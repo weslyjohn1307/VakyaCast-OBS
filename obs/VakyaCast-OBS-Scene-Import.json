@@ -1,0 +1,17 @@
+{
+  "name": "VakyaCast Bible Lower-Third Scene",
+  "sources": [
+    {
+      "id": "browser_source",
+      "name": "Bible Lower-Third Overlay (1080p)",
+      "settings": {
+        "url": "file:///C:/OBS-VakyaCast/bible_lower_third_studio.html?mode=overlay",
+        "is_local_file": false,
+        "width": 1920,
+        "height": 1080,
+        "fps": 60,
+        "shutdown": false
+      }
+    }
+  ]
+}

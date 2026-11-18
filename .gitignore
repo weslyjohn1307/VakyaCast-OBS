@@ -1,0 +1,14 @@
+# OS & Editor Artifacts
+.DS_Store
+Thumbs.db
+desktop.ini
+*.bak
+*.tmp
+*.log
+
+# Downloaded / Generated Offline 66-Book Bible Corpora (~31 MB)
+# Regenerate locally anytime via: scripts/Download-Full-Bibles-Offline.bat
+bibles/telugu_ov/
+bibles/english_kjv/
+bibles/*_bundle.js
+bibles/*.zip
