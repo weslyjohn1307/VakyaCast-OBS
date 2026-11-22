@@ -11,7 +11,7 @@
   <script defer src="bibles/english_kjv_bundle.js" onerror="void 0"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Anek+Telugu:wdth,wght@75..125,100..800&family=Gidugu&family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;600;700;800&family=Mallanna&family=Mandali&family=NTR&family=Noto+Sans+Devanagari:wght@500;600;700;800;900&family=Noto+Sans+Tamil:wght@500;600;700;800;900&family=Noto+Sans+Telugu:wght@400;500;600;700;800;900&family=Noto+Serif+Telugu:wght@400;600;700;800;900&family=Plus+Jakarta+Sans:wght@600;700;800&family=Ramabhadra&family=Sree+Krushnadevaraya&family=Suranna&family=Tenali+Ramakrishna&family=Timmana&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Anek+Latin:wdth,wght@75..125,300..800&family=Anek+Telugu:wdth,wght@75..125,100..800&family=Gidugu&family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;600;700;800&family=Mallanna&family=Mandali&family=NTR&family=Noto+Sans+Devanagari:wght@500;600;700;800;900&family=Noto+Sans+Tamil:wght@500;600;700;800;900&family=Noto+Sans+Telugu:wght@400;500;600;700;800;900&family=Noto+Serif+Telugu:wght@400;600;700;800;900&family=Plus+Jakarta+Sans:wght@600;700;800&family=Ramabhadra&family=Source+Serif+4:ital,opsz,wght@0,8..60,400..700;1,8..60,400..600&family=Sree+Krushnadevaraya&family=Suranna&family=Tenali+Ramakrishna&family=Timmana&display=swap" rel="stylesheet">
   <style>
     :root {
       --lt-primary: #0f172a;
@@ -159,53 +159,84 @@
     }
 
     /* Full-Screen Bible Mode — 2-Stage Audience Choreography (Reference First → Divider → Verse) */
-    @keyframes fsBackdropIn {
-      0% { opacity: 0; }
-      100% { opacity: 1; }
-    }
     @keyframes fsRefIn {
-      0% { opacity: 0; transform: translateY(22px) scale(0.96); filter: blur(6px); }
+      0% { opacity: 0; transform: translateY(20px) scale(0.97); filter: blur(5px); }
       100% { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
+    }
+    @keyframes fsRefSpring {
+      0% { opacity: 0; transform: translateY(24px) scale(0.92); filter: blur(4px); }
+      100% { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
+    }
+    @keyframes fsRefSweep {
+      0% { opacity: 0; transform: translateX(-28px); filter: blur(6px); }
+      100% { opacity: 1; transform: translateX(0); filter: blur(0); }
     }
     @keyframes fsDividerIn {
       0% { opacity: 0; transform: scaleX(0); }
       100% { opacity: 1; transform: scaleX(1); }
     }
     @keyframes fsVerseIn {
-      0% { opacity: 0; transform: translateY(24px); filter: blur(5px); }
+      0% { opacity: 0; transform: translateY(22px); filter: blur(4px); }
       100% { opacity: 1; transform: translateY(0); filter: blur(0); }
+    }
+    @keyframes fsVerseSweep {
+      0% { opacity: 0; transform: translateX(-20px); filter: blur(4px); }
+      100% { opacity: 1; transform: translateX(0); filter: blur(0); }
     }
     .fs-wrapper {
       will-change: opacity;
-      transition: opacity 0.42s cubic-bezier(0.16, 1, 0.3, 1), visibility 0s linear 0s;
+      transition: opacity 0.42s cubic-bezier(0.16, 1, 0.3, 1), visibility 0s linear 0s, padding 0.38s cubic-bezier(0.16, 1, 0.3, 1);
     }
     .fs-wrapper.fs-hidden {
       opacity: 0 !important;
       visibility: hidden !important;
       pointer-events: none !important;
-      transition: opacity 0.35s ease, visibility 0s linear 0.36s;
+      transition: opacity 0.38s cubic-bezier(0.16, 1, 0.3, 1), visibility 0s linear 0.40s;
     }
     .fs-wrapper.fs-visible {
       opacity: 1;
       visibility: visible;
-      animation: fsBackdropIn 0.38s cubic-bezier(0.16, 1, 0.3, 1) forwards;
     }
     .fs-visible .fs-stage-ref {
       opacity: 0;
       animation: fsRefIn 0.48s cubic-bezier(0.16, 1, 0.3, 1) 0.04s forwards;
     }
+    .fs-visible.fs-anim-spring_island .fs-stage-ref {
+      animation: fsRefSpring 0.58s cubic-bezier(0.34, 1.56, 0.64, 1) 0.04s forwards;
+    }
+    .fs-visible.fs-anim-laser_draw .fs-stage-ref {
+      animation: fsRefSweep 0.50s cubic-bezier(0.16, 1, 0.3, 1) 0.04s forwards;
+    }
     .fs-visible .fs-stage-divider {
       opacity: 0;
-      animation: fsDividerIn 0.52s cubic-bezier(0.16, 1, 0.3, 1) 0.16s forwards;
+      animation: fsDividerIn 0.50s cubic-bezier(0.16, 1, 0.3, 1) 0.16s forwards;
     }
     .fs-visible .fs-stage-verse {
       opacity: 0;
-      animation: fsVerseIn 0.58s cubic-bezier(0.16, 1, 0.3, 1) 0.28s forwards;
+      animation: fsVerseIn 0.56s cubic-bezier(0.16, 1, 0.3, 1) 0.26s forwards;
+    }
+    .fs-visible.fs-anim-laser_draw .fs-stage-verse {
+      animation: fsVerseSweep 0.54s cubic-bezier(0.16, 1, 0.3, 1) 0.24s forwards;
     }
     .fs-hidden .fs-stage-ref,
     .fs-hidden .fs-stage-divider,
     .fs-hidden .fs-stage-verse {
       opacity: 0;
+      transition: opacity 0.28s ease;
+    }
+    .fs-verse-num {
+      display: inline-block;
+      font-size: 0.56em;
+      font-weight: 800;
+      vertical-align: super;
+      line-height: 1;
+      margin-right: 0.22em;
+      margin-left: 0.18em;
+      opacity: 0.82;
+      font-variant-numeric: tabular-nums;
+    }
+    .fs-verse-num:first-child {
+      margin-left: 0;
     }
 
     /* Multi-Stage Staggered Sub-Elements */
@@ -329,6 +360,29 @@
       background-size: 100% 100%;
       color: #fda4af !important;
       border-bottom: 2px solid #fb7185;
+    }
+    /* High-Contrast Ink Overrides for Light Themes (Clean Light Canvas) */
+    .fs-theme-light .lt-hl-gold {
+      background: linear-gradient(90deg, rgba(251, 191, 36, 0.34), rgba(245, 158, 11, 0.26)) no-repeat left center;
+      color: #78350f !important;
+      border-bottom: 2px solid #d97706;
+      box-shadow: none;
+    }
+    .fs-theme-light .lt-hl-cyan {
+      background: linear-gradient(90deg, rgba(14, 165, 233, 0.22), rgba(59, 130, 246, 0.18)) no-repeat left center;
+      color: #0c4a6e !important;
+      border-bottom: 2px solid #0284c7;
+      box-shadow: none;
+    }
+    .fs-theme-light .lt-hl-emerald {
+      background: linear-gradient(90deg, rgba(16, 185, 129, 0.24), rgba(5, 150, 105, 0.18)) no-repeat left center;
+      color: #064e3b !important;
+      border-bottom: 2px solid #059669;
+    }
+    .fs-theme-light .lt-hl-crimson {
+      background: linear-gradient(90deg, rgba(244, 63, 94, 0.20), rgba(225, 29, 72, 0.16)) no-repeat left center;
+      color: #881337 !important;
+      border-bottom: 2px solid #e11d48;
     }
 
     .telugu-font-sans {
@@ -2602,9 +2656,13 @@
         const minIdx = Math.min(...activeIndices);
         const maxIdx = Math.max(...activeIndices);
         const prefixEllipsis = minIdx > 0 ? '<span class="opacity-60 mr-1">…</span>' : '';
-        const suffixEllipsis = maxIdx < words.length - 1 ? '<span class="opacity-60 ml-1">…</span>' : '';
         const pickedWords = words.filter((_, i) => selectedSet.has(i));
-        const rawPart = pickedWords.join(' ');
+        let rawPart = pickedWords.join(' ');
+        const hasMoreAfter = maxIdx < words.length - 1;
+        if (hasMoreAfter) {
+          rawPart = rawPart.replace(/[\.,;:—–]+$/, '');
+        }
+        const suffixEllipsis = hasMoreAfter ? '<span class="opacity-60 ml-0.5">…</span>' : '';
         return {
           html: `${prefixEllipsis}${escapeHtml(rawPart)}${suffixEllipsis}`,
           charLength: rawPart.length,
@@ -2972,6 +3030,18 @@
       return map[renderState.fontFamily] || map.anek;
     }
 
+    function resolveEnglishFontStack(renderState) {
+      const serifChoices = new Set(['suranna', 'serif', 'sree']);
+      if (serifChoices.has(renderState.fontFamily)) {
+        return `'Source Serif 4', Georgia, serif`;
+      }
+      return `'Anek Latin', 'Noto Sans', sans-serif`;
+    }
+
+    function styleFullScreenVerseNumbers(html, accentColor) {
+      return String(html || '').replace(/\((\d+)\)\s*/g, `<sup class="fs-verse-num" style="color: ${accentColor};">$1</sup>`);
+    }
+
     function getFullScreenBackdropStyle(themeKey, backdropMode, theme) {
       if (backdropMode === 'pure_black') {
         return 'background: #000000;';
@@ -3112,38 +3182,92 @@
       `;
     }
 
+    function formatParallelRefHtml(englishParallel) {
+      const m = String(englishParallel || '').match(/^(.*?)([a-z])$/);
+      if (m) {
+        return `<span class="uppercase">${escapeHtml(m[1])}</span><span class="normal-case">${escapeHtml(m[2])}</span>`;
+      }
+      return `<span class="uppercase">${escapeHtml(englishParallel)}</span>`;
+    }
+
     function buildFullScreenBibleMarkup(renderState, isFullOverlay, theme, fontStack, fontWeight, mainCitation, englishParallel, showSub, mediaMarkup) {
       const visibilityClass = renderState.isLive ? 'fs-visible' : 'fs-hidden';
+      const animClass = `fs-anim-${renderState.animStyle || 'ae_stagger'}`;
       const ltMode = renderState.ltDisplayMode || 'ref_te';
       const fsLayout = renderState.fsLayout || 'centered';
       const fsBackdrop = renderState.fsBackdrop || 'theme_solid';
       const fsScale = (renderState.fsScalePercent || 100) / 100;
-      // Keep 16:9 Operator Studio Monitor proportionally identical to 1920x1080 OBS canvas
-      const previewMult = isFullOverlay ? 1.0 : 0.34;
+
+      // Dynamic Studio Preview Scale (matches actual 16:9 monitor width / 1920 instead of hardcoded 0.34)
+      let previewMult = 1.0;
+      if (!isFullOverlay) {
+        const previewEl = document.getElementById('previewLowerThirdMount');
+        const stageW = previewEl ? previewEl.clientWidth : 0;
+        previewMult = stageW > 120 ? Math.max(0.18, Math.min(0.65, stageW / 1920)) : 0.29;
+      }
       const eff = fsScale * previewMult;
       const backdropStyle = getFullScreenBackdropStyle(renderState.theme, fsBackdrop, theme);
       const isEditorial = fsLayout === 'editorial';
       const alignClasses = isEditorial ? 'items-start text-left' : 'items-center text-center';
+      const enFontStack = resolveEnglishFontStack(renderState);
 
-      // REF-ONLY OR WHOLE CHAPTER IN FULL-SCREEN MODE (Heroic Reference Display)
+      // Contrast-Safe Effective Ink Palette (Prevents Clean Light dark ink on Pure Black backdrop!)
+      const isLightCanvas = renderState.theme === 'clean_light' && fsBackdrop !== 'pure_black';
+      const lightClass = isLightCanvas ? 'fs-theme-light' : '';
+      const effTheme = (renderState.theme === 'clean_light' && fsBackdrop === 'pure_black')
+        ? {
+            ...theme,
+            textColor: '#ffffff',
+            badgeColor: '#fbbf24',
+            subColor: '#cbd5e1',
+            accentBar: 'linear-gradient(90deg, #fbbf24 0%, #d97706 100%)'
+          }
+        : theme;
+
+      // Subtle text-shadow scrim on Frosted Glass so bright live camera feeds never wash out Scripture
+      const glassTextShadow = fsBackdrop === 'frosted_glass'
+        ? (isLightCanvas
+            ? 'text-shadow: 0 1px 12px rgba(255, 255, 255, 0.75);'
+            : 'text-shadow: 0 2px 18px rgba(0, 0, 0, 0.72);')
+        : '';
+
+      // Split-Screen Book / Picture Collision Guard (Uses full TV title-safe area: 4.5% margins)
+      const splitW = Math.max(26, Math.min(44, parseInt(renderState.mediaSplitWidth, 10) || 34));
+      const rightSplitActive = Boolean(renderState.mediaIsLive) && renderState.mediaLayout === 'split_right_full';
+      const leftSplitActive = Boolean(renderState.mediaIsLive) && renderState.mediaLayout === 'split_left_full';
+      const padLeft = leftSplitActive ? `calc(${splitW}% + 3.5%)` : '4.5%';
+      const padRight = rightSplitActive ? `calc(${splitW}% + 3.5%)` : '4.5%';
+      const padStyle = `padding: 4% ${padRight} 4% ${padLeft};`;
+
+      // Content key lets renderStagePreview update smoothly without flashing backdrop on verse step
+      const contentKey = [
+        renderState.bookId, renderState.chapter, renderState.verseStart, renderState.verseEnd,
+        renderState.wholeChapter, renderState.customOverride, renderState.lang, ltMode,
+        renderState.workbenchActionMode, renderState.highlightColor,
+        (renderState.selectedTeWordIndices || []).join(','),
+        (renderState.selectedEnWordIndices || []).join(','),
+        renderState.activeClauseIndex, renderState.appendClauseLetter
+      ].join('|');
+
+      // REF-ONLY OR WHOLE CHAPTER IN FULL-SCREEN MODE (Large TV Sanctuary Reference Display)
       if (ltMode === 'ref_only' || renderState.wholeChapter) {
-        const heroRefRem = (4.4 * eff).toFixed(3);
-        const heroSubRem = (1.65 * eff).toFixed(3);
-        const divW = isFullOverlay ? '160px' : '56px';
-        const divH = isFullOverlay ? '4px' : '2px';
-        const gapRem = (1.4 * eff).toFixed(3);
+        const heroRefRem = (6.4 * eff).toFixed(3);
+        const heroSubRem = (2.45 * eff).toFixed(3);
+        const divW = isFullOverlay ? '240px' : `${Math.round(240 * previewMult)}px`;
+        const divH = isFullOverlay ? '5px' : '2px';
+        const gapRem = (1.6 * eff).toFixed(3);
 
         return `
           ${mediaMarkup}
-          <div class="fs-wrapper ${visibilityClass} absolute inset-0 z-10 flex flex-col justify-center ${alignClasses} px-[8%] py-[7%] pointer-events-none" style="${backdropStyle} font-family: ${fontStack};">
-            <div class="max-w-[92%] flex flex-col ${alignClasses}" style="gap: ${gapRem}rem;">
-              <div class="fs-stage-divider rounded-full" style="width: ${divW}; height: ${divH}; background: ${theme.accentBar}; transform-origin: ${isEditorial ? 'left center' : 'center'};"></div>
-              <div class="fs-stage-ref tracking-wide leading-tight" style="color: ${theme.textColor}; font-size: ${heroRefRem}rem; font-weight: ${fontWeight};">
+          <div class="fs-wrapper ${animClass} ${lightClass} ${visibilityClass} absolute inset-0 z-10 flex flex-col justify-center ${alignClasses} pointer-events-none" data-fs-root="1" style="${backdropStyle} ${padStyle} ${glassTextShadow} font-family: ${fontStack};">
+            <div class="fs-inner-stage w-full flex flex-col ${alignClasses}" data-fs-content-key="${escapeHtml(contentKey)}" style="gap: ${gapRem}rem; transform-origin: ${isEditorial ? 'left center' : 'center center'};">
+              <div class="fs-stage-divider rounded-full" style="width: ${divW}; height: ${divH}; background: ${effTheme.accentBar}; transform-origin: ${isEditorial ? 'left center' : 'center'};"></div>
+              <div class="fs-stage-ref tracking-wide leading-tight" style="color: ${effTheme.textColor}; font-size: ${heroRefRem}rem; font-weight: ${fontWeight};">
                 ${escapeHtml(mainCitation)}
               </div>
               ${(showSub || renderState.lang !== 'en') ? `
-                <div class="fs-stage-verse font-bold uppercase tracking-[0.18em] opacity-85" style="color: ${theme.badgeColor}; font-size: ${heroSubRem}rem; font-family: 'Inter', sans-serif;">
-                  ${escapeHtml(englishParallel)}
+                <div class="fs-stage-verse font-bold tracking-[0.14em] opacity-95" style="color: ${effTheme.badgeColor}; font-size: ${heroSubRem}rem; font-family: ${enFontStack};">
+                  ${formatParallelRefHtml(englishParallel)}
                 </div>
               ` : ''}
             </div>
@@ -3151,93 +3275,127 @@
         `;
       }
 
-      // FULL-SCREEN REFERENCE FIRST → DIVIDER → SCRIPTURE VERSE
+      // FULL-SCREEN: CHURCH TV READABILITY-FIRST ENGINE (MAX SCREEN FILL, REFERENCE BIGGER FIRST)
       const teProcessed = buildProcessedVerseOverlayHtml(renderState.bookId, renderState.chapter, renderState.verseStart, renderState.verseEnd, renderState.wholeChapter, 'te', renderState);
       const enProcessed = buildProcessedVerseOverlayHtml(renderState.bookId, renderState.chapter, renderState.verseStart, renderState.verseEnd, renderState.wholeChapter, 'en', renderState);
 
       const isDual = ltMode === 'ref_dual';
-      const primaryLen = ltMode === 'ref_en'
+      const isEnOnly = ltMode === 'ref_en';
+      const primaryLen = isEnOnly
         ? enProcessed.charLength
         : (isDual ? Math.max(teProcessed.charLength, enProcessed.charLength) : teProcessed.charLength);
 
-      // Dynamic Typographic Proportion Engine (1920x1080 base rem values)
-      let baseRefRem = 2.65;
-      let baseSubRefRem = 1.25;
-      let baseTeRem = 3.15;
-      let baseEnRem = 2.55;
+      // Church TV Sanctuary Proportion Engine (1920x1080 base rem values — uses full TV canvas)
+      // Reference is ALWAYS larger/commanding so the audience identifies it first from the back row;
+      // Telugu & English use distinct optical sizing ratios for balanced TV legibility.
+      let baseRefRem = 4.80;
+      let baseSubRefRem = 2.05;
+      let baseTeRem = 4.20;
+      let baseEnRem = 3.60;
 
       if (isDual) {
-        baseRefRem = 2.35;
-        baseSubRefRem = 1.15;
-        if (primaryLen <= 65) {
-          baseTeRem = 2.95; baseEnRem = 2.05;
-        } else if (primaryLen <= 145) {
-          baseTeRem = 2.40; baseEnRem = 1.70;
-        } else if (primaryLen <= 260) {
-          baseTeRem = 1.95; baseEnRem = 1.42;
+        if (primaryLen <= 80) {
+          baseRefRem = 4.50; baseSubRefRem = 1.95; baseTeRem = 3.90; baseEnRem = 3.10;
+        } else if (primaryLen <= 200) {
+          baseRefRem = 4.20; baseSubRefRem = 1.85; baseTeRem = 3.50; baseEnRem = 2.75;
+        } else if (primaryLen <= 350) {
+          baseRefRem = 3.70; baseSubRefRem = 1.68; baseTeRem = 2.90; baseEnRem = 2.30;
+        } else if (primaryLen <= 560) {
+          baseRefRem = 3.30; baseSubRefRem = 1.52; baseTeRem = 2.45; baseEnRem = 1.95;
         } else {
-          baseTeRem = 1.58; baseEnRem = 1.18;
+          baseRefRem = 3.00; baseSubRefRem = 1.38; baseTeRem = 2.05; baseEnRem = 1.68;
         }
       } else {
-        if (primaryLen <= 60) {
-          baseTeRem = 3.95; baseEnRem = 3.25;
-        } else if (primaryLen <= 140) {
-          baseTeRem = 3.15; baseEnRem = 2.60;
-        } else if (primaryLen <= 260) {
-          baseTeRem = 2.45; baseEnRem = 2.08;
+        if (primaryLen <= 75) {
+          baseRefRem = 5.20; baseSubRefRem = 2.15; baseTeRem = 4.70; baseEnRem = 4.00;
+        } else if (primaryLen <= 200) {
+          baseRefRem = 4.80; baseSubRefRem = 2.05; baseTeRem = 4.20; baseEnRem = 3.60;
+        } else if (primaryLen <= 350) {
+          baseRefRem = 4.30; baseSubRefRem = 1.85; baseTeRem = 3.50; baseEnRem = 3.00;
+        } else if (primaryLen <= 560) {
+          baseRefRem = 3.80; baseSubRefRem = 1.65; baseTeRem = 2.90; baseEnRem = 2.50;
         } else {
-          baseTeRem = 1.95; baseEnRem = 1.68;
+          baseRefRem = 3.40; baseSubRefRem = 1.50; baseTeRem = 2.40; baseEnRem = 2.10;
         }
       }
+
+      // Strong broadcast weight for Church TV screens (thin strokes wash out on bright TVs)
+      const numericWeight = parseInt(fontWeight, 10) || 700;
+      const teBodyWeight = primaryLen > 360 ? Math.min(numericWeight, 600) : Math.min(numericWeight, 700);
+      const enBodyWeight = enFontStack.includes('Source Serif') ? 600 : 600;
+
+      // Maximum-contrast TV ink for Dual English
+      const dualEnColor = isLightCanvas ? '#1e293b' : '#f1f5f9';
+      const dualBorderColor = isLightCanvas ? 'rgba(15, 23, 42, 0.18)' : 'rgba(255, 255, 255, 0.20)';
+
+      // In English-Only mode (ref_en), make English Reference the big main header!
+      const headerPrimaryText = isEnOnly ? englishParallel : mainCitation;
+      const headerPrimaryFont = isEnOnly ? enFontStack : fontStack;
+      const showParallelInHeader = isEnOnly
+        ? (showSub && renderState.lang !== 'en')
+        : ((showSub || isDual) && renderState.lang !== 'en');
+      const headerSecondaryHtml = isEnOnly
+        ? escapeHtml(mainCitation)
+        : formatParallelRefHtml(englishParallel);
+      const headerSecondaryFont = isEnOnly ? fontStack : enFontStack;
 
       const refSize = (baseRefRem * eff).toFixed(3);
       const subRefSize = (baseSubRefRem * eff).toFixed(3);
       const teSize = (baseTeRem * eff).toFixed(3);
       const enSize = (baseEnRem * eff).toFixed(3);
-      const dividerMarginY = (1.65 * eff).toFixed(3);
-      const dualGap = (1.35 * eff).toFixed(3);
-      const dividerW = isFullOverlay ? (isEditorial ? '140px' : '200px') : (isEditorial ? '48px' : '68px');
-      const dividerH = isFullOverlay ? '4px' : '2px';
+      const dividerMarginTop = (0.90 * eff).toFixed(3);
+      const dividerMarginBottom = (1.20 * eff).toFixed(3);
+      const dualGap = (1.10 * eff).toFixed(3);
+      const dualPadTop = (0.95 * eff).toFixed(3);
+      const dividerW = isFullOverlay
+        ? (isEditorial ? '100%' : '260px')
+        : (isEditorial ? '100%' : `${Math.round(260 * previewMult)}px`);
+      const dividerH = isEditorial ? (isFullOverlay ? '2px' : '1px') : (isFullOverlay ? '5px' : '2px');
+      const dividerBg = isEditorial ? dualBorderColor : effTheme.accentBar;
+
+      const teHtml = styleFullScreenVerseNumbers(teProcessed.html, effTheme.badgeColor);
+      const enHtml = styleFullScreenVerseNumbers(enProcessed.html, effTheme.badgeColor);
 
       return `
         ${mediaMarkup}
         <div
-          class="fs-wrapper ${visibilityClass} absolute inset-0 z-10 flex flex-col justify-center ${alignClasses} px-[8%] py-[6.5%] pointer-events-none"
-          style="${backdropStyle} font-family: ${fontStack};"
+          class="fs-wrapper ${animClass} ${lightClass} ${visibilityClass} absolute inset-0 z-10 flex flex-col justify-center ${alignClasses} pointer-events-none"
+          data-fs-root="1"
+          style="${backdropStyle} ${padStyle} ${glassTextShadow} font-family: ${fontStack};"
         >
-          <div class="w-full max-w-[1620px] flex flex-col ${alignClasses}">
-            <!-- STAGE 1: PROMINENT SCRIPTURE REFERENCE (APPEARS FIRST FOR AUDIENCE) -->
-            <div class="fs-stage-ref flex flex-wrap items-baseline ${isEditorial ? 'justify-start' : 'justify-center'} gap-x-4 gap-y-1">
-              ${isEditorial ? `<span class="inline-block rounded-full shrink-0 self-center" style="width: ${isFullOverlay ? '8px' : '3px'}; height: ${(baseRefRem * eff * 0.95).toFixed(3)}rem; background: ${theme.accentBar};"></span>` : ''}
-              <span class="tracking-wide leading-tight" style="color: ${theme.badgeColor}; font-size: ${refSize}rem; font-weight: 900;">
-                ${escapeHtml(mainCitation)}
+          <div class="fs-inner-stage w-full flex flex-col ${alignClasses}" data-fs-content-key="${escapeHtml(contentKey)}" style="transform-origin: ${isEditorial ? 'left center' : 'center center'};">
+            <!-- STAGE 1: PROMINENT SCRIPTURE REFERENCE (BIGGER & SEEN FIRST ON CHURCH TV) -->
+            <div class="fs-stage-ref flex flex-wrap items-baseline ${isEditorial ? 'justify-start' : 'justify-center'} gap-x-5 gap-y-1">
+              ${isEditorial ? `<span class="inline-block rounded-full shrink-0 self-center" style="width: ${isFullOverlay ? '10px' : '3px'}; height: ${(baseRefRem * eff * 0.88).toFixed(3)}rem; background: ${effTheme.accentBar};"></span>` : ''}
+              <span class="tracking-wide leading-tight" style="color: ${effTheme.badgeColor}; font-size: ${refSize}rem; font-weight: 800; font-family: ${headerPrimaryFont};">
+                ${escapeHtml(headerPrimaryText)}
               </span>
-              ${(showSub || isDual || ltMode === 'ref_en') && renderState.lang !== 'en' ? `
-                <span class="font-bold uppercase tracking-[0.14em] opacity-85" style="color: ${theme.subColor}; font-size: ${subRefSize}rem; font-family: 'Inter', sans-serif;">
-                  • ${escapeHtml(englishParallel)}
+              ${showParallelInHeader ? `
+                <span class="font-bold tracking-[0.10em] opacity-90" style="color: ${effTheme.subColor}; font-size: ${subRefSize}rem; font-family: ${headerSecondaryFont};">
+                  • ${headerSecondaryHtml}
                 </span>
               ` : ''}
             </div>
 
-            <!-- ARCHITECTURAL SEPARATOR RULE (VISUAL BREATHING SPACE BETWEEN REF & VERSE) -->
+            <!-- ARCHITECTURAL SEPARATOR RULE -->
             <div
               class="fs-stage-divider rounded-full"
-              style="width: ${dividerW}; height: ${dividerH}; background: ${theme.accentBar}; margin-top: ${dividerMarginY}rem; margin-bottom: ${(parseFloat(dividerMarginY) * 1.2).toFixed(3)}rem; transform-origin: ${isEditorial ? 'left center' : 'center'};"
+              style="width: ${dividerW}; height: ${dividerH}; background: ${dividerBg}; margin-top: ${dividerMarginTop}rem; margin-bottom: ${dividerMarginBottom}rem; transform-origin: ${isEditorial ? 'left center' : 'center'};"
             ></div>
 
-            <!-- STAGE 2: SCRIPTURE VERSE BODY (REVEALS SECOND WITH GENEROUS TELUGU LINE-HEIGHT) -->
+            <!-- STAGE 2: SCRIPTURE VERSE BODY (MAX TV READABILITY, OPTICALLY BALANCED) -->
             <div class="fs-stage-verse w-full flex flex-col ${alignClasses}" style="gap: ${dualGap}rem;">
               ${(ltMode === 'ref_te' || isDual) ? `
-                <div style="color: ${theme.textColor}; font-size: ${teSize}rem; font-weight: ${fontWeight}; line-height: 1.62; letter-spacing: 0.01em;">
-                  ${teProcessed.html}
+                <div style="color: ${effTheme.textColor}; font-size: ${teSize}rem; font-weight: ${teBodyWeight}; line-height: 1.48; letter-spacing: 0.005em;">
+                  ${teHtml}
                 </div>
               ` : ''}
-              ${(ltMode === 'ref_en' || isDual) ? `
+              ${(isEnOnly || isDual) ? `
                 <div
-                  class="${isDual ? 'w-full pt-3 border-t border-white/15 opacity-95' : ''}"
-                  style="color: ${isDual ? theme.subColor : theme.textColor}; font-size: ${enSize}rem; font-weight: 600; line-height: 1.48; font-family: 'Inter', sans-serif;"
+                  class="${isDual ? 'w-full' : ''}"
+                  style="color: ${isDual ? dualEnColor : effTheme.textColor}; font-size: ${enSize}rem; font-weight: ${enBodyWeight}; line-height: 1.36; font-family: ${enFontStack}; ${isDual ? `padding-top: ${dualPadTop}rem; border-top: 1.5px solid ${dualBorderColor};` : ''}"
                 >
-                  ${enProcessed.html}
+                  ${enHtml}
                 </div>
               ` : ''}
             </div>
@@ -3626,11 +3784,13 @@
         }
       }
 
-      // Ensure active book is loaded in background from GitHub Raw / IndexedDB
-      ensureBookLoaded(state.bookId).then(() => {
-        renderVerseWorkbench();
-        renderStagePreview();
-      });
+      // Ensure active book is loaded in background (skip redundant re-render if already in memory)
+      if (!memoryBibleBooksCache.te[state.bookId] || !memoryBibleBooksCache.en[state.bookId]) {
+        ensureBookLoaded(state.bookId).then(() => {
+          renderVerseWorkbench();
+          renderStagePreview();
+        });
+      }
 
       renderBookList();
       renderChapterGrid();
@@ -4110,14 +4270,81 @@
       });
     }
 
+    function autoFitFullScreenStage(container) {
+      if (!container) return;
+      const fsRoot = container.querySelector('.fs-wrapper[data-fs-root="1"]');
+      const inner = fsRoot ? fsRoot.querySelector('.fs-inner-stage') : null;
+      if (!fsRoot || !inner) return;
+      inner.style.transform = '';
+      const maxH = fsRoot.clientHeight * 0.92;
+      if (maxH > 40 && inner.scrollHeight > maxH) {
+        const ratio = Math.max(0.52, +(maxH / inner.scrollHeight).toFixed(3));
+        inner.style.transform = `scale(${ratio})`;
+      }
+    }
+
+    function updateStageContainer(container, isFullOverlay) {
+      if (!container) return;
+      const html = buildLowerThirdMarkup(state, isFullOverlay);
+      const isFullScreen = (state.presentationMode || 'lower_third') === 'full_screen';
+      const existingFs = isFullScreen ? container.querySelector('.fs-wrapper[data-fs-root="1"]') : null;
+
+      if (isFullScreen && existingFs) {
+        const tpl = document.createElement('template');
+        tpl.innerHTML = html;
+        const nextFs = tpl.content.querySelector('.fs-wrapper[data-fs-root="1"]');
+        const nextMedia = tpl.content.querySelector('.media-overlay-wrapper');
+
+        if (nextFs) {
+          // Sync Media Overlay cleanly without disturbing the persistent Full-Screen backdrop
+          const existingMedia = container.querySelector('.media-overlay-wrapper');
+          if (existingMedia && nextMedia) {
+            if (existingMedia.outerHTML !== nextMedia.outerHTML) {
+              existingMedia.replaceWith(nextMedia);
+            }
+          } else if (existingMedia && !nextMedia) {
+            existingMedia.remove();
+          } else if (!existingMedia && nextMedia) {
+            container.insertBefore(nextMedia, existingFs);
+          }
+
+          // Update Full-Screen wrapper classes & styles IN PLACE so fade-out & verse swaps NEVER blink!
+          existingFs.className = nextFs.className;
+          existingFs.style.cssText = nextFs.style.cssText;
+
+          // Replace inner stage when content/styling changed (re-triggers Reference → Divider → Verse entrance)
+          const existingInner = existingFs.querySelector('.fs-inner-stage');
+          const nextInner = nextFs.querySelector('.fs-inner-stage');
+          if (existingInner && nextInner) {
+            const prevKey = existingInner.getAttribute('data-fs-content-key');
+            const nextKey = nextInner.getAttribute('data-fs-content-key');
+            if (prevKey !== nextKey || existingInner.innerHTML !== nextInner.innerHTML) {
+              existingInner.replaceWith(nextInner);
+            }
+          } else if (nextInner) {
+            existingFs.innerHTML = '';
+            existingFs.appendChild(nextInner);
+          }
+
+          autoFitFullScreenStage(container);
+          return;
+        }
+      }
+
+      container.innerHTML = html;
+      if (isFullScreen) {
+        autoFitFullScreenStage(container);
+      }
+    }
+
     function renderStagePreview() {
       const mount = document.getElementById('previewLowerThirdMount');
       if (mount) {
-        mount.innerHTML = buildLowerThirdMarkup(state, false);
+        updateStageContainer(mount, false);
       }
       const pureOverlayAnchor = document.getElementById('pureOverlayAnchor');
       if (pureOverlayAnchor) {
-        pureOverlayAnchor.innerHTML = buildLowerThirdMarkup(state, true);
+        updateStageContainer(pureOverlayAnchor, true);
       }
     }
 
@@ -5816,9 +6043,11 @@
       state.mediaFocalPos = payload.mediaFocalPos || state.mediaFocalPos;
       state.mediaSplitWidth = payload.mediaSplitWidth || state.mediaSplitWidth;
       state.mediaShowCaption = payload.mediaShowCaption !== undefined ? Boolean(payload.mediaShowCaption) : true;
-      ensureBookLoaded(state.bookId).then(() => {
-        renderStagePreview();
-      });
+      if (!memoryBibleBooksCache.te[state.bookId] || !memoryBibleBooksCache.en[state.bookId]) {
+        ensureBookLoaded(state.bookId).then(() => {
+          renderStagePreview();
+        });
+      }
       renderStagePreview();
     }
 
