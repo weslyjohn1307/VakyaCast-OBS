@@ -29,14 +29,44 @@
       user-select: text;
     }
     body {
-      font-family: 'Inter', 'Anek Telugu', 'Noto Sans Telugu', sans-serif;
+      font-family: 'Anek Latin', 'Anek Telugu', 'Noto Sans Telugu', system-ui, -apple-system, sans-serif;
       background-color: #09090b;
       color: #fafafa;
       margin: 0;
       padding: 0;
       overflow-x: hidden;
       -webkit-font-smoothing: antialiased;
-      letter-spacing: -0.011em;
+      letter-spacing: -0.008em;
+    }
+    #appRoot .font-mono {
+      font-family: 'Anek Latin', system-ui, sans-serif !important;
+      font-variant-numeric: tabular-nums !important;
+    }
+    #appRoot .shadow-lg, #appRoot .shadow-xl {
+      box-shadow: none !important;
+    }
+    /* OBS Dock Mode: Single Focused View At A Time (Zero Stacked Card Clutter) */
+    #dockViewNavBar {
+      display: none;
+    }
+    body.dock-compact-mode #dockViewNavBar {
+      display: flex;
+    }
+    body.dock-compact-mode #stagePreviewCard {
+      display: none !important;
+    }
+    body.dock-compact-mode main {
+      display: block !important;
+      padding: 0.5rem !important;
+    }
+    body.dock-compact-mode[data-dock-view="live"] #rightColumnSection {
+      display: none !important;
+    }
+    body.dock-compact-mode:not([data-dock-view="live"]) #pickerColumnSection {
+      display: none !important;
+    }
+    body.dock-compact-mode #rightTabsStrip {
+      display: none !important;
     }
     #appRoot .bg-slate-900, #appRoot .bg-slate-900\/95, #appRoot .bg-slate-900\/90, #appRoot .bg-slate-900\/80 {
       background-color: #0f0f12 !important;
@@ -158,81 +188,73 @@
       pointer-events: none;
     }
 
-    /* Full-Screen Bible Mode — 2-Stage Audience Choreography (Reference First → Divider → Verse) */
-    @keyframes fsRefIn {
-      0% { opacity: 0; transform: translateY(20px) scale(0.97); filter: blur(5px); }
-      100% { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
+    /* Browser Surface Polish (Selection, Scrollbar, Tabular Figures) */
+    ::selection {
+      background: rgba(251, 191, 36, 0.28);
+      color: #ffffff;
     }
-    @keyframes fsRefSpring {
-      0% { opacity: 0; transform: translateY(24px) scale(0.92); filter: blur(4px); }
-      100% { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
     }
-    @keyframes fsRefSweep {
-      0% { opacity: 0; transform: translateX(-28px); filter: blur(6px); }
-      100% { opacity: 1; transform: translateX(0); filter: blur(0); }
+    ::-webkit-scrollbar-track {
+      background: transparent;
     }
-    @keyframes fsDividerIn {
-      0% { opacity: 0; transform: scaleX(0); }
-      100% { opacity: 1; transform: scaleX(1); }
+    ::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.12);
+      border-radius: 999px;
     }
-    @keyframes fsVerseIn {
-      0% { opacity: 0; transform: translateY(22px); filter: blur(4px); }
-      100% { opacity: 1; transform: translateY(0); filter: blur(0); }
+    ::-webkit-scrollbar-thumb:hover {
+      background: rgba(255, 255, 255, 0.24);
     }
-    @keyframes fsVerseSweep {
-      0% { opacity: 0; transform: translateX(-20px); filter: blur(4px); }
-      100% { opacity: 1; transform: translateX(0); filter: blur(0); }
+    .tabular-nums {
+      font-variant-numeric: tabular-nums;
     }
+
+    /* Full-Screen Bible Mode — Broadcast Masked Choreography (GSAP-Driven, Zero Cheap Blur) */
     .fs-wrapper {
       will-change: opacity;
-      transition: opacity 0.42s cubic-bezier(0.16, 1, 0.3, 1), visibility 0s linear 0s, padding 0.38s cubic-bezier(0.16, 1, 0.3, 1);
+      transition: opacity 0.36s cubic-bezier(0.16, 1, 0.3, 1), visibility 0s linear 0s, padding 0.36s cubic-bezier(0.16, 1, 0.3, 1);
     }
     .fs-wrapper.fs-hidden {
       opacity: 0 !important;
       visibility: hidden !important;
       pointer-events: none !important;
-      transition: opacity 0.38s cubic-bezier(0.16, 1, 0.3, 1), visibility 0s linear 0.40s;
+      transition: opacity 0.26s cubic-bezier(0.55, 0.055, 0.675, 0.19), visibility 0s linear 0.28s;
     }
     .fs-wrapper.fs-visible {
       opacity: 1;
       visibility: visible;
     }
-    .fs-visible .fs-stage-ref {
-      opacity: 0;
-      animation: fsRefIn 0.48s cubic-bezier(0.16, 1, 0.3, 1) 0.04s forwards;
+    .fs-grain-layer {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      opacity: 0.032;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.82' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+      background-size: 180px 180px;
     }
-    .fs-visible.fs-anim-spring_island .fs-stage-ref {
-      animation: fsRefSpring 0.58s cubic-bezier(0.34, 1.56, 0.64, 1) 0.04s forwards;
+    /* Global Telugu / Indic Zero-Clipping Discipline:
+       1. Never overflow:hidden on Telugu lines
+       2. Never permanent will-change (prevents Chromium GPU texture-box cropping of Telugu ascenders/ottulu)
+       3. Generous vertical safe padding directly on animated Telugu text nodes */
+    .fs-mask {
+      overflow: visible;
     }
-    .fs-visible.fs-anim-laser_draw .fs-stage-ref {
-      animation: fsRefSweep 0.50s cubic-bezier(0.16, 1, 0.3, 1) 0.04s forwards;
-    }
-    .fs-visible .fs-stage-divider {
-      opacity: 0;
-      animation: fsDividerIn 0.50s cubic-bezier(0.16, 1, 0.3, 1) 0.16s forwards;
-    }
-    .fs-visible .fs-stage-verse {
-      opacity: 0;
-      animation: fsVerseIn 0.56s cubic-bezier(0.16, 1, 0.3, 1) 0.26s forwards;
-    }
-    .fs-visible.fs-anim-laser_draw .fs-stage-verse {
-      animation: fsVerseSweep 0.54s cubic-bezier(0.16, 1, 0.3, 1) 0.24s forwards;
-    }
-    .fs-hidden .fs-stage-ref,
-    .fs-hidden .fs-stage-divider,
-    .fs-hidden .fs-stage-verse {
-      opacity: 0;
-      transition: opacity 0.28s ease;
+    .fs-stage-ref,
+    .fs-stage-verse {
+      padding-top: 0.24em;
+      padding-bottom: 0.24em;
     }
     .fs-verse-num {
       display: inline-block;
-      font-size: 0.56em;
+      font-size: 0.54em;
       font-weight: 800;
       vertical-align: super;
       line-height: 1;
       margin-right: 0.22em;
-      margin-left: 0.18em;
-      opacity: 0.82;
+      margin-left: 0.20em;
+      opacity: 0.85;
       font-variant-numeric: tabular-nums;
     }
     .fs-verse-num:first-child {
@@ -457,124 +479,115 @@
   <!-- ==================== STUDIO & DOCK ROOT ==================== -->
   <div id="appRoot" class="flex-1 flex flex-col min-h-screen">
 
-    <!-- TOP HEADER / BROADCAST BAR -->
-    <header class="bg-slate-900/95 border-b border-slate-800 px-3 py-2 flex flex-wrap items-center justify-between gap-2 sticky top-0 z-30 backdrop-blur">
-      <div class="flex items-center gap-2.5">
-        <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-amber-500 to-orange-600 flex items-center justify-center shadow-md shadow-amber-500/20 font-bold text-slate-950 text-lg">
-          📖
+    <!-- TOP HEADER / CALM BROADCAST TALLY BAR -->
+    <header class="bg-[#0b0b0e]/95 border-b border-white/[0.08] px-3 py-2 flex flex-wrap items-center justify-between gap-2 sticky top-0 z-30 backdrop-blur-md">
+      <div class="flex items-center gap-2">
+        <div class="w-7 h-7 rounded-md bg-white/[0.06] border border-white/10 flex items-center justify-center text-zinc-100 shrink-0">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"/></svg>
         </div>
-        <div>
-          <div class="flex items-center gap-2">
-            <h1 class="text-sm font-bold tracking-tight text-white">VakyaCast LT</h1>
-            <span class="text-[10px] font-mono uppercase px-1.5 py-0.5 rounded bg-amber-500/15 text-amber-400 border border-amber-500/30">OBS + Standalone</span>
-          </div>
-          <p class="text-[11px] text-slate-400 hidden sm:block">Fast Bible Reference Lower-Third Presenter (యోహాను 15:4 • 15:4-15 • యోహాను సువార్త 12వ అధ్యాయము)</p>
-        </div>
+        <h1 class="text-sm font-semibold tracking-tight text-zinc-100">VakyaCast</h1>
       </div>
 
       <!-- DUAL SEARCH BARS: 1) QUICK REFERENCE (/)  2) FULL-BIBLE WORD CONCORDANCE (Ctrl+F) -->
-      <div class="order-3 sm:order-2 w-full sm:flex-1 sm:max-w-2xl sm:mx-1 grid grid-cols-1 md:grid-cols-12 gap-1.5">
+      <div class="order-3 sm:order-2 w-full sm:flex-1 sm:max-w-xl sm:mx-2 grid grid-cols-1 md:grid-cols-12 gap-1.5">
         <div class="md:col-span-6 relative flex items-center">
-          <span class="absolute left-2.5 text-amber-400 text-[10px] font-mono font-bold pointer-events-none">/</span>
+          <span class="absolute left-2.5 text-zinc-500 text-[11px] font-semibold pointer-events-none">/</span>
           <span id="quickParsePreview" class="hidden"></span>
           <input
             id="quickCommandInput"
             type="text"
             autocomplete="off"
             spellcheck="false"
-            placeholder="Quick Ref (/): yoh 15:4, yoh 15:4-15, yoh 12..."
-            class="w-full bg-slate-950/90 border border-slate-700 focus:border-amber-500 rounded-lg pl-6 pr-2.5 py-1.5 text-xs sm:text-sm text-white placeholder-slate-500 outline-none transition"
+            placeholder="Go to ref (yoh 15:4, yoh 12)..."
+            class="w-full bg-[#111114] border border-white/[0.09] focus:border-white/30 rounded-lg pl-6 pr-2.5 py-1.5 text-xs sm:text-sm text-zinc-100 placeholder-zinc-500 outline-none transition"
           />
         </div>
         <div class="md:col-span-6 relative flex items-center">
-          <span class="absolute left-2.5 text-sky-400 text-[10px] font-mono font-bold pointer-events-none">Ctrl+F</span>
+          <span class="absolute left-2.5 text-zinc-500 text-[10px] font-semibold pointer-events-none">Ctrl+F</span>
           <input
             id="headerConcordanceTriggerInput"
             type="text"
             autocomplete="off"
             spellcheck="false"
-            placeholder="Word Search (Ctrl+F): ప్రేమించెను, vine, shepherd..."
-            class="w-full bg-slate-950/90 border border-slate-700 focus:border-sky-400 rounded-lg pl-12 pr-2.5 py-1.5 text-xs sm:text-sm text-white placeholder-slate-500 outline-none transition"
+            placeholder="Search verse text..."
+            class="w-full bg-[#111114] border border-white/[0.09] focus:border-white/30 rounded-lg pl-12 pr-2.5 py-1.5 text-xs sm:text-sm text-zinc-100 placeholder-zinc-500 outline-none transition"
           />
         </div>
       </div>
 
-      <!-- ON-AIR STATUS & MODE CONTROLS -->
-      <div class="order-2 sm:order-3 flex flex-wrap items-center gap-1">
+      <!-- CALM ON-AIR CONTROLS + PROGRESSIVE TOOLS MENU -->
+      <div class="order-2 sm:order-3 flex items-center gap-1.5 relative">
         <button
           id="btnToggleLiveHeader"
           type="button"
-          class="px-2.5 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 transition border border-emerald-500/40 bg-emerald-600 hover:bg-emerald-500 text-white shadow-sm"
+          class="px-3 py-1.5 rounded-lg text-xs font-semibold tracking-wide flex items-center gap-1.5 transition border border-white/15 bg-white hover:bg-zinc-200 text-zinc-950"
           title="Shortcut: Spacebar or Enter"
         >
-          <span id="headerLiveDot" class="w-2 h-2 rounded-full bg-white"></span>
+          <span id="headerLiveDot" class="w-2 h-2 rounded-full bg-zinc-950"></span>
           <span id="headerLiveText">GO LIVE</span>
         </button>
 
         <button
           id="btnPanicHide"
           type="button"
-          class="px-2 py-1.5 rounded-lg text-xs font-semibold bg-slate-800 hover:bg-rose-600/90 text-slate-300 hover:text-white border border-slate-700 transition"
+          class="px-2.5 py-1.5 rounded-lg text-xs font-medium bg-white/[0.05] hover:bg-white/[0.10] text-zinc-300 hover:text-white border border-white/[0.08] transition"
           title="Instant Hide (Shortcut: Esc)"
         >
-          Hide <span class="hidden sm:inline">(Esc)</span>
+          Hide
         </button>
 
-        <button
-          id="btnToggleDockCompact"
-          type="button"
-          class="px-2 py-1.5 rounded-lg text-xs font-medium bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 transition"
-          title="Toggle Compact OBS Dock Mode (Hides 16:9 Stage Monitor to save space in narrow/short docks)"
-        >
-          📐 Dock View
-        </button>
+        <div class="relative">
+          <button
+            id="btnToolsMenuToggle"
+            type="button"
+            class="px-2.5 py-1.5 rounded-lg text-xs font-medium bg-white/[0.05] hover:bg-white/[0.10] text-zinc-300 hover:text-white border border-white/[0.08] transition flex items-center gap-1"
+            title="Dock view, Word Search, Bible DB, OBS Setup & Shortcuts"
+          >
+            <span>Tools</span>
+            <span class="text-[10px] text-zinc-500">▾</span>
+          </button>
 
-        <button
-          id="btnPopoutOverlay"
-          type="button"
-          class="px-2 py-1.5 rounded-lg text-xs font-medium bg-slate-800 hover:bg-slate-700 text-amber-300 border border-slate-700 transition hidden md:flex items-center gap-1"
-          title="Open clean Overlay window for Standalone Monitor / OBS Window Capture"
-        >
-          <span>↗</span> <span>Pop-out <span class="hidden xl:inline">Overlay</span></span>
-        </button>
-
-        <button
-          id="btnToggleConcordanceDrawer"
-          type="button"
-          class="px-2.5 py-1.5 rounded-lg text-xs font-semibold bg-sky-500/15 hover:bg-sky-500/25 text-sky-300 border border-sky-500/30 transition"
-          title="Open Full-Bible Concordance Search (Shortcut: Ctrl+F)"
-        >
-          Word Search
-        </button>
-
-        <button
-          id="btnOpenBibleSyncModal"
-          type="button"
-          class="px-2.5 py-1.5 rounded-lg text-xs font-semibold bg-emerald-500/15 hover:bg-emerald-500/25 text-emerald-300 border border-emerald-500/30 transition"
-          title="Manage Full 66-Book Telugu OV (BSI) & English KJV Offline Database"
-        >
-          Bible DB <span id="headerBibleDbStatus" class="font-mono text-[10px] text-emerald-400">(OV+KJV)</span>
-        </button>
-
-        <button
-          id="btnOpenObsModal"
-          type="button"
-          class="px-2 py-1.5 rounded-lg text-xs font-medium bg-indigo-600/20 hover:bg-indigo-600/35 text-indigo-300 border border-indigo-500/30 transition"
-          title="OBS Studio Dock & Browser Source Setup Guide"
-        >
-          OBS <span class="hidden sm:inline">Setup</span>
-        </button>
-
-        <button
-          id="btnOpenHotkeysModal"
-          type="button"
-          class="px-2 py-1.5 rounded-lg text-xs font-mono bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 transition"
-          title="Keyboard Shortcuts Reference"
-        >
-          ⌨️ <span class="hidden sm:inline">Keys</span>
-        </button>
+          <div
+            id="toolsPopoverMenu"
+            class="hidden absolute right-0 mt-1.5 w-52 rounded-xl bg-[#121216] border border-white/10 p-1.5 z-50 flex flex-col gap-0.5"
+            style="box-shadow: 0 16px 40px -10px rgba(0, 0, 0, 0.85);"
+          >
+            <button id="btnToggleDockCompact" type="button" class="w-full text-left px-2.5 py-1.5 rounded-lg text-xs font-medium text-zinc-200 hover:bg-white/[0.07] transition flex items-center justify-between">
+              <span>Dock Compact View</span>
+              <span class="text-[10px] text-zinc-500">OBS</span>
+            </button>
+            <button id="btnPopoutOverlay" type="button" class="w-full text-left px-2.5 py-1.5 rounded-lg text-xs font-medium text-zinc-200 hover:bg-white/[0.07] transition flex items-center justify-between">
+              <span>Pop-out Overlay</span>
+              <span class="text-[10px] text-zinc-500">↗</span>
+            </button>
+            <button id="btnToggleConcordanceDrawer" type="button" class="w-full text-left px-2.5 py-1.5 rounded-lg text-xs font-medium text-zinc-200 hover:bg-white/[0.07] transition flex items-center justify-between">
+              <span>Concordance Search</span>
+              <span class="text-[10px] text-zinc-500">Ctrl+F</span>
+            </button>
+            <div class="my-1 border-t border-white/[0.07]"></div>
+            <button id="btnOpenBibleSyncModal" type="button" class="w-full text-left px-2.5 py-1.5 rounded-lg text-xs font-medium text-zinc-200 hover:bg-white/[0.07] transition flex items-center justify-between">
+              <span>Offline Bible DB</span>
+              <span id="headerBibleDbStatus" class="text-[10px] text-emerald-400">OV+KJV</span>
+            </button>
+            <button id="btnOpenObsModal" type="button" class="w-full text-left px-2.5 py-1.5 rounded-lg text-xs font-medium text-zinc-200 hover:bg-white/[0.07] transition">
+              OBS Studio Setup
+            </button>
+            <button id="btnOpenHotkeysModal" type="button" class="w-full text-left px-2.5 py-1.5 rounded-lg text-xs font-medium text-zinc-200 hover:bg-white/[0.07] transition flex items-center justify-between">
+              <span>Keyboard Shortcuts</span>
+              <span class="text-[10px] text-zinc-500">?</span>
+            </button>
+          </div>
+        </div>
       </div>
     </header>
+
+    <!-- OBS DOCK MODE: FOCUSED 1-AT-A-TIME VIEW SWITCHER -->
+    <nav id="dockViewNavBar" class="px-2.5 py-1.5 bg-[#0b0b0e] border-b border-white/[0.07] items-center gap-1">
+      <button type="button" data-dock-target="live" class="dock-nav-btn flex-1 py-1.5 rounded-lg text-xs font-semibold bg-white text-zinc-950 transition">Live</button>
+      <button type="button" data-dock-target="queue" class="dock-nav-btn flex-1 py-1.5 rounded-lg text-xs font-medium text-zinc-400 hover:text-white transition">Queue</button>
+      <button type="button" data-dock-target="media" class="dock-nav-btn flex-1 py-1.5 rounded-lg text-xs font-medium text-zinc-400 hover:text-white transition">Media</button>
+      <button type="button" data-dock-target="style" class="dock-nav-btn flex-1 py-1.5 rounded-lg text-xs font-medium text-zinc-400 hover:text-white transition">Look</button>
+    </nav>
 
     <!-- MAIN WORKSPACE GRID -->
     <main class="flex-1 grid grid-cols-1 lg:grid-cols-12 gap-3 p-3 max-w-[1800px] w-full mx-auto">
@@ -821,36 +834,49 @@
           </div>
         </div>
 
-        <!-- REQUIREMENTS 2 & 3: INTERACTIVE VERSE WORKBENCH (PART-OF-VERSE HIGHLIGHTING & PART-VERSE SLICER) -->
-        <div id="verseWorkbenchCard" class="bg-slate-900/90 border border-slate-800 rounded-xl p-2.5 sm:p-3 shadow-lg flex flex-col gap-2">
-          <div class="flex flex-wrap items-center justify-between gap-2">
-            <div class="flex items-center gap-2">
-              <span class="text-[11px] font-bold uppercase tracking-wider text-amber-400">Interactive Verse Workbench</span>
-              <span id="workbenchSourceBadge" class="text-[10px] font-mono px-1.5 py-0.5 rounded bg-slate-800 text-emerald-400 border border-slate-700">BSI Telugu O.V. + KJV</span>
+        <!-- REQUIREMENTS 2 & 3: COLLAPSIBLE VERSE WORKBENCH (PROGRESSIVE DISCLOSURE — CLICK OR PRESS H) -->
+        <div id="verseWorkbenchCard" class="bg-[#0f0f12] border border-white/[0.08] rounded-xl overflow-hidden flex flex-col">
+          <button
+            id="btnToggleWorkbenchDrawer"
+            type="button"
+            class="w-full px-3 py-2 flex items-center justify-between gap-2 text-left hover:bg-white/[0.03] transition"
+            title="Expand or collapse Word Highlight & Clause Slicer (Shortcut: H)"
+          >
+            <div class="flex items-center gap-2 min-w-0">
+              <span id="workbenchChevron" class="text-xs text-zinc-400 transition-transform">▸</span>
+              <span class="text-xs font-semibold text-zinc-200">Highlight &amp; Slice Words</span>
+              <span id="workbenchSourceBadge" class="text-[11px] text-zinc-500 hidden sm:inline">BSI Telugu O.V. + KJV</span>
             </div>
+            <div class="flex items-center gap-1.5 shrink-0">
+              <span id="workbenchSummaryBadge" class="text-[11px] px-2 py-0.5 rounded-md bg-white/[0.05] text-zinc-400 border border-white/[0.07]">Full Verse</span>
+              <span class="text-[10px] text-zinc-500 hidden sm:inline">H</span>
+            </div>
+          </button>
 
+          <div id="workbenchDrawerBody" class="hidden px-3 pb-3 pt-1 border-t border-white/[0.07] flex flex-col gap-2">
+          <div class="flex flex-wrap items-center justify-between gap-2">
             <!-- Workbench Action Mode: Highlight Words in Full Verse vs Present Selected Part Only -->
             <div class="flex flex-wrap items-center gap-1.5">
               <button
                 id="btnWorkbenchModeHighlight"
                 type="button"
-                class="px-2.5 py-1 rounded-lg text-[11px] font-bold border border-amber-500 bg-amber-500/20 text-amber-300 transition"
+                class="px-2.5 py-1 rounded-lg text-[11px] font-semibold border border-white/15 bg-white text-zinc-950 transition"
                 title="Show full verse on Lower-Third and highlight selected words/clauses"
               >
-                Mode: Highlight Words in Verse
+                Highlight Words
               </button>
               <button
                 id="btnWorkbenchModePartOnly"
                 type="button"
-                class="px-2.5 py-1 rounded-lg text-[11px] font-semibold border border-slate-700 bg-slate-800 text-slate-300 hover:text-white transition"
-                title="Present ONLY the selected clause or selected words on the Lower-Third (hides the rest of the verse)"
+                class="px-2.5 py-1 rounded-lg text-[11px] font-medium border border-white/[0.08] bg-white/[0.04] text-zinc-300 hover:text-white transition"
+                title="Present ONLY the selected clause or selected words (hides the rest of the verse)"
               >
-                Mode: Present Part-Verse Only
+                Present Part Only
               </button>
 
               <select
                 id="selectHighlightColor"
-                class="bg-slate-950 border border-slate-700 rounded-lg px-2 py-1 text-[11px] font-semibold text-amber-300 outline-none"
+                class="bg-[#111114] border border-white/10 rounded-lg px-2 py-1 text-[11px] font-medium text-zinc-200 outline-none"
                 title="Highlight Marker Style on Broadcast Overlay"
               >
                 <option value="gold">Gold Marker</option>
@@ -862,35 +888,35 @@
               <button
                 id="btnClearWordSelection"
                 type="button"
-                class="px-2 py-1 rounded-lg text-[11px] font-medium bg-slate-800 hover:bg-rose-600/80 text-slate-300 hover:text-white border border-slate-700 transition"
+                class="px-2 py-1 rounded-lg text-[11px] font-medium bg-white/[0.04] hover:bg-white/[0.10] text-zinc-400 hover:text-white border border-white/[0.08] transition"
                 title="Clear selected words and reset to Full Verse"
               >
-                Reset Full Verse
+                Reset
               </button>
             </div>
           </div>
 
           <!-- Clause Quick-Slicer Chips (Full Verse, Part a, Part b, Part c, Part d) -->
-          <div class="flex flex-wrap items-center justify-between gap-2 bg-slate-950/70 border border-slate-800/80 rounded-lg px-2.5 py-1.5">
+          <div class="flex flex-wrap items-center justify-between gap-2 bg-[#0b0b0e] border border-white/[0.07] rounded-lg px-2.5 py-1.5">
             <div class="flex flex-wrap items-center gap-1.5">
-              <span class="text-[10px] font-mono uppercase text-slate-400">Clause Slicer:</span>
+              <span class="text-[11px] text-zinc-500">Clauses:</span>
               <div id="clauseChipsContainer" class="flex flex-wrap items-center gap-1">
                 <!-- Populated dynamically with Full, Part a, Part b, Part c... -->
               </div>
             </div>
-            <label class="flex items-center gap-1.5 cursor-pointer text-[11px] text-slate-400">
-              <input id="chkAppendClauseLetter" type="checkbox" checked class="rounded bg-slate-900 border-slate-700 text-amber-500" />
-              <span>Show <code class="text-amber-300 font-mono">15:4a</code> suffix when slicing clause</span>
+            <label class="flex items-center gap-1.5 cursor-pointer text-[11px] text-zinc-400">
+              <input id="chkAppendClauseLetter" type="checkbox" checked class="rounded bg-zinc-900 border-zinc-700 accent-white" />
+              <span>Append <span class="text-zinc-200 font-medium">15:4a</span> suffix</span>
             </label>
           </div>
 
           <!-- Interactive Word Token Clickers: Telugu OV (BSI) & English KJV -->
           <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
             <!-- Telugu OV (BSI) Word Tokens -->
-            <div class="p-2 rounded-lg bg-slate-950/90 border border-slate-800 flex flex-col gap-1.5">
+            <div class="p-2 rounded-lg bg-[#0b0b0e] border border-white/[0.07] flex flex-col gap-1.5">
               <div class="flex items-center justify-between">
-                <span class="text-[10px] font-bold uppercase tracking-wider text-amber-400">పరిశుద్ధ గ్రంథము (Telugu O.V. BSI) — Click Words to Highlight / Slice</span>
-                <span id="teSelectionCountBadge" class="text-[10px] font-mono text-slate-400">Full Verse</span>
+                <span class="text-[11px] font-medium text-zinc-300">Telugu O.V. (BSI)</span>
+                <span id="teSelectionCountBadge" class="text-[10px] text-zinc-500">Full Verse</span>
               </div>
               <div id="teluguWordTokensContainer" class="flex flex-wrap gap-1 max-h-[115px] overflow-y-auto py-0.5 leading-relaxed">
                 <!-- Populated dynamically -->
@@ -898,15 +924,16 @@
             </div>
 
             <!-- English KJV Word Tokens -->
-            <div class="p-2 rounded-lg bg-slate-950/90 border border-slate-800 flex flex-col gap-1.5">
+            <div class="p-2 rounded-lg bg-[#0b0b0e] border border-white/[0.07] flex flex-col gap-1.5">
               <div class="flex items-center justify-between">
-                <span class="text-[10px] font-bold uppercase tracking-wider text-sky-400">King James Version (English KJV) — Click Words to Highlight / Slice</span>
-                <span id="enSelectionCountBadge" class="text-[10px] font-mono text-slate-400">Full Verse</span>
+                <span class="text-[11px] font-medium text-zinc-300">English KJV</span>
+                <span id="enSelectionCountBadge" class="text-[10px] text-zinc-500">Full Verse</span>
               </div>
               <div id="englishWordTokensContainer" class="flex flex-wrap gap-1 max-h-[115px] overflow-y-auto py-0.5 leading-relaxed">
                 <!-- Populated dynamically -->
               </div>
             </div>
+          </div>
           </div>
         </div>
 
@@ -1023,20 +1050,20 @@
           </div>
         </div>
 
-        <!-- TABS FOR: 1) SERVICE QUEUE & PRESETS  2) DESIGN & ANIMATION  3) CUSTOM BOOK NAMES -->
-        <div class="bg-slate-900/90 border border-slate-800 rounded-xl p-3 shadow-lg flex-1 flex flex-col">
-          <div class="flex flex-wrap items-center gap-1 border-b border-slate-800 pb-2 mb-3">
-            <button id="rightTabQueue" type="button" class="px-2.5 py-1.5 rounded-lg text-xs font-bold bg-amber-500 text-slate-950 transition">
-              📌 Service Queue & Hotkeys (Alt+1..9)
+        <!-- TABS FOR: 1) SERVICE QUEUE  2) STYLE & MOTION  3) MEDIA  4) BOOK NAMES -->
+        <div class="bg-[#0f0f12] border border-white/[0.08] rounded-xl p-3 flex-1 flex flex-col">
+          <div id="rightTabsStrip" class="flex flex-wrap items-center gap-1 border-b border-white/[0.07] pb-2 mb-3">
+            <button id="rightTabQueue" type="button" class="px-2.5 py-1.5 rounded-lg text-xs font-semibold bg-white text-zinc-950 transition">
+              Queue (Alt+1..9)
             </button>
-            <button id="rightTabStyle" type="button" class="px-2.5 py-1.5 rounded-lg text-xs font-semibold bg-slate-800 text-slate-300 hover:text-white transition">
-              🎨 Theme, Font & Timing
+            <button id="rightTabStyle" type="button" class="px-2.5 py-1.5 rounded-lg text-xs font-medium bg-white/[0.04] text-zinc-400 hover:text-white transition">
+              Look &amp; Motion
             </button>
-            <button id="rightTabMedia" type="button" class="px-2.5 py-1.5 rounded-lg text-xs font-semibold bg-slate-800 text-slate-300 hover:text-white transition">
-              Picture Slide-Over
+            <button id="rightTabMedia" type="button" class="px-2.5 py-1.5 rounded-lg text-xs font-medium bg-white/[0.04] text-zinc-400 hover:text-white transition">
+              Media
             </button>
-            <button id="rightTabCustomLang" type="button" class="px-2.5 py-1.5 rounded-lg text-xs font-semibold bg-slate-800 text-slate-300 hover:text-white transition">
-              🌐 Book Names Editor
+            <button id="rightTabCustomLang" type="button" class="px-2.5 py-1.5 rounded-lg text-xs font-medium bg-white/[0.04] text-zinc-400 hover:text-white transition">
+              Book Names
             </button>
           </div>
 
@@ -1127,13 +1154,9 @@
               <div>
                 <label for="selectAnimStyle" class="block text-[11px] text-slate-400 mb-1">Motion Choreography</label>
                 <select id="selectAnimStyle" class="w-full bg-slate-950 border border-slate-700 rounded-lg px-2 py-1.5 text-white outline-none">
-                  <option value="ae_stagger">GSAP After Effects Stagger</option>
-                  <option value="spring_island">Dynamic Island Spring</option>
-                  <option value="kinetic_3d">3D Kinetic Perspective</option>
-                  <option value="laser_draw">Laser Line & Blur Reveal</option>
-                  <option value="slide">Smooth Slide Up</option>
-                  <option value="wipe">Broadcast Wipe Unfold</option>
-                  <option value="pop">Scale & Pop</option>
+                  <option value="broadcast_mask">Broadcast Mask (Crisp Rise)</option>
+                  <option value="sanctuary_dissolve">Sanctuary Dissolve (Calm Fade)</option>
+                  <option value="editorial_wipe">Editorial Wipe (Clip Reveal)</option>
                 </select>
               </div>
               <div>
@@ -1208,8 +1231,9 @@
                 <div>
                   <label for="selectFsLayout" class="block text-[10px] text-slate-400 mb-0.5">Full-Screen Alignment</label>
                   <select id="selectFsLayout" class="w-full bg-slate-950 border border-slate-700 rounded-lg px-2 py-1 text-[11px] text-white outline-none">
-                    <option value="centered">Sanctuary Center (Ref Top)</option>
-                    <option value="editorial">Editorial Left-Aligned</option>
+                    <option value="editorial">Sanctuary Editorial (Left + Hairline)</option>
+                    <option value="centered">Sanctuary Centered (Pure Type)</option>
+                    <option value="tag_header">Architectural Ref Tag (Centered)</option>
                   </select>
                 </div>
                 <div>
@@ -2044,7 +2068,7 @@
       // Phase 9: Full Bible, Concordance, Part-of-Verse Highlighting & Part-Verse Presentation
       ltDisplayMode: 'ref_te',          // 'ref_only' | 'ref_te' | 'ref_en' | 'ref_dual'
       presentationMode: 'lower_third',  // 'lower_third' | 'full_screen'
-      fsLayout: 'centered',             // 'centered' | 'editorial'
+      fsLayout: 'editorial',            // 'editorial' | 'centered' | 'tag_header'
       fsBackdrop: 'theme_solid',        // 'theme_solid' | 'frosted_glass' | 'pure_black'
       fsScalePercent: 100,              // 75..135
       workbenchActionMode: 'highlight', // 'highlight' | 'part_only'
@@ -3048,22 +3072,22 @@
       }
       if (backdropMode === 'frosted_glass') {
         if (themeKey === 'clean_light') {
-          return 'background: rgba(248, 250, 252, 0.84); backdrop-filter: blur(22px); -webkit-backdrop-filter: blur(22px);';
+          return 'background: linear-gradient(180deg, rgba(247, 246, 242, 0.88) 0%, rgba(238, 236, 230, 0.92) 100%); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);';
         }
-        return 'background: rgba(9, 9, 11, 0.80); backdrop-filter: blur(22px); -webkit-backdrop-filter: blur(22px);';
+        return 'background: linear-gradient(180deg, rgba(8, 9, 12, 0.78) 0%, rgba(5, 6, 9, 0.88) 100%); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);';
       }
-      // Opaque Rich Sanctuary Canvas matched to active theme
+      // Cinema-Grade Deep Matte Sanctuary Surfaces (Zero dated radial spotlight blobs)
       const solidMap = {
-        royal_gold: 'background: radial-gradient(ellipse at 50% 25%, rgba(30, 41, 59, 0.98) 0%, rgba(9, 13, 24, 1) 70%, #05070d 100%);',
-        sacred_crimson: 'background: radial-gradient(ellipse at 50% 25%, rgba(110, 22, 22, 0.98) 0%, rgba(45, 8, 10, 1) 72%, #180305 100%);',
-        minimal_glass: 'background: radial-gradient(ellipse at 50% 22%, rgba(15, 28, 52, 0.98) 0%, rgba(6, 10, 20, 1) 75%, #02040a 100%);',
-        clean_light: 'background: radial-gradient(ellipse at 50% 20%, #ffffff 0%, #f1f5f9 70%, #e2e8f0 100%);',
-        emerald_sanctuary: 'background: radial-gradient(ellipse at 50% 25%, rgba(6, 78, 59, 0.98) 0%, rgba(3, 32, 24, 1) 72%, #021410 100%);',
-        pure_minimal: 'background: radial-gradient(ellipse at 50% 25%, rgba(24, 28, 52, 0.98) 0%, rgba(10, 12, 24, 1) 75%, #060710 100%);',
-        beam_21st: 'background: radial-gradient(ellipse at 50% 20%, rgba(38, 24, 14, 0.96) 0%, rgba(12, 11, 13, 1) 68%, #070709 100%);',
-        ae_ribbon: 'background: radial-gradient(ellipse at 50% 25%, rgba(28, 25, 68, 0.98) 0%, rgba(11, 14, 30, 1) 72%, #050714 100%);',
-        obsidian_hud: 'background: radial-gradient(ellipse at 50% 25%, rgba(36, 20, 62, 0.98) 0%, rgba(11, 9, 18, 1) 72%, #06050b 100%);',
-        swiss_grid: 'background: linear-gradient(180deg, #0d0d10 0%, #050507 100%);'
+        royal_gold: 'background: linear-gradient(180deg, #0d121d 0%, #070a12 100%);',
+        sacred_crimson: 'background: linear-gradient(180deg, #24080a 0%, #130405 100%);',
+        minimal_glass: 'background: linear-gradient(180deg, #0b1220 0%, #05080f 100%);',
+        clean_light: 'background: linear-gradient(180deg, #f8f7f3 0%, #efede7 100%);',
+        emerald_sanctuary: 'background: linear-gradient(180deg, #05211a 0%, #02120e 100%);',
+        pure_minimal: 'background: linear-gradient(180deg, #10121e 0%, #080910 100%);',
+        beam_21st: 'background: linear-gradient(180deg, #14110f 0%, #090807 100%);',
+        ae_ribbon: 'background: linear-gradient(180deg, #111026 0%, #080814 100%);',
+        obsidian_hud: 'background: linear-gradient(180deg, #130e1c 0%, #09070e 100%);',
+        swiss_grid: 'background: linear-gradient(180deg, #0d0d10 0%, #070709 100%);'
       };
       return solidMap[themeKey] || solidMap.royal_gold;
     }
@@ -3253,21 +3277,24 @@
       if (ltMode === 'ref_only' || renderState.wholeChapter) {
         const heroRefRem = (6.4 * eff).toFixed(3);
         const heroSubRem = (2.45 * eff).toFixed(3);
-        const divW = isFullOverlay ? '240px' : `${Math.round(240 * previewMult)}px`;
-        const divH = isFullOverlay ? '5px' : '2px';
-        const gapRem = (1.6 * eff).toFixed(3);
+        const gapRem = (1.15 * eff).toFixed(3);
+        const showGrain = fsBackdrop === 'theme_solid' && !isLightCanvas;
 
         return `
           ${mediaMarkup}
           <div class="fs-wrapper ${animClass} ${lightClass} ${visibilityClass} absolute inset-0 z-10 flex flex-col justify-center ${alignClasses} pointer-events-none" data-fs-root="1" style="${backdropStyle} ${padStyle} ${glassTextShadow} font-family: ${fontStack};">
-            <div class="fs-inner-stage w-full flex flex-col ${alignClasses}" data-fs-content-key="${escapeHtml(contentKey)}" style="gap: ${gapRem}rem; transform-origin: ${isEditorial ? 'left center' : 'center center'};">
-              <div class="fs-stage-divider rounded-full" style="width: ${divW}; height: ${divH}; background: ${effTheme.accentBar}; transform-origin: ${isEditorial ? 'left center' : 'center'};"></div>
-              <div class="fs-stage-ref tracking-wide leading-tight" style="color: ${effTheme.textColor}; font-size: ${heroRefRem}rem; font-weight: ${fontWeight};">
-                ${escapeHtml(mainCitation)}
+            ${showGrain ? '<div class="fs-grain-layer"></div>' : ''}
+            <div class="fs-inner-stage relative z-10 w-full flex flex-col ${alignClasses}" data-fs-content-key="${escapeHtml(contentKey)}" style="gap: ${gapRem}rem; transform-origin: ${isEditorial ? 'left center' : 'center center'};">
+              <div class="fs-mask w-full">
+                <div class="fs-stage-ref" style="color: ${effTheme.textColor}; font-size: ${heroRefRem}rem; font-weight: ${fontWeight}; line-height: 1.42; letter-spacing: 0;">
+                  ${escapeHtml(mainCitation)}
+                </div>
               </div>
               ${(showSub || renderState.lang !== 'en') ? `
-                <div class="fs-stage-verse font-bold tracking-[0.14em] opacity-95" style="color: ${effTheme.badgeColor}; font-size: ${heroSubRem}rem; font-family: ${enFontStack};">
-                  ${formatParallelRefHtml(englishParallel)}
+                <div class="fs-mask w-full">
+                  <div class="fs-stage-verse font-bold tracking-[0.14em] opacity-90" style="color: ${effTheme.badgeColor}; font-size: ${heroSubRem}rem; font-family: ${enFontStack};">
+                    ${formatParallelRefHtml(englishParallel)}
+                  </div>
                 </div>
               ` : ''}
             </div>
@@ -3275,58 +3302,58 @@
         `;
       }
 
-      // FULL-SCREEN: CHURCH TV READABILITY-FIRST ENGINE (MAX SCREEN FILL, REFERENCE BIGGER FIRST)
+      // FULL-SCREEN: CHURCH TV READABILITY-FIRST ENGINE (3 BROADCAST LAYOUTS, ZERO CHEAP YELLOW BAR)
       const teProcessed = buildProcessedVerseOverlayHtml(renderState.bookId, renderState.chapter, renderState.verseStart, renderState.verseEnd, renderState.wholeChapter, 'te', renderState);
       const enProcessed = buildProcessedVerseOverlayHtml(renderState.bookId, renderState.chapter, renderState.verseStart, renderState.verseEnd, renderState.wholeChapter, 'en', renderState);
 
       const isDual = ltMode === 'ref_dual';
       const isEnOnly = ltMode === 'ref_en';
+      const isTagHeader = fsLayout === 'tag_header';
+      const showGrain = fsBackdrop === 'theme_solid' && !isLightCanvas;
       const primaryLen = isEnOnly
         ? enProcessed.charLength
         : (isDual ? Math.max(teProcessed.charLength, enProcessed.charLength) : teProcessed.charLength);
 
       // Church TV Sanctuary Proportion Engine (1920x1080 base rem values — uses full TV canvas)
-      // Reference is ALWAYS larger/commanding so the audience identifies it first from the back row;
-      // Telugu & English use distinct optical sizing ratios for balanced TV legibility.
       let baseRefRem = 4.80;
-      let baseSubRefRem = 2.05;
+      let baseSubRefRem = 2.00;
       let baseTeRem = 4.20;
       let baseEnRem = 3.60;
 
       if (isDual) {
         if (primaryLen <= 80) {
-          baseRefRem = 4.50; baseSubRefRem = 1.95; baseTeRem = 3.90; baseEnRem = 3.10;
+          baseRefRem = 4.50; baseSubRefRem = 1.90; baseTeRem = 3.90; baseEnRem = 3.10;
         } else if (primaryLen <= 200) {
-          baseRefRem = 4.20; baseSubRefRem = 1.85; baseTeRem = 3.50; baseEnRem = 2.75;
+          baseRefRem = 4.20; baseSubRefRem = 1.80; baseTeRem = 3.50; baseEnRem = 2.75;
         } else if (primaryLen <= 350) {
-          baseRefRem = 3.70; baseSubRefRem = 1.68; baseTeRem = 2.90; baseEnRem = 2.30;
+          baseRefRem = 3.70; baseSubRefRem = 1.62; baseTeRem = 2.90; baseEnRem = 2.30;
         } else if (primaryLen <= 560) {
-          baseRefRem = 3.30; baseSubRefRem = 1.52; baseTeRem = 2.45; baseEnRem = 1.95;
+          baseRefRem = 3.30; baseSubRefRem = 1.48; baseTeRem = 2.45; baseEnRem = 1.95;
         } else {
-          baseRefRem = 3.00; baseSubRefRem = 1.38; baseTeRem = 2.05; baseEnRem = 1.68;
+          baseRefRem = 3.00; baseSubRefRem = 1.35; baseTeRem = 2.05; baseEnRem = 1.68;
         }
       } else {
         if (primaryLen <= 75) {
-          baseRefRem = 5.20; baseSubRefRem = 2.15; baseTeRem = 4.70; baseEnRem = 4.00;
+          baseRefRem = 5.20; baseSubRefRem = 2.10; baseTeRem = 4.70; baseEnRem = 4.00;
         } else if (primaryLen <= 200) {
-          baseRefRem = 4.80; baseSubRefRem = 2.05; baseTeRem = 4.20; baseEnRem = 3.60;
+          baseRefRem = 4.80; baseSubRefRem = 2.00; baseTeRem = 4.20; baseEnRem = 3.60;
         } else if (primaryLen <= 350) {
-          baseRefRem = 4.30; baseSubRefRem = 1.85; baseTeRem = 3.50; baseEnRem = 3.00;
+          baseRefRem = 4.30; baseSubRefRem = 1.82; baseTeRem = 3.50; baseEnRem = 3.00;
         } else if (primaryLen <= 560) {
-          baseRefRem = 3.80; baseSubRefRem = 1.65; baseTeRem = 2.90; baseEnRem = 2.50;
+          baseRefRem = 3.80; baseSubRefRem = 1.62; baseTeRem = 2.90; baseEnRem = 2.50;
         } else {
-          baseRefRem = 3.40; baseSubRefRem = 1.50; baseTeRem = 2.40; baseEnRem = 2.10;
+          baseRefRem = 3.40; baseSubRefRem = 1.48; baseTeRem = 2.40; baseEnRem = 2.10;
         }
       }
 
-      // Strong broadcast weight for Church TV screens (thin strokes wash out on bright TVs)
       const numericWeight = parseInt(fontWeight, 10) || 700;
       const teBodyWeight = primaryLen > 360 ? Math.min(numericWeight, 600) : Math.min(numericWeight, 700);
-      const enBodyWeight = enFontStack.includes('Source Serif') ? 600 : 600;
+      const enBodyWeight = 600;
 
-      // Maximum-contrast TV ink for Dual English
       const dualEnColor = isLightCanvas ? '#1e293b' : '#f1f5f9';
-      const dualBorderColor = isLightCanvas ? 'rgba(15, 23, 42, 0.18)' : 'rgba(255, 255, 255, 0.20)';
+      const hairlineColor = isLightCanvas ? 'rgba(15, 23, 42, 0.14)' : 'rgba(255, 255, 255, 0.14)';
+      const tagSurfaceBg = isLightCanvas ? 'rgba(15, 23, 42, 0.05)' : 'rgba(255, 255, 255, 0.05)';
+      const tagBorderColor = isLightCanvas ? 'rgba(15, 23, 42, 0.16)' : effTheme.borderColor;
 
       // In English-Only mode (ref_en), make English Reference the big main header!
       const headerPrimaryText = isEnOnly ? englishParallel : mainCitation;
@@ -3343,18 +3370,75 @@
       const subRefSize = (baseSubRefRem * eff).toFixed(3);
       const teSize = (baseTeRem * eff).toFixed(3);
       const enSize = (baseEnRem * eff).toFixed(3);
-      const dividerMarginTop = (0.90 * eff).toFixed(3);
-      const dividerMarginBottom = (1.20 * eff).toFixed(3);
-      const dualGap = (1.10 * eff).toFixed(3);
-      const dualPadTop = (0.95 * eff).toFixed(3);
-      const dividerW = isFullOverlay
-        ? (isEditorial ? '100%' : '260px')
-        : (isEditorial ? '100%' : `${Math.round(260 * previewMult)}px`);
-      const dividerH = isEditorial ? (isFullOverlay ? '2px' : '1px') : (isFullOverlay ? '5px' : '2px');
-      const dividerBg = isEditorial ? dualBorderColor : effTheme.accentBar;
+      const headerGapBottom = (isEditorial ? 1.15 * eff : 1.65 * eff).toFixed(3);
+      const dividerMarginTop = (0.85 * eff).toFixed(3);
+      const dividerMarginBottom = (1.35 * eff).toFixed(3);
+      const dualGap = (1.15 * eff).toFixed(3);
+      const dualPadTop = (1.00 * eff).toFixed(3);
 
       const teHtml = styleFullScreenVerseNumbers(teProcessed.html, effTheme.badgeColor);
       const enHtml = styleFullScreenVerseNumbers(enProcessed.html, effTheme.badgeColor);
+
+      // Build Reference Header by Selected Broadcast Layout (Zero cheap floating yellow bar, zero Telugu clipping!)
+      let refHeaderMarkup = '';
+      if (isEditorial) {
+        // LAYOUT A: SANCTUARY EDITORIAL — Big Ref Left, Parallel Right, Edge-to-Edge 1px Architectural Hairline
+        refHeaderMarkup = `
+          <div class="fs-mask w-full">
+            <div class="fs-stage-ref w-full flex flex-wrap items-baseline justify-between gap-x-6 gap-y-1">
+              <span style="color: ${effTheme.badgeColor}; font-size: ${refSize}rem; font-weight: 800; line-height: 1.40; letter-spacing: 0; font-family: ${headerPrimaryFont};">
+                ${escapeHtml(headerPrimaryText)}
+              </span>
+              ${showParallelInHeader ? `
+                <span class="font-semibold tracking-[0.10em] opacity-80" style="color: ${effTheme.subColor}; font-size: ${subRefSize}rem; line-height: 1.38; font-family: ${headerSecondaryFont};">
+                  ${headerSecondaryHtml}
+                </span>
+              ` : ''}
+            </div>
+          </div>
+          <div
+            class="fs-stage-divider w-full"
+            style="height: 1px; background: ${hairlineColor}; margin-top: ${dividerMarginTop}rem; margin-bottom: ${dividerMarginBottom}rem; transform-origin: left center;"
+          ></div>
+        `;
+      } else if (isTagHeader) {
+        // LAYOUT C: ARCHITECTURAL REF TAG — Precision Broadcast Tag, Generous Telugu Vertical Safe Box
+        const tagPadX = (1.6 * eff).toFixed(3);
+        const tagPadY = (0.55 * eff).toFixed(3);
+        refHeaderMarkup = `
+          <div class="fs-mask" style="margin-bottom: ${headerGapBottom}rem;">
+            <div
+              class="fs-stage-ref inline-flex flex-wrap items-baseline justify-center gap-x-4 gap-y-1"
+              style="padding: ${tagPadY}rem ${tagPadX}rem; background: ${tagSurfaceBg}; border: 1px solid ${tagBorderColor}; border-radius: ${isFullOverlay ? '8px' : '4px'};"
+            >
+              <span style="color: ${effTheme.badgeColor}; font-size: ${(baseRefRem * 0.90 * eff).toFixed(3)}rem; font-weight: 800; line-height: 1.40; letter-spacing: 0; font-family: ${headerPrimaryFont};">
+                ${escapeHtml(headerPrimaryText)}
+              </span>
+              ${showParallelInHeader ? `
+                <span class="font-semibold tracking-[0.10em] opacity-80" style="color: ${effTheme.subColor}; font-size: ${(baseSubRefRem * 0.92 * eff).toFixed(3)}rem; line-height: 1.38; font-family: ${headerSecondaryFont};">
+                  ${headerSecondaryHtml}
+                </span>
+              ` : ''}
+            </div>
+          </div>
+        `;
+      } else {
+        // LAYOUT B: SANCTUARY CENTERED — Pure Typographic Hierarchy, Zero Yellow Bar
+        refHeaderMarkup = `
+          <div class="fs-mask w-full" style="margin-bottom: ${headerGapBottom}rem;">
+            <div class="fs-stage-ref flex flex-wrap items-baseline justify-center gap-x-5 gap-y-1">
+              <span style="color: ${effTheme.badgeColor}; font-size: ${refSize}rem; font-weight: 800; line-height: 1.40; letter-spacing: 0; font-family: ${headerPrimaryFont};">
+                ${escapeHtml(headerPrimaryText)}
+              </span>
+              ${showParallelInHeader ? `
+                <span class="font-semibold tracking-[0.10em] opacity-80" style="color: ${effTheme.subColor}; font-size: ${subRefSize}rem; line-height: 1.38; font-family: ${headerSecondaryFont};">
+                  ${headerSecondaryHtml}
+                </span>
+              ` : ''}
+            </div>
+          </div>
+        `;
+      }
 
       return `
         ${mediaMarkup}
@@ -3363,41 +3447,28 @@
           data-fs-root="1"
           style="${backdropStyle} ${padStyle} ${glassTextShadow} font-family: ${fontStack};"
         >
-          <div class="fs-inner-stage w-full flex flex-col ${alignClasses}" data-fs-content-key="${escapeHtml(contentKey)}" style="transform-origin: ${isEditorial ? 'left center' : 'center center'};">
+          ${showGrain ? '<div class="fs-grain-layer"></div>' : ''}
+          <div class="fs-inner-stage relative z-10 w-full flex flex-col ${alignClasses}" data-fs-content-key="${escapeHtml(contentKey)}" style="transform-origin: ${isEditorial ? 'left center' : 'center center'};">
             <!-- STAGE 1: PROMINENT SCRIPTURE REFERENCE (BIGGER & SEEN FIRST ON CHURCH TV) -->
-            <div class="fs-stage-ref flex flex-wrap items-baseline ${isEditorial ? 'justify-start' : 'justify-center'} gap-x-5 gap-y-1">
-              ${isEditorial ? `<span class="inline-block rounded-full shrink-0 self-center" style="width: ${isFullOverlay ? '10px' : '3px'}; height: ${(baseRefRem * eff * 0.88).toFixed(3)}rem; background: ${effTheme.accentBar};"></span>` : ''}
-              <span class="tracking-wide leading-tight" style="color: ${effTheme.badgeColor}; font-size: ${refSize}rem; font-weight: 800; font-family: ${headerPrimaryFont};">
-                ${escapeHtml(headerPrimaryText)}
-              </span>
-              ${showParallelInHeader ? `
-                <span class="font-bold tracking-[0.10em] opacity-90" style="color: ${effTheme.subColor}; font-size: ${subRefSize}rem; font-family: ${headerSecondaryFont};">
-                  • ${headerSecondaryHtml}
-                </span>
-              ` : ''}
-            </div>
-
-            <!-- ARCHITECTURAL SEPARATOR RULE -->
-            <div
-              class="fs-stage-divider rounded-full"
-              style="width: ${dividerW}; height: ${dividerH}; background: ${dividerBg}; margin-top: ${dividerMarginTop}rem; margin-bottom: ${dividerMarginBottom}rem; transform-origin: ${isEditorial ? 'left center' : 'center'};"
-            ></div>
+            ${refHeaderMarkup}
 
             <!-- STAGE 2: SCRIPTURE VERSE BODY (MAX TV READABILITY, OPTICALLY BALANCED) -->
-            <div class="fs-stage-verse w-full flex flex-col ${alignClasses}" style="gap: ${dualGap}rem;">
-              ${(ltMode === 'ref_te' || isDual) ? `
-                <div style="color: ${effTheme.textColor}; font-size: ${teSize}rem; font-weight: ${teBodyWeight}; line-height: 1.48; letter-spacing: 0.005em;">
-                  ${teHtml}
-                </div>
-              ` : ''}
-              ${(isEnOnly || isDual) ? `
-                <div
-                  class="${isDual ? 'w-full' : ''}"
-                  style="color: ${isDual ? dualEnColor : effTheme.textColor}; font-size: ${enSize}rem; font-weight: ${enBodyWeight}; line-height: 1.36; font-family: ${enFontStack}; ${isDual ? `padding-top: ${dualPadTop}rem; border-top: 1.5px solid ${dualBorderColor};` : ''}"
-                >
-                  ${enHtml}
-                </div>
-              ` : ''}
+            <div class="fs-mask w-full">
+              <div class="fs-stage-verse w-full flex flex-col ${alignClasses}" style="gap: ${dualGap}rem;">
+                ${(ltMode === 'ref_te' || isDual) ? `
+                  <div style="color: ${effTheme.textColor}; font-size: ${teSize}rem; font-weight: ${teBodyWeight}; line-height: 1.48; letter-spacing: 0.005em;">
+                    ${teHtml}
+                  </div>
+                ` : ''}
+                ${(isEnOnly || isDual) ? `
+                  <div
+                    class="${isDual ? 'w-full' : ''}"
+                    style="color: ${isDual ? dualEnColor : effTheme.textColor}; font-size: ${enSize}rem; font-weight: ${enBodyWeight}; line-height: 1.36; font-family: ${enFontStack}; ${isDual ? `padding-top: ${dualPadTop}rem; border-top: 1px solid ${hairlineColor};` : ''}"
+                  >
+                    ${enHtml}
+                  </div>
+                ` : ''}
+              </div>
             </div>
           </div>
         </div>
@@ -3446,32 +3517,35 @@
         collisionWidthStyle = `max-width: calc(${100 - splitW - 6}% / ${isFullOverlay ? (baseScale * 1.12).toFixed(3) : (baseScale * 0.78).toFixed(3)});`;
       }
 
-      // MODE 1: REFERENCE ONLY (Compact Badge)
+      const ltLightClass = renderState.theme === 'clean_light' ? 'fs-theme-light' : '';
+      const enFontStack = resolveEnglishFontStack(renderState);
+      const bookSvgIcon = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"/></svg>`;
+
+      // MODE 1: REFERENCE ONLY (Architectural Broadcast Badge — Zero Emoji, Zero Shimmer Slop)
       if (ltMode === 'ref_only') {
         const effectiveScale = isFullOverlay ? baseScale * 1.32 : baseScale * 0.92;
         return `
           ${mediaMarkup}
           <div class="absolute ${posClass} z-30 transition-all duration-300" style="transform: ${renderState.position === 'bottom-center' ? `translateX(-50%) scale(${effectiveScale})` : `scale(${effectiveScale})`}; transform-origin: ${renderState.position.includes('right') ? 'bottom right' : renderState.position === 'bottom-center' ? 'bottom center' : 'bottom left'};">
             <div
-              class="lt-wrapper ${animClass} ${visibilityClass} relative overflow-hidden rounded-2xl backdrop-blur-md flex items-stretch"
-              style="background: ${theme.cardBg}; border: 1.5px solid ${theme.borderColor}; box-shadow: ${theme.shadow}; font-family: ${fontStack};"
+              class="lt-wrapper ${ltLightClass} ${animClass} ${visibilityClass} relative overflow-hidden rounded-lg backdrop-blur-md flex items-stretch"
+              style="background: ${theme.cardBg}; border: 1px solid ${theme.borderColor}; box-shadow: ${theme.shadow}; font-family: ${fontStack};"
             >
-              <div class="lt-shimmer-effect absolute inset-0 w-1/3 bg-gradient-to-r from-transparent via-white/10 to-transparent pointer-events-none"></div>
-              <div class="lt-accent-bar lt-stage-bar w-2 shrink-0" style="background: ${theme.accentBar};"></div>
+              <div class="lt-accent-bar lt-stage-bar w-1 shrink-0" style="background: ${theme.accentBar};"></div>
               ${renderState.showBibleIcon ? `
-                <div class="flex items-center justify-center pl-3.5 pr-1">
-                  <div class="w-9 h-9 rounded-xl flex items-center justify-center text-base font-bold" style="background: ${theme.badgeBg}; color: ${theme.badgeColor};">
-                    📖
+                <div class="flex items-center justify-center pl-3 pr-0.5">
+                  <div class="w-8 h-8 rounded-md flex items-center justify-center" style="background: ${theme.badgeBg}; color: ${theme.badgeColor};">
+                    ${bookSvgIcon}
                   </div>
                 </div>
               ` : ''}
               <div class="px-4 py-2.5 flex flex-col justify-center">
-                <div class="lt-stage-book tracking-wide leading-tight whitespace-nowrap text-xl sm:text-2xl md:text-[26px]" style="color: ${theme.textColor}; font-weight: ${fontWeight};">
+                <div class="lt-stage-book tracking-tight leading-tight whitespace-nowrap text-xl sm:text-2xl md:text-[26px]" style="color: ${theme.textColor}; font-weight: ${fontWeight};">
                   ${escapeHtml(mainCitation)}
                 </div>
                 ${showSub ? `
-                  <div class="lt-stage-sub text-[11px] font-bold uppercase tracking-widest mt-0.5 opacity-90" style="color: ${theme.subColor};">
-                    ${escapeHtml(englishParallel)}
+                  <div class="lt-stage-sub text-[11px] font-semibold tracking-[0.12em] mt-0.5 opacity-85" style="color: ${theme.subColor}; font-family: ${enFontStack};">
+                    ${formatParallelRefHtml(englishParallel)}
                   </div>
                 ` : ''}
               </div>
@@ -3504,28 +3578,30 @@
         enFontSize = '0.94rem';
       }
 
+      const ltDividerColor = renderState.theme === 'clean_light' ? 'rgba(15, 23, 42, 0.12)' : 'rgba(255, 255, 255, 0.12)';
+      const ltHeaderBg = renderState.theme === 'clean_light' ? 'rgba(15, 23, 42, 0.04)' : 'rgba(0, 0, 0, 0.28)';
+      const ltDualEnColor = renderState.theme === 'clean_light' ? '#334155' : 'rgba(241, 245, 249, 0.90)';
+
       return `
         ${mediaMarkup}
         <div class="absolute ${posClass} z-30 transition-all duration-300 w-[90%] max-w-[980px]" style="${collisionWidthStyle} transform: ${renderState.position === 'bottom-center' ? `translateX(-50%) scale(${effectiveScale})` : `scale(${effectiveScale})`}; transform-origin: ${renderState.position.includes('right') ? 'bottom right' : renderState.position === 'bottom-center' ? 'bottom center' : 'bottom left'};">
           <div
-            class="lt-wrapper ${animClass} ${visibilityClass} relative overflow-hidden rounded-2xl backdrop-blur-md flex flex-col"
-            style="background: ${theme.cardBg}; border: 1.5px solid ${theme.borderColor}; box-shadow: ${theme.shadow}; font-family: ${fontStack};"
+            class="lt-wrapper ${ltLightClass} ${animClass} ${visibilityClass} relative overflow-hidden rounded-lg backdrop-blur-md flex flex-col"
+            style="background: ${theme.cardBg}; border: 1px solid ${theme.borderColor}; box-shadow: ${theme.shadow}; font-family: ${fontStack};"
           >
-            <div class="lt-shimmer-effect absolute inset-0 w-1/3 bg-gradient-to-r from-transparent via-white/10 to-transparent pointer-events-none"></div>
-
             <!-- Top Reference Header Bar -->
-            <div class="flex items-center gap-3 px-4 py-2 border-b border-white/10" style="background: rgba(0,0,0,0.28);">
+            <div class="flex items-center justify-between gap-3 px-4 py-2" style="background: ${ltHeaderBg}; border-bottom: 1px solid ${ltDividerColor};">
               <div class="flex items-center gap-2.5 min-w-0">
-                <div class="w-2 h-6 rounded-full shrink-0" style="background: ${theme.accentBar};"></div>
-                <span class="lt-stage-book text-lg sm:text-xl font-extrabold tracking-wide truncate" style="color: ${theme.badgeColor};">
-                  ${escapeHtml(mainCitation)}
+                <div class="w-1 h-5 rounded-full shrink-0" style="background: ${theme.accentBar};"></div>
+                <span class="lt-stage-book text-lg sm:text-xl font-extrabold tracking-tight py-0.5 leading-snug" style="color: ${theme.badgeColor};">
+                  ${escapeHtml(ltMode === 'ref_en' ? englishParallel : mainCitation)}
                 </span>
-                ${(showSub || ltMode === 'ref_dual' || ltMode === 'ref_en') && renderState.lang !== 'en' ? `
-                  <span class="lt-stage-sub text-xs font-bold uppercase tracking-wider opacity-85 hidden sm:inline" style="color: ${theme.subColor};">
-                    • ${escapeHtml(englishParallel)}
-                  </span>
-                ` : ''}
               </div>
+              ${(showSub || ltMode === 'ref_dual') && renderState.lang !== 'en' && ltMode !== 'ref_en' ? `
+                <span class="lt-stage-sub text-xs font-semibold tracking-[0.10em] opacity-80 hidden sm:inline shrink-0" style="color: ${theme.subColor}; font-family: ${enFontStack};">
+                  ${formatParallelRefHtml(englishParallel)}
+                </span>
+              ` : ''}
             </div>
 
             <!-- Bottom Scripture Verse Plate -->
@@ -3536,7 +3612,7 @@
                 </div>
               ` : ''}
               ${(ltMode === 'ref_en' || ltMode === 'ref_dual') ? `
-                <div class="leading-snug ${ltMode === 'ref_dual' ? 'pt-1 border-t border-white/10 opacity-95' : ''}" style="color: ${ltMode === 'ref_dual' ? theme.subColor : theme.textColor}; font-size: ${enFontSize}; font-weight: 600; font-family: 'Inter', sans-serif;">
+                <div class="leading-snug" style="color: ${ltMode === 'ref_dual' ? ltDualEnColor : theme.textColor}; font-size: ${enFontSize}; font-weight: 600; font-family: ${enFontStack}; ${ltMode === 'ref_dual' ? `padding-top: 0.4rem; border-top: 1px solid ${ltDividerColor};` : ''}">
                   ${enProcessed.html}
                 </div>
               ` : ''}
@@ -3700,16 +3776,16 @@
       const liveStatusPill = document.getElementById('liveStatusPill');
 
       if (state.isLive) {
-        btnLiveHeader.className = 'px-3 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 transition border border-rose-400/50 bg-rose-600 hover:bg-rose-500 text-white on-air-glow';
-        headerLiveText.textContent = 'ON AIR (LIVE)';
+        btnLiveHeader.className = 'px-3 py-1.5 rounded-lg text-xs font-semibold tracking-wide flex items-center gap-1.5 transition border border-rose-400/50 bg-rose-600 hover:bg-rose-500 text-white on-air-glow';
+        headerLiveText.textContent = 'ON AIR';
         headerLiveDot.className = 'w-2 h-2 rounded-full bg-white animate-ping';
-        liveStatusPill.className = 'text-[10px] font-bold uppercase px-2 py-0.5 rounded-full bg-rose-500/20 text-rose-400 border border-rose-500/40';
+        liveStatusPill.className = 'text-[10px] font-semibold uppercase px-2 py-0.5 rounded-md bg-rose-500/15 text-rose-400 border border-rose-500/30';
         liveStatusPill.textContent = '● ON AIR';
       } else {
-        btnLiveHeader.className = 'px-3 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 transition border border-emerald-500/40 bg-emerald-600 hover:bg-emerald-500 text-white shadow-sm';
+        btnLiveHeader.className = 'px-3 py-1.5 rounded-lg text-xs font-semibold tracking-wide flex items-center gap-1.5 transition border border-white/15 bg-white hover:bg-zinc-200 text-zinc-950';
         headerLiveText.textContent = 'GO LIVE';
-        headerLiveDot.className = 'w-2 h-2 rounded-full bg-white';
-        liveStatusPill.className = 'text-[10px] font-bold uppercase px-2 py-0.5 rounded-full bg-slate-800 text-slate-400 border border-slate-700';
+        headerLiveDot.className = 'w-2 h-2 rounded-full bg-zinc-950';
+        liveStatusPill.className = 'text-[10px] font-medium uppercase px-2 py-0.5 rounded-md bg-white/[0.05] text-zinc-400 border border-white/[0.08]';
         liveStatusPill.textContent = 'STANDBY';
       }
 
@@ -3718,17 +3794,17 @@
       if (btnBilingual) {
         btnBilingual.textContent = state.showBilingual ? 'Sub-label: ON' : 'Sub-label: OFF';
         btnBilingual.className = state.showBilingual
-          ? 'px-2 py-1 rounded-lg text-[11px] font-bold bg-amber-500/20 text-amber-300 border border-amber-500/40 transition'
-          : 'px-2 py-1 rounded-lg text-[11px] font-medium bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 transition';
+          ? 'px-2 py-1 rounded-lg text-[11px] font-semibold bg-white text-zinc-950 border border-white transition'
+          : 'px-2 py-1 rounded-lg text-[11px] font-medium bg-white/[0.04] hover:bg-white/[0.08] text-zinc-300 border border-white/[0.08] transition';
       }
 
       // Range Click Button State
       const btnRangeMode = document.getElementById('btnToggleRangeClickMode');
       if (btnRangeMode) {
-        btnRangeMode.textContent = state.rangeClickMode ? 'Range Click: ON' : 'Range Click: OFF';
+        btnRangeMode.textContent = state.rangeClickMode ? 'Range: ON' : 'Range: OFF';
         btnRangeMode.className = state.rangeClickMode
-          ? 'px-2 py-0.5 rounded text-[10px] font-bold border border-amber-500/50 bg-amber-500/15 text-amber-300 transition'
-          : 'px-2 py-0.5 rounded text-[10px] font-bold border border-slate-700 bg-slate-800 text-slate-400 transition';
+          ? 'px-2 py-0.5 rounded text-[10px] font-semibold border border-white/20 bg-white/15 text-white transition'
+          : 'px-2 py-0.5 rounded text-[10px] font-medium border border-white/[0.08] bg-white/[0.03] text-zinc-400 transition';
       }
 
       // Update Presentation Mode Switcher (Lower-Third vs Full Screen)
@@ -3736,11 +3812,11 @@
       const btnPresFs = document.getElementById('btnPresModeFullScreen');
       if (btnPresLt && btnPresFs) {
         if (state.presentationMode === 'full_screen') {
-          btnPresFs.className = 'pres-mode-btn px-2.5 py-1 rounded-md text-[11px] font-bold bg-sky-500 text-slate-950 shadow-sm transition';
-          btnPresLt.className = 'pres-mode-btn px-2.5 py-1 rounded-md text-[11px] font-bold text-slate-300 hover:text-white transition';
+          btnPresFs.className = 'pres-mode-btn px-2.5 py-1 rounded-md text-[11px] font-semibold bg-white text-zinc-950 transition';
+          btnPresLt.className = 'pres-mode-btn px-2.5 py-1 rounded-md text-[11px] font-medium text-zinc-400 hover:text-white transition';
         } else {
-          btnPresLt.className = 'pres-mode-btn px-2.5 py-1 rounded-md text-[11px] font-bold bg-amber-500 text-slate-950 shadow-sm transition';
-          btnPresFs.className = 'pres-mode-btn px-2.5 py-1 rounded-md text-[11px] font-bold text-slate-300 hover:text-white transition';
+          btnPresLt.className = 'pres-mode-btn px-2.5 py-1 rounded-md text-[11px] font-semibold bg-white text-zinc-950 transition';
+          btnPresFs.className = 'pres-mode-btn px-2.5 py-1 rounded-md text-[11px] font-medium text-zinc-400 hover:text-white transition';
         }
       }
 
@@ -3749,10 +3825,10 @@
       if (mediaPill) {
         if (state.mediaIsLive) {
           mediaPill.textContent = '● ON AIR';
-          mediaPill.className = 'px-2 py-0.5 rounded-full text-[10px] font-mono font-bold bg-rose-500/20 text-rose-300 border border-rose-500/50 animate-pulse';
+          mediaPill.className = 'px-2 py-0.5 rounded-full text-[10px] font-semibold bg-rose-500/20 text-rose-300 border border-rose-500/50 animate-pulse';
         } else {
           mediaPill.textContent = '○ OFF AIR';
-          mediaPill.className = 'px-2 py-0.5 rounded-full text-[10px] font-mono font-bold bg-slate-800 text-slate-400 border border-slate-700';
+          mediaPill.className = 'px-2 py-0.5 rounded-full text-[10px] font-medium bg-white/[0.05] text-zinc-400 border border-white/[0.08]';
         }
       }
       const stagedThumb = document.getElementById('stagedMediaThumb');
@@ -3761,15 +3837,34 @@
         stagedThumb.style.objectPosition = state.mediaFocalPos === 'top' ? 'center top' : state.mediaFocalPos === 'bottom' ? 'center bottom' : 'center center';
       }
 
-      // Update Lower-Third Mode Buttons
+      // Update Lower-Third Mode Buttons (Calm Monochrome Active Pill)
       document.querySelectorAll('.lt-mode-btn').forEach(btn => {
         const m = btn.getAttribute('data-lt-mode');
         if (m === state.ltDisplayMode) {
-          btn.className = 'lt-mode-btn px-2.5 py-1 rounded-lg text-xs font-bold border border-amber-500 bg-amber-500 text-slate-950 transition';
+          btn.className = 'lt-mode-btn px-2.5 py-1 rounded-lg text-xs font-semibold border border-white bg-white text-zinc-950 transition';
         } else {
-          btn.className = 'lt-mode-btn px-2.5 py-1 rounded-lg text-xs font-bold border border-slate-700 bg-slate-800 text-slate-300 hover:text-white transition';
+          btn.className = 'lt-mode-btn px-2.5 py-1 rounded-lg text-xs font-medium border border-white/[0.08] bg-white/[0.04] text-zinc-300 hover:text-white hover:bg-white/[0.08] transition';
         }
       });
+
+      // Update Collapsed Workbench Summary Badge
+      const wbSummary = document.getElementById('workbenchSummaryBadge');
+      if (wbSummary) {
+        const teCnt = (state.selectedTeWordIndices || []).length;
+        const enCnt = (state.selectedEnWordIndices || []).length;
+        if (teCnt || enCnt) {
+          const modeLbl = state.workbenchActionMode === 'part_only' ? 'Slice' : 'Highlight';
+          wbSummary.textContent = `${modeLbl}: ${Math.max(teCnt, enCnt)}w`;
+          wbSummary.className = 'text-[11px] px-2 py-0.5 rounded-md bg-white text-zinc-950 font-semibold';
+        } else if (typeof state.activeClauseIndex === 'number' && state.activeClauseIndex >= 0) {
+          const letter = String.fromCharCode(97 + state.activeClauseIndex);
+          wbSummary.textContent = `Part ${letter}`;
+          wbSummary.className = 'text-[11px] px-2 py-0.5 rounded-md bg-white text-zinc-950 font-semibold';
+        } else {
+          wbSummary.textContent = 'Full Verse';
+          wbSummary.className = 'text-[11px] px-2 py-0.5 rounded-md bg-white/[0.05] text-zinc-400 border border-white/[0.07]';
+        }
+      }
 
       // Update Workbench Action Mode Buttons
       const btnModeHl = document.getElementById('btnWorkbenchModeHighlight');
@@ -4270,6 +4365,39 @@
       });
     }
 
+    function playFullScreenGsapMotion(fsRoot, animStyle) {
+      if (!fsRoot || typeof gsap === 'undefined' || !fsRoot.classList.contains('fs-visible')) return;
+      const refEl = fsRoot.querySelector('.fs-stage-ref');
+      const divEl = fsRoot.querySelector('.fs-stage-divider');
+      const verseEl = fsRoot.querySelector('.fs-stage-verse');
+      const targets = [refEl, divEl, verseEl].filter(Boolean);
+      if (!targets.length) return;
+      gsap.killTweensOf(targets);
+
+      const mode = (animStyle === 'sanctuary_dissolve' || animStyle === 'pop' || animStyle === 'spring_island')
+        ? 'sanctuary_dissolve'
+        : ((animStyle === 'editorial_wipe' || animStyle === 'wipe' || animStyle === 'laser_draw')
+          ? 'editorial_wipe'
+          : 'broadcast_mask');
+
+      const tl = gsap.timeline();
+      if (mode === 'sanctuary_dissolve') {
+        if (refEl) tl.fromTo(refEl, { opacity: 0, scale: 0.98 }, { opacity: 1, scale: 1, duration: 0.38, ease: 'power2.out', clearProps: 'transform' }, 0);
+        if (divEl) tl.fromTo(divEl, { opacity: 0, scaleX: 0 }, { opacity: 1, scaleX: 1, duration: 0.42, ease: 'power2.out' }, 0.06);
+        if (verseEl) tl.fromTo(verseEl, { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.44, ease: 'power2.out', clearProps: 'transform' }, 0.10);
+      } else if (mode === 'editorial_wipe') {
+        // Vertical -0.35em bleed guarantees Telugu ottulu & dirgham are NEVER clipped even mid-wipe
+        if (refEl) tl.fromTo(refEl, { opacity: 0, clipPath: 'inset(-0.35em 100% -0.35em 0)' }, { opacity: 1, clipPath: 'inset(-0.35em -0.1em -0.35em -0.1em)', duration: 0.44, ease: 'power3.out', clearProps: 'clipPath' }, 0);
+        if (divEl) tl.fromTo(divEl, { scaleX: 0 }, { scaleX: 1, duration: 0.44, ease: 'power3.out' }, 0.08);
+        if (verseEl) tl.fromTo(verseEl, { opacity: 0, clipPath: 'inset(-0.35em 100% -0.35em 0)' }, { opacity: 1, clipPath: 'inset(-0.35em -0.1em -0.35em -0.1em)', duration: 0.50, ease: 'power3.out', clearProps: 'clipPath' }, 0.14);
+      } else {
+        // Broadcast Rise (Default): Zero-Clip Vertical Glide (Never clips Telugu ascenders/ottulu)
+        if (refEl) tl.fromTo(refEl, { y: 22, opacity: 0 }, { y: 0, opacity: 1, duration: 0.40, ease: 'power3.out', clearProps: 'transform' }, 0);
+        if (divEl) tl.fromTo(divEl, { scaleX: 0, opacity: 0 }, { scaleX: 1, opacity: 1, duration: 0.44, ease: 'power3.out' }, 0.08);
+        if (verseEl) tl.fromTo(verseEl, { y: 26, opacity: 0 }, { y: 0, opacity: 1, duration: 0.46, ease: 'power3.out', clearProps: 'transform' }, 0.13);
+      }
+    }
+
     function autoFitFullScreenStage(container) {
       if (!container) return;
       const fsRoot = container.querySelector('.fs-wrapper[data-fs-root="1"]');
@@ -4290,6 +4418,7 @@
       const existingFs = isFullScreen ? container.querySelector('.fs-wrapper[data-fs-root="1"]') : null;
 
       if (isFullScreen && existingFs) {
+        const wasVisible = existingFs.classList.contains('fs-visible');
         const tpl = document.createElement('template');
         tpl.innerHTML = html;
         const nextFs = tpl.content.querySelector('.fs-wrapper[data-fs-root="1"]');
@@ -4312,21 +4441,33 @@
           existingFs.className = nextFs.className;
           existingFs.style.cssText = nextFs.style.cssText;
 
-          // Replace inner stage when content/styling changed (re-triggers Reference → Divider → Verse entrance)
+          // Sync film-grain layer presence
+          const existingGrain = existingFs.querySelector('.fs-grain-layer');
+          const nextGrain = nextFs.querySelector('.fs-grain-layer');
+          if (existingGrain && !nextGrain) existingGrain.remove();
+          if (!existingGrain && nextGrain) existingFs.insertBefore(nextGrain, existingFs.firstChild);
+
+          // Replace inner stage when content/layout changed & fire crisp GSAP broadcast motion
           const existingInner = existingFs.querySelector('.fs-inner-stage');
           const nextInner = nextFs.querySelector('.fs-inner-stage');
+          let contentChanged = false;
           if (existingInner && nextInner) {
             const prevKey = existingInner.getAttribute('data-fs-content-key');
             const nextKey = nextInner.getAttribute('data-fs-content-key');
             if (prevKey !== nextKey || existingInner.innerHTML !== nextInner.innerHTML) {
               existingInner.replaceWith(nextInner);
+              contentChanged = true;
             }
           } else if (nextInner) {
-            existingFs.innerHTML = '';
             existingFs.appendChild(nextInner);
+            contentChanged = true;
           }
 
           autoFitFullScreenStage(container);
+          const nowVisible = existingFs.classList.contains('fs-visible');
+          if (nowVisible && (!wasVisible || contentChanged)) {
+            playFullScreenGsapMotion(existingFs, state.animStyle);
+          }
           return;
         }
       }
@@ -4334,6 +4475,10 @@
       container.innerHTML = html;
       if (isFullScreen) {
         autoFitFullScreenStage(container);
+        const fsRoot = container.querySelector('.fs-wrapper[data-fs-root="1"]');
+        if (fsRoot && fsRoot.classList.contains('fs-visible')) {
+          playFullScreenGsapMotion(fsRoot, state.animStyle);
+        }
       }
     }
 
@@ -4885,13 +5030,15 @@
       document.getElementById('btnAddToQueue').addEventListener('click', addCurrentToQueue);
 
       const btnDockCompact = document.getElementById('btnToggleDockCompact');
+      if (!document.body.dataset.dockView) {
+        document.body.dataset.dockView = 'live';
+      }
       function updateDockButtonVisual() {
         const isCompact = document.body.classList.contains('dock-compact-mode');
         if (btnDockCompact) {
-          btnDockCompact.textContent = isCompact ? '📺 Show Preview' : '📐 Dock View';
-          btnDockCompact.className = isCompact
-            ? 'px-2 py-1.5 rounded-lg text-xs font-bold bg-amber-500/20 text-amber-300 border border-amber-500/40 transition'
-            : 'px-2 py-1.5 rounded-lg text-xs font-medium bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 transition';
+          btnDockCompact.innerHTML = isCompact
+            ? '<span>Full Studio View</span><span class="text-[10px] text-zinc-400">16:9</span>'
+            : '<span>Dock Compact View</span><span class="text-[10px] text-zinc-500">OBS</span>';
         }
       }
       updateDockButtonVisual();
@@ -4899,9 +5046,66 @@
         btnDockCompact.addEventListener('click', () => {
           document.body.classList.toggle('dock-compact-mode');
           updateDockButtonVisual();
-          showToast(document.body.classList.contains('dock-compact-mode') ? 'Compact Dock View Active' : 'Full Studio View Active');
+          showToast(document.body.classList.contains('dock-compact-mode') ? 'OBS Dock View Active' : 'Full Studio View Active');
         });
       }
+
+      // Calm Header Tools Popover Menu
+      const btnToolsMenu = document.getElementById('btnToolsMenuToggle');
+      const toolsPopover = document.getElementById('toolsPopoverMenu');
+      if (btnToolsMenu && toolsPopover) {
+        btnToolsMenu.addEventListener('click', (e) => {
+          e.stopPropagation();
+          toolsPopover.classList.toggle('hidden');
+        });
+        toolsPopover.addEventListener('click', () => {
+          toolsPopover.classList.add('hidden');
+        });
+        document.addEventListener('click', (e) => {
+          if (!toolsPopover.classList.contains('hidden') && !toolsPopover.contains(e.target) && e.target !== btnToolsMenu) {
+            toolsPopover.classList.add('hidden');
+          }
+        });
+      }
+
+      // Progressive Disclosure: Collapsible Verse Workbench Drawer (Click or Press H)
+      const btnToggleWb = document.getElementById('btnToggleWorkbenchDrawer');
+      const wbBody = document.getElementById('workbenchDrawerBody');
+      const wbChev = document.getElementById('workbenchChevron');
+      function toggleWorkbenchDrawer(forceOpen) {
+        if (!wbBody) return;
+        const willOpen = typeof forceOpen === 'boolean' ? forceOpen : wbBody.classList.contains('hidden');
+        wbBody.classList.toggle('hidden', !willOpen);
+        if (wbChev) wbChev.style.transform = willOpen ? 'rotate(90deg)' : '';
+      }
+      if (btnToggleWb) {
+        btnToggleWb.addEventListener('click', () => toggleWorkbenchDrawer());
+      }
+      document.addEventListener('keydown', (e) => {
+        const tag = (document.activeElement && document.activeElement.tagName) || '';
+        if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
+        if (!e.ctrlKey && !e.metaKey && !e.altKey && (e.key === 'h' || e.key === 'H')) {
+          e.preventDefault();
+          toggleWorkbenchDrawer();
+        }
+      });
+
+      // OBS Dock Focused View Switcher (Live | Queue | Media | Look)
+      document.querySelectorAll('.dock-nav-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const target = btn.getAttribute('data-dock-target') || 'live';
+          document.body.dataset.dockView = target;
+          document.querySelectorAll('.dock-nav-btn').forEach(b => {
+            const active = b.getAttribute('data-dock-target') === target;
+            b.className = active
+              ? 'dock-nav-btn flex-1 py-1.5 rounded-lg text-xs font-semibold bg-white text-zinc-950 transition'
+              : 'dock-nav-btn flex-1 py-1.5 rounded-lg text-xs font-medium text-zinc-400 hover:text-white transition';
+          });
+          if (target === 'queue') document.getElementById('rightTabQueue')?.click();
+          if (target === 'media') document.getElementById('rightTabMedia')?.click();
+          if (target === 'style') document.getElementById('rightTabStyle')?.click();
+        });
+      });
 
       // Pop-out Standalone Overlay Window
       document.getElementById('btnPopoutOverlay').addEventListener('click', () => {
