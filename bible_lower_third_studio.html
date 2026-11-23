@@ -774,7 +774,7 @@
                 <button id="btnPresModeLowerThird" type="button" data-pres-mode="lower_third" class="pres-mode-btn px-2 py-1 rounded-md text-[11px] font-semibold bg-white text-zinc-950 transition" title="Compact Lower-Third Overlay over Camera">
                   Lower-Third
                 </button>
-                <button id="btnPresModeSceneOverlay" type="button" data-pres-mode="scene_overlay" class="pres-mode-btn px-2 py-1 rounded-md text-[11px] font-medium text-zinc-400 hover:text-white transition" title="Auto-Switch OBS to Bible Overlay Scene + Verse Panel">
+                <button id="btnPresModeSceneOverlay" type="button" data-pres-mode="scene_overlay" class="pres-mode-btn px-2 py-1 rounded-md text-[11px] font-medium text-zinc-400 hover:text-white transition" title="Auto-Switch OBS to Book Overlay Scene + Verse Panel">
                   Scene Overlay
                 </button>
                 <button id="btnPresModeFullScreen" type="button" data-pres-mode="full_screen" class="pres-mode-btn px-2 py-1 rounded-md text-[11px] font-medium text-zinc-400 hover:text-white transition" title="Full-Screen Church TV Slide (Hotkey: Alt+F)">
@@ -1356,8 +1356,8 @@
               </div>
               <div class="grid grid-cols-2 gap-2">
                 <div>
-                  <label for="obsBibleSceneInput" class="block text-[10px] text-zinc-400 mb-0.5">OBS Bible Scene Name</label>
-                  <input id="obsBibleSceneInput" type="text" value="Bible Overlay" list="obsSceneListDatalist" class="w-full bg-[#111114] border border-white/10 rounded-lg px-2 py-1 text-[11px] text-zinc-100 outline-none" />
+                  <label for="obsBibleSceneInput" class="block text-[10px] text-zinc-400 mb-0.5">OBS Overlay Scene (Same as Media)</label>
+                  <input id="obsBibleSceneInput" type="text" value="Book Overlay" list="obsSceneListDatalist" class="w-full bg-[#111114] border border-white/10 rounded-lg px-2 py-1 text-[11px] text-zinc-100 outline-none" />
                 </div>
                 <div>
                   <label for="selectBibleOverlayLayout" class="block text-[10px] text-zinc-400 mb-0.5">Overlay Panel Position</label>
@@ -2289,9 +2289,9 @@
       fsLayout: 'editorial',            // 'editorial' | 'centered' | 'tag_header'
       fsBackdrop: 'theme_solid',        // 'theme_solid' | 'frosted_glass' | 'pure_black'
       fsScalePercent: 100,              // 75..135
-      // Bible Scene Overlay Mode (OBS Auto-Scene Switch: Center Stage ↔ Bible Overlay)
+      // Bible Scene Overlay Mode (OBS Auto-Scene Switch: Center Stage ↔ Book Overlay)
       obsBibleAutoSwitch: true,
-      obsBibleScene: 'Bible Overlay',
+      obsBibleScene: 'Book Overlay',
       bibleOverlayLayout: 'split_right', // 'split_right' | 'split_left' | 'transparent_full'
       bibleSplitWidth: 44,               // 34..58 (% of 1920px canvas)
       workbenchActionMode: 'highlight', // 'highlight' | 'part_only'
@@ -2488,6 +2488,9 @@
         if (prefs[k] !== undefined) state[k] = prefs[k];
       });
       state.animStyle = normalizeAnimStyle(state.animStyle);
+      if (state.obsBibleScene === 'Bible Overlay') {
+        state.obsBibleScene = state.obsPictureScene || 'Book Overlay';
+      }
     }
 
     function scheduleSavePreferences() {
@@ -5640,9 +5643,9 @@
       }
       startAutoHideIfConfigured();
       renderAll();
-      // OBS WebSocket Auto-Scene Switch for Bible Scene Overlay mode (Center Stage → Bible Overlay)
+      // OBS WebSocket Auto-Scene Switch for Bible Scene Overlay mode (Center Stage → Book Overlay)
       if (state.presentationMode === 'scene_overlay' && state.obsBibleAutoSwitch && typeof obsWsConnected !== 'undefined' && obsWsConnected) {
-        const bibleScene = (state.obsBibleScene || 'Bible Overlay').trim();
+        const bibleScene = (state.obsBibleScene || state.obsPictureScene || 'Book Overlay').trim();
         if (bibleScene && typeof obsSwitchToScene === 'function') obsSwitchToScene(bibleScene);
       }
       showToast(`ON AIR: ${(state.customOverride || getFormattedCitation())}`);
@@ -6768,7 +6771,7 @@
         scheduleSavePreferences();
       });
       document.getElementById('obsBibleSceneInput')?.addEventListener('input', (e) => {
-        state.obsBibleScene = e.target.value.trim() || 'Bible Overlay';
+        state.obsBibleScene = e.target.value.trim() || 'Book Overlay';
         scheduleSavePreferences();
       });
       document.getElementById('selectBibleOverlayLayout')?.addEventListener('change', (e) => {
