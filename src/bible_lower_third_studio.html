@@ -271,6 +271,79 @@
       background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.82' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
       background-size: 180px 180px;
     }
+    /* Portable Sanctuary Backdrop Lab (WebGL Shader + CSS Fallback + Custom Image/Video + Textures) */
+    .fs-backdrop-layer {
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+      overflow: hidden;
+      pointer-events: none;
+    }
+    .fs-shader-canvas {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+    @keyframes sanctuaryCssDrift {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+    .fs-css-fallback-drift {
+      background-size: 220% 220% !important;
+      animation: sanctuaryCssDrift 22s ease-in-out infinite;
+    }
+    .fs-texture-overlay {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      z-index: 3;
+    }
+    .fs-dimmer-scrim {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      z-index: 4;
+    }
+    /* Liquid Glass Reference Pill & Two-Zone Frosted Verse Card (Compact surfaces only for smooth 60fps OBS CEF) */
+    .fs-liquid-glass-pill {
+      position: relative;
+      text-shadow: none;
+      backdrop-filter: blur(22px) saturate(165%);
+      -webkit-backdrop-filter: blur(22px) saturate(165%);
+      box-shadow:
+        0 14px 40px rgba(0, 0, 0, 0.36),
+        inset 0 1px 0 rgba(255, 255, 255, 0.32),
+        inset 0 -1px 0 rgba(255, 255, 255, 0.08);
+    }
+    .fs-liquid-glass-pill::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      pointer-events: none;
+      background: linear-gradient(135deg, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0.03) 42%, rgba(255,255,255,0) 65%, rgba(255,255,255,0.09) 100%);
+    }
+    .fs-frosted-card {
+      position: relative;
+      backdrop-filter: blur(24px) saturate(155%);
+      -webkit-backdrop-filter: blur(24px) saturate(155%);
+      box-shadow:
+        0 24px 64px rgba(0, 0, 0, 0.44),
+        inset 0 1px 0 rgba(255, 255, 255, 0.22),
+        inset 0 -1px 0 rgba(255, 255, 255, 0.06);
+    }
+    .fs-anchored-bar {
+      position: relative;
+      text-shadow: none;
+      backdrop-filter: blur(20px) saturate(160%);
+      -webkit-backdrop-filter: blur(20px) saturate(160%);
+      box-shadow:
+        0 12px 32px rgba(0, 0, 0, 0.35),
+        inset 0 1px 0 rgba(255, 255, 255, 0.26);
+    }
     /* Global Telugu / Indic Zero-Clipping Discipline:
        1. Never overflow:hidden on Telugu lines
        2. Never permanent will-change (prevents Chromium GPU texture-box cropping of Telugu ascenders/ottulu)
@@ -505,6 +578,16 @@
   </style>
 </head>
 <body class="min-h-screen flex flex-col">
+  <!-- Subtle SVG Liquid Glass Specular Filter (Scoped to compact pills/cards only — zero full-screen GPU cost) -->
+  <svg width="0" height="0" style="position:absolute;pointer-events:none;" aria-hidden="true">
+    <defs>
+      <filter id="vakyacast-liquid-edge" x="-5%" y="-5%" width="110%" height="110%">
+        <feTurbulence type="fractalNoise" baseFrequency="0.015 0.04" numOctaves="2" seed="7" result="noise"/>
+        <feGaussianBlur in="noise" stdDeviation="1.5" result="softNoise"/>
+        <feDisplacementMap in="SourceGraphic" in2="softNoise" scale="3" xChannelSelector="R" yChannelSelector="G"/>
+      </filter>
+    </defs>
+  </svg>
 
   <!-- ==================== PURE OVERLAY CONTAINER (Used when ?mode=overlay) ==================== -->
   <div id="pureOverlayRoot" class="hidden fixed inset-0 pointer-events-none z-50 flex">
@@ -1375,34 +1458,121 @@
               </div>
             </div>
 
-            <!-- CONTEXTUAL GROUP C: FULL-SCREEN TV OPTIONS (Hidden when Lower-Third or Scene Overlay is active) -->
+            <!-- CONTEXTUAL GROUP C: FULL-SCREEN TV & SANCTUARY BACKDROP LAB (Hidden in Lower-Third & Scene Overlay) -->
             <div id="styleGroupFullScreen" class="pt-2 border-t border-white/[0.07] flex flex-col gap-2">
-              <div class="flex items-center justify-between">
-                <span class="text-[11px] font-semibold text-zinc-200">Full-Screen TV Options (Alt+F)</span>
-                <span id="pureBlackHintNote" class="hidden text-[10px] text-amber-300">Accent color only — canvas Pure Black</span>
+              <div class="flex items-center justify-between gap-2">
+                <span class="text-[11px] font-semibold text-zinc-200">Full-Screen TV &amp; Backdrop Lab (Alt+F)</span>
+                <span id="fsContrastBadge" class="text-[10px] tabular-nums font-semibold px-1.5 py-0.5 rounded bg-emerald-500/15 text-emerald-300 border border-emerald-500/30">AAA 15.8:1 ✓</span>
               </div>
-              <div class="grid grid-cols-2 gap-2">
-                <div>
-                  <label for="selectFsLayout" class="block text-[10px] text-zinc-400 mb-0.5">TV Alignment</label>
+
+              <!-- Separation Layout + Reference Position -->
+              <div class="grid grid-cols-12 gap-1.5 items-end">
+                <div class="col-span-8">
+                  <label for="selectFsLayout" class="block text-[10px] text-zinc-400 mb-0.5">Verse &amp; Ref Separation</label>
                   <select id="selectFsLayout" class="w-full bg-[#111114] border border-white/10 rounded-lg px-2 py-1 text-[11px] text-zinc-100 outline-none">
-                    <option value="editorial">Sanctuary Editorial (Left + Hairline)</option>
+                    <option value="glass_pill">Liquid Glass Ref Pill</option>
+                    <option value="frosted_card">Two-Zone Frosted Verse Card</option>
+                    <option value="anchored_bar">Bottom-Anchored Sanctuary Bar</option>
+                    <option value="editorial">Pure Editorial Rule (Left)</option>
                     <option value="centered">Sanctuary Centered (Pure Type)</option>
-                    <option value="tag_header">Architectural Ref Tag (Centered)</option>
+                    <option value="tag_header">Architectural Ref Tag</option>
                   </select>
                 </div>
-                <div>
-                  <label for="selectFsBackdrop" class="block text-[10px] text-zinc-400 mb-0.5">TV Backdrop</label>
+                <div id="wrapFsRefPosition" class="col-span-4">
+                  <span class="block text-[10px] text-zinc-400 mb-0.5">Ref Position</span>
+                  <div class="inline-flex w-full rounded-lg bg-[#09090b] p-0.5 border border-white/[0.08]">
+                    <button type="button" data-ref-pos="top" class="fs-refpos-btn flex-1 py-0.5 rounded text-[10px] font-semibold bg-white text-zinc-950 transition">Top</button>
+                    <button type="button" data-ref-pos="bottom" class="fs-refpos-btn flex-1 py-0.5 rounded text-[10px] font-medium text-zinc-400 hover:text-white transition">Bottom</button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Backdrop Source Switcher -->
+              <div class="flex items-center justify-between gap-2">
+                <span class="text-[10px] text-zinc-400">Backdrop:</span>
+                <div class="inline-flex rounded-lg bg-[#09090b] p-0.5 border border-white/[0.08]">
+                  <button type="button" data-bg-src="shader" class="fs-bgsrc-btn px-2 py-0.5 rounded text-[10px] font-semibold bg-white text-zinc-950 transition">Shader Lab</button>
+                  <button type="button" data-bg-src="media" class="fs-bgsrc-btn px-2 py-0.5 rounded text-[10px] font-medium text-zinc-400 hover:text-white transition">Image / Video</button>
+                  <button type="button" data-bg-src="solid" class="fs-bgsrc-btn px-2 py-0.5 rounded text-[10px] font-medium text-zinc-400 hover:text-white transition">Solid / Key</button>
+                </div>
+              </div>
+
+              <!-- SOURCE A: PORTABLE WEBGL SHADER PRESETS -->
+              <div id="fsBgPanelShader" class="flex flex-col gap-1.5">
+                <div class="grid grid-cols-3 gap-1">
+                  <button type="button" data-shader="deep_navy_waves" class="fs-shader-btn px-2 py-1 rounded-md border border-white bg-[#0f2142] text-[10px] font-medium text-white truncate transition">Deep Navy</button>
+                  <button type="button" data-shader="midnight_aurora" class="fs-shader-btn px-2 py-1 rounded-md border border-white/10 bg-[#102030] text-[10px] font-medium text-zinc-200 truncate transition">Aurora</button>
+                  <button type="button" data-shader="warm_sanctuary_gold" class="fs-shader-btn px-2 py-1 rounded-md border border-white/10 bg-[#24180c] text-[10px] font-medium text-amber-100 truncate transition">Sanctuary Gold</button>
+                  <button type="button" data-shader="quiet_charcoal_mist" class="fs-shader-btn px-2 py-1 rounded-md border border-white/10 bg-[#181a20] text-[10px] font-medium text-zinc-200 truncate transition">Charcoal Mist</button>
+                  <button type="button" data-shader="still_waters" class="fs-shader-btn px-2 py-1 rounded-md border border-white/10 bg-[#0f2730] text-[10px] font-medium text-cyan-100 truncate transition">Still Waters</button>
+                  <button type="button" data-shader="soft_linen_light" class="fs-shader-btn px-2 py-1 rounded-md border border-white/10 bg-[#ece8df] text-[10px] font-semibold text-zinc-900 truncate transition">Soft Linen</button>
+                </div>
+                <div class="flex items-center gap-2">
+                  <label for="rangeFsShaderSpeed" class="text-[10px] text-zinc-400 whitespace-nowrap">Motion:</label>
+                  <input id="rangeFsShaderSpeed" type="range" min="0" max="100" value="32" class="w-full accent-white" />
+                  <span id="fsShaderSpeedLabel" class="text-[10px] tabular-nums text-zinc-300 w-10 text-right">32%</span>
+                </div>
+              </div>
+
+              <!-- SOURCE B: PORTABLE IMAGE / VIDEO BACKGROUNDS (IndexedDB + Bridge ./backgrounds/) -->
+              <div id="fsBgPanelMedia" class="hidden flex flex-col gap-1.5">
+                <div class="flex items-center gap-1.5">
+                  <label class="flex-1 text-center px-2 py-1 rounded-lg bg-white text-zinc-950 hover:bg-zinc-200 text-[10px] font-semibold cursor-pointer transition">
+                    <span>Upload Image / MP4 / WebM</span>
+                    <input id="inputFsCustomBgFile" type="file" accept="image/*,video/mp4,video/webm" class="hidden" />
+                  </label>
+                  <button id="btnRefreshBridgeBgs" type="button" class="px-2 py-1 rounded-lg bg-white/[0.06] hover:bg-white/[0.12] text-zinc-300 border border-white/10 text-[10px] font-medium transition" title="Scan ./backgrounds/ folder via Bridge">
+                    Scan Folder
+                  </button>
+                </div>
+                <div id="fsBgMediaList" class="flex flex-wrap gap-1 max-h-20 overflow-y-auto text-[10px] text-zinc-400">
+                  <span>Upload any image/video or drop files into ./backgrounds/</span>
+                </div>
+              </div>
+
+              <!-- SOURCE C: SOLID / TRANSPARENT / KEYING -->
+              <div id="fsBgPanelSolid" class="hidden flex flex-col gap-1">
+                <div class="flex items-center justify-between gap-2">
                   <select id="selectFsBackdrop" class="w-full bg-[#111114] border border-white/10 rounded-lg px-2 py-1 text-[11px] text-zinc-100 outline-none">
                     <option value="theme_solid">Matte Sanctuary Canvas</option>
-                    <option value="frosted_glass">Frosted Camera Scrim</option>
+                    <option value="frosted_glass">Frosted Camera / OBS Video Scrim</option>
                     <option value="pure_black">Pure Black (LED / Keying)</option>
                   </select>
                 </div>
+                <span id="pureBlackHintNote" class="hidden text-[10px] text-amber-300">Accent color only — canvas Pure Black</span>
               </div>
-              <div class="flex items-center gap-2">
-                <label for="rangeFsScale" class="text-[11px] text-zinc-400 whitespace-nowrap">Text Size:</label>
-                <input id="rangeFsScale" type="range" min="75" max="135" value="100" class="w-full accent-white" />
-                <span id="fsScaleValueLabel" class="text-[11px] tabular-nums text-zinc-200 w-10 text-right">100%</span>
+
+              <!-- Texture, Dimmer, Blur & Text Size -->
+              <div class="grid grid-cols-2 gap-1.5 pt-1 border-t border-white/[0.06]">
+                <div>
+                  <label for="selectFsTexture" class="block text-[10px] text-zinc-400 mb-0.5">Texture Overlay</label>
+                  <select id="selectFsTexture" class="w-full bg-[#111114] border border-white/10 rounded-lg px-2 py-1 text-[11px] text-zinc-100 outline-none">
+                    <option value="none">None</option>
+                    <option value="fine_grain">Fine Matte Grain</option>
+                    <option value="world_map">Subtle World Map</option>
+                    <option value="soft_linen">Soft Woven Linen</option>
+                  </select>
+                </div>
+                <div class="flex flex-col justify-end">
+                  <div class="flex items-center justify-between text-[10px] text-zinc-400 mb-0.5">
+                    <label for="rangeFsDimmer">Dimmer</label>
+                    <span id="fsDimmerLabel" class="tabular-nums text-zinc-300">24%</span>
+                  </div>
+                  <input id="rangeFsDimmer" type="range" min="0" max="85" value="24" class="w-full accent-white" />
+                </div>
+              </div>
+
+              <div class="grid grid-cols-2 gap-2">
+                <div class="flex items-center gap-1.5">
+                  <label for="rangeFsBgBlur" class="text-[10px] text-zinc-400 whitespace-nowrap">Blur:</label>
+                  <input id="rangeFsBgBlur" type="range" min="0" max="24" value="0" class="w-full accent-white" />
+                  <span id="fsBgBlurLabel" class="text-[10px] tabular-nums text-zinc-300 w-7 text-right">0px</span>
+                </div>
+                <div class="flex items-center gap-1.5">
+                  <label for="rangeFsScale" class="text-[10px] text-zinc-400 whitespace-nowrap">Size:</label>
+                  <input id="rangeFsScale" type="range" min="75" max="135" value="100" class="w-full accent-white" />
+                  <span id="fsScaleValueLabel" class="text-[10px] tabular-nums text-zinc-200 w-8 text-right">100%</span>
+                </div>
               </div>
             </div>
 
@@ -2286,8 +2456,19 @@
       // Phase 9: Full Bible, Concordance, Part-of-Verse Highlighting & Part-Verse Presentation
       ltDisplayMode: 'ref_te',          // 'ref_only' | 'ref_te' | 'ref_en' | 'ref_dual'
       presentationMode: 'lower_third',  // 'lower_third' | 'scene_overlay' | 'full_screen'
-      fsLayout: 'editorial',            // 'editorial' | 'centered' | 'tag_header'
+      fsLayout: 'glass_pill',           // 'glass_pill' | 'frosted_card' | 'anchored_bar' | 'editorial' | 'centered' | 'tag_header'
       fsBackdrop: 'theme_solid',        // 'theme_solid' | 'frosted_glass' | 'pure_black'
+      fsBackdropSource: 'shader',       // 'shader' | 'solid' | 'media'
+      fsShaderPreset: 'deep_navy_waves',// 'deep_navy_waves' | 'midnight_aurora' | 'warm_sanctuary_gold' | 'quiet_charcoal_mist' | 'still_waters' | 'soft_linen_light'
+      fsShaderSpeed: 32,                // 0 (paused) .. 100
+      fsTexture: 'fine_grain',          // 'none' | 'fine_grain' | 'world_map' | 'soft_linen'
+      fsTextureOpacity: 10,             // 0 .. 25 (%)
+      fsDimmer: 24,                     // 0 .. 85 (%)
+      fsBgBlur: 0,                      // 0 .. 24 (px)
+      fsRefPosition: 'top',             // 'top' | 'bottom'
+      fsCustomBgUrl: '',                // '/backgrounds/...' or data URI / ObjectURL
+      fsCustomBgKind: 'image',          // 'image' | 'video'
+      fsCustomBgLum: 0.08,              // sampled 0..1 relative luminance for WCAG AAA contrast meter
       fsScalePercent: 100,              // 75..135
       // Bible Scene Overlay Mode (OBS Auto-Scene Switch: Center Stage ↔ Book Overlay)
       obsBibleAutoSwitch: true,
@@ -2433,6 +2614,17 @@
         presentationMode: state.presentationMode,
         fsLayout: state.fsLayout,
         fsBackdrop: state.fsBackdrop,
+        fsBackdropSource: state.fsBackdropSource,
+        fsShaderPreset: state.fsShaderPreset,
+        fsShaderSpeed: state.fsShaderSpeed,
+        fsTexture: state.fsTexture,
+        fsTextureOpacity: state.fsTextureOpacity,
+        fsDimmer: state.fsDimmer,
+        fsBgBlur: state.fsBgBlur,
+        fsRefPosition: state.fsRefPosition,
+        fsCustomBgUrl: (state.fsCustomBgUrl && !state.fsCustomBgUrl.startsWith('blob:')) ? state.fsCustomBgUrl : '',
+        fsCustomBgKind: state.fsCustomBgKind,
+        fsCustomBgLum: state.fsCustomBgLum,
         fsScalePercent: state.fsScalePercent,
         bibleOverlayLayout: state.bibleOverlayLayout,
         bibleSplitWidth: state.bibleSplitWidth,
@@ -2476,7 +2668,9 @@
         'showBilingual', 'rangeClickMode', 'instantLiveOnPick', 'theme', 'position',
         'animStyle', 'fontFamily', 'fontWeight', 'customFontFamilyName', 'autoHideSeconds',
         'scalePercent', 'showBibleIcon', 'ltDisplayMode', 'presentationMode',
-        'fsLayout', 'fsBackdrop', 'fsScalePercent', 'obsBibleAutoSwitch', 'obsBibleScene',
+        'fsLayout', 'fsBackdrop', 'fsBackdropSource', 'fsShaderPreset', 'fsShaderSpeed',
+        'fsTexture', 'fsTextureOpacity', 'fsDimmer', 'fsBgBlur', 'fsRefPosition',
+        'fsCustomBgUrl', 'fsCustomBgKind', 'fsCustomBgLum', 'fsScalePercent', 'obsBibleAutoSwitch', 'obsBibleScene',
         'bibleOverlayLayout', 'bibleSplitWidth', 'workbenchActionMode',
         'highlightColor', 'appendClauseLetter', 'mediaTitle', 'mediaSubtitle',
         'mediaType', 'mediaSubMode', 'mediaZoom', 'mediaSearchSource',
@@ -3595,6 +3789,302 @@
       return `<span class="uppercase">${escapeHtml(englishParallel)}</span>`;
     }
 
+    // ==================== PORTABLE SANCTUARY BACKDROP LAB (WEBGL SHADERS + SVG TEXTURES + WCAG AAA CONTRAST) ====================
+    const SANCTUARY_SHADER_PRESETS = {
+      deep_navy_waves: {
+        name: 'Deep Navy Waves',
+        isLight: false,
+        baseLum: 0.015,
+        c1: [0.027, 0.063, 0.129], // #071021
+        c2: [0.059, 0.129, 0.259], // #0F2142
+        c3: [0.090, 0.212, 0.376], // #173660
+        cssFallback: 'linear-gradient(135deg, #071021 0%, #0f2142 52%, #173660 100%)',
+        refAccent: '#fcd34d',
+        textColor: '#f8fafc'
+      },
+      midnight_aurora: {
+        name: 'Midnight Aurora',
+        isLight: false,
+        baseLum: 0.013,
+        c1: [0.035, 0.043, 0.086], // #090B16
+        c2: [0.063, 0.125, 0.188], // #102030
+        c3: [0.114, 0.094, 0.235], // #1D183C
+        cssFallback: 'linear-gradient(135deg, #090b16 0%, #102030 50%, #1d183c 100%)',
+        refAccent: '#93c5fd',
+        textColor: '#f8fafc'
+      },
+      warm_sanctuary_gold: {
+        name: 'Warm Sanctuary Gold',
+        isLight: false,
+        baseLum: 0.017,
+        c1: [0.071, 0.051, 0.031], // #120D08
+        c2: [0.141, 0.094, 0.047], // #24180C
+        c3: [0.220, 0.145, 0.059], // #38250F
+        cssFallback: 'linear-gradient(135deg, #120d08 0%, #24180c 52%, #38250f 100%)',
+        refAccent: '#fde68a',
+        textColor: '#faf7f0'
+      },
+      quiet_charcoal_mist: {
+        name: 'Quiet Charcoal Mist',
+        isLight: false,
+        baseLum: 0.011,
+        c1: [0.043, 0.047, 0.059], // #0B0C0F
+        c2: [0.094, 0.102, 0.125], // #181A20
+        c3: [0.145, 0.157, 0.188], // #252830
+        cssFallback: 'linear-gradient(135deg, #0b0c0f 0%, #181a20 50%, #252830 100%)',
+        refAccent: '#e4e4e7',
+        textColor: '#f8fafc'
+      },
+      still_waters: {
+        name: 'Still Waters',
+        isLight: false,
+        baseLum: 0.015,
+        c1: [0.027, 0.082, 0.102], // #07151A
+        c2: [0.059, 0.153, 0.188], // #0F2730
+        c3: [0.086, 0.220, 0.267], // #163844
+        cssFallback: 'linear-gradient(135deg, #07151a 0%, #0f2730 50%, #163844 100%)',
+        refAccent: '#67e8f9',
+        textColor: '#f8fafc'
+      },
+      soft_linen_light: {
+        name: 'Soft Linen Light',
+        isLight: true,
+        baseLum: 0.86,
+        c1: [0.969, 0.961, 0.941], // #F7F5F0
+        c2: [0.925, 0.910, 0.875], // #ECE8DF
+        c3: [0.890, 0.871, 0.824], // #E3DED2
+        cssFallback: 'linear-gradient(135deg, #f7f5f0 0%, #ece8df 52%, #e3ded2 100%)',
+        refAccent: '#0f172a',
+        textColor: '#0f172a'
+      }
+    };
+
+    function getSanctuaryTextureCss(textureKey, isLightCanvas) {
+      if (!textureKey || textureKey === 'none') return '';
+      if (textureKey === 'fine_grain') {
+        return `background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.82' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"); background-size: 180px 180px;`;
+      }
+      if (textureKey === 'soft_linen') {
+        const stroke = isLightCanvas ? '%230f172a' : '%23ffffff';
+        return `background-image: url("data:image/svg+xml,%3Csvg width='24' height='24' viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 6h24M0 18h24M6 0v24M18 0v24' stroke='${stroke}' stroke-opacity='0.35' stroke-width='0.5' fill='none'/%3E%3C/svg%3E"); background-size: 24px 24px;`;
+      }
+      if (textureKey === 'world_map') {
+        const fill = isLightCanvas ? '%230f172a' : '%23ffffff';
+        const svg = `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 600'><g fill='${fill}' opacity='0.85'><path d='M130,150 Q190,115 265,135 L325,175 Q300,235 255,255 L215,245 Q170,210 130,150 Z'/><path d='M265,280 Q320,285 355,345 L330,455 Q290,485 275,440 L255,355 Z'/><path d='M485,120 Q560,105 635,125 L665,175 Q620,205 565,205 L505,180 Z'/><path d='M515,225 Q595,215 645,275 L625,405 Q580,455 545,410 L505,310 Z'/><path d='M655,120 Q810,95 965,145 L1005,225 Q935,285 835,275 L735,240 L665,185 Z'/><path d='M895,355 Q970,340 1025,385 L1010,450 Q945,465 895,425 Z'/><circle cx='770' cy='255' r='16'/></g><path d='M0,300 H1200 M600,0 V600' stroke='${fill}' stroke-opacity='0.18' stroke-width='1' stroke-dasharray='6 8'/></svg>`;
+        return `background-image: url("data:image/svg+xml,${encodeURIComponent(svg)}"); background-size: 88% auto; background-position: center; background-repeat: no-repeat;`;
+      }
+      return '';
+    }
+
+    function computeEffectiveContrastRatio(renderState) {
+      const src = renderState.fsBackdropSource || 'shader';
+      const preset = SANCTUARY_SHADER_PRESETS[renderState.fsShaderPreset] || SANCTUARY_SHADER_PRESETS.deep_navy_waves;
+      const isLight = (src === 'shader' && preset.isLight) || (src === 'solid' && renderState.theme === 'clean_light' && renderState.fsBackdrop !== 'pure_black');
+      const dimmer = Math.max(0, Math.min(85, parseInt(renderState.fsDimmer, 10) || 0)) / 100;
+      let bgLum = isLight ? 0.88 : 0.015;
+      if (src === 'shader') {
+        bgLum = preset.baseLum * (isLight ? (1 - dimmer * 0.25) : (1 - dimmer));
+      } else if (src === 'media') {
+        const rawLum = typeof renderState.fsCustomBgLum === 'number' ? renderState.fsCustomBgLum : 0.22;
+        bgLum = rawLum * (1 - dimmer);
+      } else if (renderState.fsBackdrop === 'pure_black') {
+        bgLum = 0.0;
+      }
+      const textLum = isLight ? 0.012 : 0.96; // #0F172A vs #F8FAFC
+      const lighter = Math.max(bgLum, textLum);
+      const darker = Math.min(bgLum, textLum);
+      return Number(((lighter + 0.05) / (darker + 0.05)).toFixed(1));
+    }
+
+    // Lightweight Inline WebGL Fragment Shader Manager (Auto-pauses when OFF AIR -> 0% GPU!)
+    const activeShaderControllers = new WeakMap();
+
+    function syncSanctuaryShaderCanvas(fsRoot, renderState) {
+      if (!fsRoot) return;
+      const canvas = fsRoot.querySelector('canvas.fs-shader-canvas');
+      if (!canvas) return;
+      const presetKey = renderState.fsShaderPreset || 'deep_navy_waves';
+      const preset = SANCTUARY_SHADER_PRESETS[presetKey] || SANCTUARY_SHADER_PRESETS.deep_navy_waves;
+      const speedVal = Math.max(0, Math.min(100, parseInt(renderState.fsShaderSpeed, 10) ?? 32));
+      const isActive = fsRoot.classList.contains('fs-visible') || fsRoot.closest('#previewLowerThirdMount');
+
+      let ctrl = activeShaderControllers.get(canvas);
+      if (!ctrl) {
+        const gl = canvas.getContext('webgl', { alpha: false, antialias: false, powerPreference: 'low-power', preserveDrawingBuffer: false });
+        if (!gl) {
+          // Graceful CSS Fallback for PCs without WebGL acceleration
+          canvas.style.display = 'none';
+          const fallbackEl = fsRoot.querySelector('.fs-shader-fallback');
+          if (fallbackEl) {
+            fallbackEl.style.background = preset.cssFallback;
+            fallbackEl.classList.add('fs-css-fallback-drift');
+          }
+          return;
+        }
+        const vsSrc = 'attribute vec2 p;void main(){gl_Position=vec4(p,0.0,1.0);}';
+        const fsSrc = `precision mediump float;
+          uniform vec2 u_res;
+          uniform float u_time;
+          uniform vec3 u_c1;
+          uniform vec3 u_c2;
+          uniform vec3 u_c3;
+          void main() {
+            vec2 uv = gl_FragCoord.xy / u_res.xy;
+            float t = u_time * 0.22;
+            float w1 = sin(uv.x * 2.6 + t + cos(uv.y * 2.1 - t * 0.6)) * 0.5 + 0.5;
+            float w2 = cos(uv.y * 2.8 - t * 0.75 + sin(uv.x * 1.9 + t * 0.5)) * 0.5 + 0.5;
+            float w3 = sin((uv.x + uv.y) * 2.2 + t * 0.45) * 0.5 + 0.5;
+            vec3 col = mix(u_c1, u_c2, smoothstep(0.12, 0.88, w1 * 0.65 + w2 * 0.35));
+            col = mix(col, u_c3, smoothstep(0.28, 0.92, w2 * 0.55 + w3 * 0.45) * 0.68);
+            float vig = 1.0 - smoothstep(0.45, 1.15, length((uv - 0.5) * vec2(1.15, 1.0)));
+            col *= (0.86 + 0.14 * vig);
+            gl_FragColor = vec4(col, 1.0);
+          }`;
+        const compile = (type, src) => {
+          const s = gl.createShader(type);
+          gl.shaderSource(s, src);
+          gl.compileShader(s);
+          return s;
+        };
+        const prog = gl.createProgram();
+        gl.attachShader(prog, compile(gl.VERTEX_SHADER, vsSrc));
+        gl.attachShader(prog, compile(gl.FRAGMENT_SHADER, fsSrc));
+        gl.linkProgram(prog);
+        gl.useProgram(prog);
+        const buf = gl.createBuffer();
+        gl.bindBuffer(gl.ARRAY_BUFFER, buf);
+        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1,-1, 1,-1, -1,1, -1,1, 1,-1, 1,1]), gl.STATIC_DRAW);
+        const loc = gl.getAttribLocation(prog, 'p');
+        gl.enableVertexAttribArray(loc);
+        gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
+
+        ctrl = {
+          gl, prog,
+          uRes: gl.getUniformLocation(prog, 'u_res'),
+          uTime: gl.getUniformLocation(prog, 'u_time'),
+          uC1: gl.getUniformLocation(prog, 'u_c1'),
+          uC2: gl.getUniformLocation(prog, 'u_c2'),
+          uC3: gl.getUniformLocation(prog, 'u_c3'),
+          t: 1.4,
+          lastTs: 0,
+          rafId: 0,
+          running: false,
+          preset,
+          speed: speedVal / 40
+        };
+        activeShaderControllers.set(canvas, ctrl);
+      }
+
+      ctrl.preset = preset;
+      ctrl.speed = speedVal / 40;
+
+      const drawFrame = (ts) => {
+        if (!canvas.isConnected) { ctrl.running = false; return; }
+        const w = Math.max(320, Math.min(960, Math.round(canvas.clientWidth * 0.5) || 640));
+        const h = Math.max(180, Math.min(540, Math.round(canvas.clientHeight * 0.5) || 360));
+        if (canvas.width !== w || canvas.height !== h) {
+          canvas.width = w;
+          canvas.height = h;
+          ctrl.gl.viewport(0, 0, w, h);
+        }
+        if (ctrl.lastTs && ctrl.speed > 0) {
+          ctrl.t += Math.min(0.08, (ts - ctrl.lastTs) / 1000) * ctrl.speed;
+        }
+        ctrl.lastTs = ts;
+        ctrl.gl.uniform2f(ctrl.uRes, w, h);
+        ctrl.gl.uniform1f(ctrl.uTime, ctrl.t);
+        ctrl.gl.uniform3fv(ctrl.uC1, ctrl.preset.c1);
+        ctrl.gl.uniform3fv(ctrl.uC2, ctrl.preset.c2);
+        ctrl.gl.uniform3fv(ctrl.uC3, ctrl.preset.c3);
+        ctrl.gl.drawArrays(ctrl.gl.TRIANGLES, 0, 6);
+        if (ctrl.running && ctrl.speed > 0) {
+          ctrl.rafId = requestAnimationFrame(drawFrame);
+        } else {
+          ctrl.running = false;
+        }
+      };
+
+      if (isActive && ctrl.speed > 0) {
+        if (!ctrl.running) {
+          ctrl.running = true;
+          ctrl.lastTs = 0;
+          ctrl.rafId = requestAnimationFrame(drawFrame);
+        }
+      } else {
+        ctrl.running = false;
+        if (ctrl.rafId) cancelAnimationFrame(ctrl.rafId);
+        // Render 1 crisp static frame so paused or staged preview looks great at 0% GPU
+        drawFrame(performance.now());
+      }
+    }
+
+    function syncSanctuaryVideoPlayback(fsRoot) {
+      if (!fsRoot) return;
+      const vid = fsRoot.querySelector('video.fs-bg-video');
+      if (!vid) return;
+      const isActive = fsRoot.classList.contains('fs-visible') || Boolean(fsRoot.closest('#previewLowerThirdMount'));
+      if (isActive) {
+        if (vid.paused) vid.play().catch(() => {});
+      } else {
+        if (!vid.paused) vid.pause();
+      }
+    }
+
+    function buildSanctuaryBackdropLayerMarkup(renderState, isLightCanvas) {
+      const src = renderState.fsBackdropSource || 'shader';
+      const preset = SANCTUARY_SHADER_PRESETS[renderState.fsShaderPreset] || SANCTUARY_SHADER_PRESETS.deep_navy_waves;
+      const texKey = renderState.fsTexture || 'none';
+      const texOp = Math.max(0, Math.min(25, parseInt(renderState.fsTextureOpacity, 10) ?? 10)) / 100;
+      const dimmer = Math.max(0, Math.min(85, parseInt(renderState.fsDimmer, 10) ?? 24)) / 100;
+      const blurPx = Math.max(0, Math.min(24, parseInt(renderState.fsBgBlur, 10) || 0));
+      const texCss = getSanctuaryTextureCss(texKey, isLightCanvas);
+      const texMarkup = texCss && texOp > 0
+        ? `<div class="fs-texture-overlay" style="${texCss} opacity: ${texOp.toFixed(3)};"></div>`
+        : '';
+
+      if (src === 'solid') {
+        const showGrain = renderState.fsBackdrop === 'theme_solid' && !isLightCanvas;
+        const bgKey = `solid|${renderState.fsBackdrop}|${texKey}|${texOp}`;
+        return `<div class="fs-backdrop-layer" data-bg-key="${escapeHtml(bgKey)}">${showGrain ? '<div class="fs-grain-layer"></div>' : ''}${texMarkup}</div>`;
+      }
+
+      const scrimRgba = isLightCanvas
+        ? `rgba(248, 246, 240, ${(dimmer * 0.55).toFixed(3)})`
+        : `rgba(4, 6, 12, ${dimmer.toFixed(3)})`;
+      const vignetteCss = isLightCanvas
+        ? `background: radial-gradient(ellipse at center, ${scrimRgba} 0%, rgba(235,230,220,${Math.min(0.45, dimmer * 0.6).toFixed(3)}) 100%);`
+        : `background: radial-gradient(ellipse at center, ${scrimRgba} 0%, rgba(2,4,10,${Math.min(0.92, dimmer + 0.22).toFixed(3)}) 100%);`;
+
+      if (src === 'media' && renderState.fsCustomBgUrl) {
+        const mediaUrl = renderState.fsCustomBgUrl;
+        const isVid = renderState.fsCustomBgKind === 'video' || /\.(mp4|webm)(\?|$)/i.test(mediaUrl);
+        const filterStyle = blurPx > 0 ? `filter: blur(${blurPx}px); transform: scale(1.06);` : '';
+        const bgKey = `media|${mediaUrl}|${isVid ? 'v' : 'i'}|${blurPx}|${dimmer}|${texKey}|${texOp}`;
+        const mediaEl = isVid
+          ? `<video class="fs-bg-video absolute inset-0 w-full h-full object-cover" src="${escapeHtml(mediaUrl)}" autoplay loop muted playsinline style="${filterStyle}" onerror="this.style.display='none'"></video>`
+          : `<img class="absolute inset-0 w-full h-full object-cover" src="${escapeHtml(mediaUrl)}" alt="" style="${filterStyle}" onerror="this.style.display='none'" />`;
+        return `
+          <div class="fs-backdrop-layer" data-bg-key="${escapeHtml(bgKey)}" style="background: ${preset.cssFallback};">
+            ${mediaEl}
+            ${texMarkup}
+            <div class="fs-dimmer-scrim" style="${vignetteCss}"></div>
+          </div>
+        `;
+      }
+
+      // Default: Portable WebGL Sanctuary Shader Lab (with CSS animated gradient fallback)
+      const bgKey = `shader|${renderState.fsShaderPreset}|${blurPx}|${dimmer}|${texKey}|${texOp}`;
+      const blurStyle = blurPx > 0 ? `filter: blur(${blurPx}px); transform: scale(1.05);` : '';
+      return `
+        <div class="fs-backdrop-layer" data-bg-key="${escapeHtml(bgKey)}">
+          <div class="fs-shader-fallback absolute inset-0" style="background: ${preset.cssFallback}; ${blurStyle}"></div>
+          <canvas class="fs-shader-canvas" style="${blurStyle}"></canvas>
+          ${texMarkup}
+          <div class="fs-dimmer-scrim" style="${vignetteCss}"></div>
+        </div>
+      `;
+    }
+
     function buildFullScreenBibleMarkup(renderState, isFullOverlay, theme, fontStack, fontWeight, mainCitation, englishParallel, showSub, mediaMarkup) {
       const visibilityClass = renderState.isLive ? 'fs-visible' : 'fs-hidden';
       const animClass = `fs-anim-${renderState.animStyle || 'ae_stagger'}`;
@@ -3611,29 +4101,55 @@
         previewMult = stageW > 120 ? Math.max(0.18, Math.min(0.65, stageW / 1920)) : 0.29;
       }
       const eff = fsScale * previewMult;
-      const backdropStyle = getFullScreenBackdropStyle(renderState.theme, fsBackdrop, theme);
+      const fsBackdropSource = renderState.fsBackdropSource || 'shader';
+      const shaderPreset = SANCTUARY_SHADER_PRESETS[renderState.fsShaderPreset] || SANCTUARY_SHADER_PRESETS.deep_navy_waves;
+      const backdropStyle = fsBackdropSource === 'solid'
+        ? getFullScreenBackdropStyle(renderState.theme, fsBackdrop, theme)
+        : 'background: #070a12;';
       const isEditorial = fsLayout === 'editorial';
+      const isGlassPill = fsLayout === 'glass_pill';
+      const isFrostedCard = fsLayout === 'frosted_card';
+      const isAnchoredBar = fsLayout === 'anchored_bar';
+      const refPosition = (renderState.fsRefPosition === 'bottom' || isAnchoredBar) ? 'bottom' : 'top';
       const alignClasses = isEditorial ? 'items-start text-left' : 'items-center text-center';
       const enFontStack = resolveEnglishFontStack(renderState);
 
-      // Contrast-Safe Effective Ink Palette (Prevents Clean Light dark ink on Pure Black backdrop!)
-      const isLightCanvas = renderState.theme === 'clean_light' && fsBackdrop !== 'pure_black';
+      // Contrast-Safe Effective Ink Palette (WCAG AAA ≥ 15:1 across Dark Shaders, Light Linen & Custom Media!)
+      const isLightCanvas = (fsBackdropSource === 'shader' && shaderPreset.isLight)
+        || (fsBackdropSource === 'solid' && renderState.theme === 'clean_light' && fsBackdrop !== 'pure_black');
       const lightClass = isLightCanvas ? 'fs-theme-light' : '';
-      const effTheme = (renderState.theme === 'clean_light' && fsBackdrop === 'pure_black')
+      const effTheme = isLightCanvas
         ? {
             ...theme,
-            textColor: '#ffffff',
-            badgeColor: '#fbbf24',
-            subColor: '#cbd5e1',
-            accentBar: 'linear-gradient(90deg, #fbbf24 0%, #d97706 100%)'
+            textColor: '#0f172a',
+            badgeColor: '#0f172a',
+            subColor: '#334155',
+            accentBar: 'linear-gradient(90deg, #0f172a 0%, #334155 100%)'
           }
-        : theme;
+        : (fsBackdropSource === 'shader'
+            ? {
+                ...theme,
+                textColor: shaderPreset.textColor || '#f8fafc',
+                badgeColor: shaderPreset.refAccent || theme.badgeColor,
+                subColor: '#cbd5e1'
+              }
+            : (renderState.theme === 'clean_light' && (fsBackdrop === 'pure_black' || fsBackdropSource === 'media')
+                ? {
+                    ...theme,
+                    textColor: '#ffffff',
+                    badgeColor: '#fbbf24',
+                    subColor: '#cbd5e1',
+                    accentBar: 'linear-gradient(90deg, #fbbf24 0%, #d97706 100%)'
+                  }
+                : theme));
 
-      // Subtle text-shadow scrim on Frosted Glass so bright live camera feeds never wash out Scripture
-      const glassTextShadow = fsBackdrop === 'frosted_glass'
+      const backdropLayerMarkup = buildSanctuaryBackdropLayerMarkup(renderState, isLightCanvas);
+
+      // Subtle text-shadow scrim on motion/media/frosted backdrops so Telugu text pops cleanly from back row
+      const glassTextShadow = (fsBackdropSource !== 'solid' || fsBackdrop === 'frosted_glass')
         ? (isLightCanvas
-            ? 'text-shadow: 0 1px 12px rgba(255, 255, 255, 0.75);'
-            : 'text-shadow: 0 2px 18px rgba(0, 0, 0, 0.72);')
+            ? 'text-shadow: 0 1px 10px rgba(255, 255, 255, 0.55);'
+            : 'text-shadow: 0 2px 20px rgba(0, 0, 0, 0.55);')
         : '';
 
       // Split-Screen Book / Picture Collision Guard (Uses full TV title-safe area: 4.5% margins)
@@ -3659,12 +4175,11 @@
         const heroRefRem = (6.4 * eff).toFixed(3);
         const heroSubRem = (2.45 * eff).toFixed(3);
         const gapRem = (1.15 * eff).toFixed(3);
-        const showGrain = fsBackdrop === 'theme_solid' && !isLightCanvas;
 
         return `
           ${mediaMarkup}
           <div class="fs-wrapper ${animClass} ${lightClass} ${visibilityClass} absolute inset-0 z-10 flex flex-col justify-center ${alignClasses} pointer-events-none" data-fs-root="1" style="${backdropStyle} ${padStyle} ${glassTextShadow} font-family: ${fontStack};">
-            ${showGrain ? '<div class="fs-grain-layer"></div>' : ''}
+            ${backdropLayerMarkup}
             <div class="fs-inner-stage relative z-10 w-full flex flex-col ${alignClasses}" data-fs-content-key="${escapeHtml(contentKey)}" style="gap: ${gapRem}rem; transform-origin: ${isEditorial ? 'left center' : 'center center'};">
               <div class="fs-mask w-full">
                 <div class="fs-stage-ref" style="color: ${effTheme.textColor}; font-size: ${heroRefRem}rem; font-weight: ${fontWeight}; line-height: 1.42; letter-spacing: 0;">
@@ -3760,11 +4275,118 @@
       const teHtml = styleFullScreenVerseNumbers(teProcessed.html, effTheme.badgeColor);
       const enHtml = styleFullScreenVerseNumbers(enProcessed.html, effTheme.badgeColor);
 
-      // Build Reference Header by Selected Broadcast Layout (Zero cheap floating yellow bar, zero Telugu clipping!)
-      let refHeaderMarkup = '';
-      if (isEditorial) {
-        // LAYOUT A: SANCTUARY EDITORIAL — Big Ref Left, Parallel Right, Edge-to-Edge 1px Architectural Hairline
-        refHeaderMarkup = `
+      // Build Reference Header & Verse Body by Selected Separation Style (WCAG AAA, Zero Generic Bevels, Zero Telugu Clipping!)
+      const pillBg = isLightCanvas ? 'rgba(15, 23, 42, 0.90)' : 'rgba(9, 13, 24, 0.58)';
+      const pillTextColor = isLightCanvas ? '#fde68a' : effTheme.badgeColor;
+      const pillSubColor = isLightCanvas ? 'rgba(248, 250, 252, 0.84)' : effTheme.subColor;
+      const pillBorder = isLightCanvas ? 'rgba(255, 255, 255, 0.16)' : 'rgba(255, 255, 255, 0.24)';
+
+      const verseBodyMarkup = `
+        <div class="fs-mask w-full">
+          <div class="fs-stage-verse w-full flex flex-col ${alignClasses}" style="gap: ${dualGap}rem;">
+            ${(ltMode === 'ref_te' || isDual) ? `
+              <div style="color: ${effTheme.textColor}; font-size: ${teSize}rem; font-weight: ${teBodyWeight}; line-height: 1.48; letter-spacing: 0.005em;">
+                ${teHtml}
+              </div>
+            ` : ''}
+            ${(isEnOnly || isDual) ? `
+              <div
+                class="${isDual ? 'w-full' : ''}"
+                style="color: ${isDual ? dualEnColor : effTheme.textColor}; font-size: ${enSize}rem; font-weight: ${enBodyWeight}; line-height: 1.36; font-family: ${enFontStack}; ${isDual ? `padding-top: ${dualPadTop}rem; border-top: 1px solid ${hairlineColor};` : ''}"
+              >
+                ${enHtml}
+              </div>
+            ` : ''}
+          </div>
+        </div>
+      `;
+
+      let stageInnerMarkup = '';
+
+      if (isFrostedCard) {
+        // LAYOUT 2: TWO-ZONE FROSTED VERSE CARD (Zone 1: Reference Strip + 1px Hairline | Zone 2: Scripture Body)
+        const cardBg = isLightCanvas ? 'rgba(255, 255, 255, 0.72)' : 'rgba(10, 14, 24, 0.56)';
+        const cardHeaderBg = isLightCanvas ? 'rgba(15, 23, 42, 0.05)' : 'rgba(255, 255, 255, 0.045)';
+        const cardBorder = isLightCanvas ? 'rgba(15, 23, 42, 0.14)' : 'rgba(255, 255, 255, 0.18)';
+        const cardRadius = isFullOverlay ? '28px' : '12px';
+        const hdrPadY = (1.15 * eff).toFixed(3);
+        const hdrPadX = (2.6 * eff).toFixed(3);
+        const bodyPadY = (2.4 * eff).toFixed(3);
+        const bodyPadX = (3.0 * eff).toFixed(3);
+        stageInnerMarkup = `
+          <div
+            class="fs-frosted-card w-full max-w-[94%] flex flex-col overflow-visible"
+            style="background: ${cardBg}; border: 1px solid ${cardBorder}; border-radius: ${cardRadius};"
+          >
+            <div
+              class="fs-stage-ref w-full flex flex-wrap items-baseline justify-between gap-x-6 gap-y-1"
+              style="padding: ${hdrPadY}rem ${hdrPadX}rem; background: ${cardHeaderBg}; border-bottom: 1px solid ${hairlineColor}; border-top-left-radius: ${cardRadius}; border-top-right-radius: ${cardRadius};"
+            >
+              <span style="color: ${effTheme.badgeColor}; font-size: ${(baseRefRem * 0.84 * eff).toFixed(3)}rem; font-weight: 800; line-height: 1.40; letter-spacing: 0; font-family: ${headerPrimaryFont};">
+                ${escapeHtml(headerPrimaryText)}
+              </span>
+              ${showParallelInHeader ? `
+                <span class="font-semibold tracking-[0.10em] opacity-85" style="color: ${effTheme.subColor}; font-size: ${(baseSubRefRem * 0.90 * eff).toFixed(3)}rem; line-height: 1.38; font-family: ${headerSecondaryFont};">
+                  ${headerSecondaryHtml}
+                </span>
+              ` : ''}
+            </div>
+            <div style="padding: ${bodyPadY}rem ${bodyPadX}rem;">
+              ${verseBodyMarkup}
+            </div>
+          </div>
+        `;
+      } else if (isGlassPill) {
+        // LAYOUT 1: LIQUID GLASS REFERENCE PILL (Frosted Capsule + Top Specular Sheen, Top or Bottom)
+        const pillPadX = (2.2 * eff).toFixed(3);
+        const pillPadY = (0.62 * eff).toFixed(3);
+        const pillMargin = refPosition === 'bottom' ? `margin-top: ${headerGapBottom}rem;` : `margin-bottom: ${headerGapBottom}rem;`;
+        const refPillMarkup = `
+          <div class="fs-mask" style="${pillMargin}">
+            <div
+              class="fs-stage-ref fs-liquid-glass-pill inline-flex flex-wrap items-baseline justify-center gap-x-4 gap-y-1"
+              style="padding: ${pillPadY}rem ${pillPadX}rem; background: ${pillBg}; border: 1px solid ${pillBorder}; border-radius: 9999px;"
+            >
+              <span class="relative z-10" style="color: ${pillTextColor}; font-size: ${(baseRefRem * 0.86 * eff).toFixed(3)}rem; font-weight: 800; line-height: 1.40; letter-spacing: 0; font-family: ${headerPrimaryFont};">
+                ${escapeHtml(headerPrimaryText)}
+              </span>
+              ${showParallelInHeader ? `
+                <span class="relative z-10 font-semibold tracking-[0.10em] opacity-90" style="color: ${pillSubColor}; font-size: ${(baseSubRefRem * 0.88 * eff).toFixed(3)}rem; line-height: 1.38; font-family: ${headerSecondaryFont};">
+                  ${headerSecondaryHtml}
+                </span>
+              ` : ''}
+            </div>
+          </div>
+        `;
+        stageInnerMarkup = refPosition === 'bottom'
+          ? `${verseBodyMarkup}${refPillMarkup}`
+          : `${refPillMarkup}${verseBodyMarkup}`;
+      } else if (isAnchoredBar) {
+        // LAYOUT 3: BOTTOM-ANCHORED SANCTUARY BAR (Oversized Verse Centered + Quiet Grounded Ref Bar at Bottom)
+        const barPadX = (2.8 * eff).toFixed(3);
+        const barPadY = (0.72 * eff).toFixed(3);
+        const barRadius = isFullOverlay ? '16px' : '8px';
+        const refBarMarkup = `
+          <div class="fs-mask" style="margin-top: ${(2.0 * eff).toFixed(3)}rem;">
+            <div
+              class="fs-stage-ref fs-anchored-bar inline-flex flex-wrap items-baseline justify-center gap-x-5 gap-y-1"
+              style="padding: ${barPadY}rem ${barPadX}rem; background: ${pillBg}; border: 1px solid ${pillBorder}; border-radius: ${barRadius};"
+            >
+              <span style="color: ${pillTextColor}; font-size: ${(baseRefRem * 0.84 * eff).toFixed(3)}rem; font-weight: 800; line-height: 1.40; letter-spacing: 0; font-family: ${headerPrimaryFont};">
+                ${escapeHtml(headerPrimaryText)}
+              </span>
+              ${showParallelInHeader ? `
+                <span class="font-semibold tracking-[0.10em] opacity-85" style="color: ${pillSubColor}; font-size: ${(baseSubRefRem * 0.86 * eff).toFixed(3)}rem; line-height: 1.38; font-family: ${headerSecondaryFont};">
+                  ${headerSecondaryHtml}
+                </span>
+              ` : ''}
+            </div>
+          </div>
+        `;
+        stageInnerMarkup = `${verseBodyMarkup}${refBarMarkup}`;
+      } else if (isEditorial) {
+        // LAYOUT 4: PURE EDITORIAL RULE — Big Ref Left, Parallel Right, Edge-to-Edge 1px Architectural Hairline
+        const refHeaderMarkup = `
           <div class="fs-mask w-full">
             <div class="fs-stage-ref w-full flex flex-wrap items-baseline justify-between gap-x-6 gap-y-1">
               <span style="color: ${effTheme.badgeColor}; font-size: ${refSize}rem; font-weight: 800; line-height: 1.40; letter-spacing: 0; font-family: ${headerPrimaryFont};">
@@ -3782,12 +4404,15 @@
             style="height: 1px; background: ${hairlineColor}; margin-top: ${dividerMarginTop}rem; margin-bottom: ${dividerMarginBottom}rem; transform-origin: left center;"
           ></div>
         `;
+        stageInnerMarkup = refPosition === 'bottom'
+          ? `${verseBodyMarkup}<div class="w-full" style="margin-top: ${dividerMarginBottom}rem;">${refHeaderMarkup}</div>`
+          : `${refHeaderMarkup}${verseBodyMarkup}`;
       } else if (isTagHeader) {
-        // LAYOUT C: ARCHITECTURAL REF TAG — Precision Broadcast Tag, Generous Telugu Vertical Safe Box
         const tagPadX = (1.6 * eff).toFixed(3);
         const tagPadY = (0.55 * eff).toFixed(3);
-        refHeaderMarkup = `
-          <div class="fs-mask" style="margin-bottom: ${headerGapBottom}rem;">
+        const tagMargin = refPosition === 'bottom' ? `margin-top: ${headerGapBottom}rem;` : `margin-bottom: ${headerGapBottom}rem;`;
+        const refHeaderMarkup = `
+          <div class="fs-mask" style="${tagMargin}">
             <div
               class="fs-stage-ref inline-flex flex-wrap items-baseline justify-center gap-x-4 gap-y-1"
               style="padding: ${tagPadY}rem ${tagPadX}rem; background: ${tagSurfaceBg}; border: 1px solid ${tagBorderColor}; border-radius: ${isFullOverlay ? '8px' : '4px'};"
@@ -3803,10 +4428,11 @@
             </div>
           </div>
         `;
+        stageInnerMarkup = refPosition === 'bottom' ? `${verseBodyMarkup}${refHeaderMarkup}` : `${refHeaderMarkup}${verseBodyMarkup}`;
       } else {
-        // LAYOUT B: SANCTUARY CENTERED — Pure Typographic Hierarchy, Zero Yellow Bar
-        refHeaderMarkup = `
-          <div class="fs-mask w-full" style="margin-bottom: ${headerGapBottom}rem;">
+        const centeredMargin = refPosition === 'bottom' ? `margin-top: ${headerGapBottom}rem;` : `margin-bottom: ${headerGapBottom}rem;`;
+        const refHeaderMarkup = `
+          <div class="fs-mask w-full" style="${centeredMargin}">
             <div class="fs-stage-ref flex flex-wrap items-baseline justify-center gap-x-5 gap-y-1">
               <span style="color: ${effTheme.badgeColor}; font-size: ${refSize}rem; font-weight: 800; line-height: 1.40; letter-spacing: 0; font-family: ${headerPrimaryFont};">
                 ${escapeHtml(headerPrimaryText)}
@@ -3819,6 +4445,7 @@
             </div>
           </div>
         `;
+        stageInnerMarkup = refPosition === 'bottom' ? `${verseBodyMarkup}${refHeaderMarkup}` : `${refHeaderMarkup}${verseBodyMarkup}`;
       }
 
       return `
@@ -3828,29 +4455,9 @@
           data-fs-root="1"
           style="${backdropStyle} ${padStyle} ${glassTextShadow} font-family: ${fontStack};"
         >
-          ${showGrain ? '<div class="fs-grain-layer"></div>' : ''}
+          ${backdropLayerMarkup}
           <div class="fs-inner-stage relative z-10 w-full flex flex-col ${alignClasses}" data-fs-content-key="${escapeHtml(contentKey)}" style="transform-origin: ${isEditorial ? 'left center' : 'center center'};">
-            <!-- STAGE 1: PROMINENT SCRIPTURE REFERENCE (BIGGER & SEEN FIRST ON CHURCH TV) -->
-            ${refHeaderMarkup}
-
-            <!-- STAGE 2: SCRIPTURE VERSE BODY (MAX TV READABILITY, OPTICALLY BALANCED) -->
-            <div class="fs-mask w-full">
-              <div class="fs-stage-verse w-full flex flex-col ${alignClasses}" style="gap: ${dualGap}rem;">
-                ${(ltMode === 'ref_te' || isDual) ? `
-                  <div style="color: ${effTheme.textColor}; font-size: ${teSize}rem; font-weight: ${teBodyWeight}; line-height: 1.48; letter-spacing: 0.005em;">
-                    ${teHtml}
-                  </div>
-                ` : ''}
-                ${(isEnOnly || isDual) ? `
-                  <div
-                    class="${isDual ? 'w-full' : ''}"
-                    style="color: ${isDual ? dualEnColor : effTheme.textColor}; font-size: ${enSize}rem; font-weight: ${enBodyWeight}; line-height: 1.36; font-family: ${enFontStack}; ${isDual ? `padding-top: ${dualPadTop}rem; border-top: 1px solid ${hairlineColor};` : ''}"
-                  >
-                    ${enHtml}
-                  </div>
-                ` : ''}
-              </div>
-            </div>
+            ${stageInnerMarkup}
           </div>
         </div>
       `;
@@ -4188,6 +4795,17 @@
         presentationMode: state.presentationMode,
         fsLayout: state.fsLayout,
         fsBackdrop: state.fsBackdrop,
+        fsBackdropSource: state.fsBackdropSource,
+        fsShaderPreset: state.fsShaderPreset,
+        fsShaderSpeed: state.fsShaderSpeed,
+        fsTexture: state.fsTexture,
+        fsTextureOpacity: state.fsTextureOpacity,
+        fsDimmer: state.fsDimmer,
+        fsBgBlur: state.fsBgBlur,
+        fsRefPosition: state.fsRefPosition,
+        fsCustomBgUrl: (state.fsCustomBgUrl && !state.fsCustomBgUrl.startsWith('blob:')) ? state.fsCustomBgUrl : '',
+        fsCustomBgKind: state.fsCustomBgKind,
+        fsCustomBgLum: state.fsCustomBgLum,
         fsScalePercent: state.fsScalePercent,
         bibleOverlayLayout: state.bibleOverlayLayout,
         bibleSplitWidth: state.bibleSplitWidth,
@@ -4367,6 +4985,49 @@
       document.getElementById('wrapBibleSplitWidth')?.classList.toggle('hidden', (state.bibleOverlayLayout || 'split_right') === 'transparent_full');
       document.getElementById('styleGroupFullScreen')?.classList.toggle('hidden', !isFs);
       document.getElementById('pureBlackHintNote')?.classList.toggle('hidden', state.fsBackdrop !== 'pure_black');
+
+      // Contextual Sanctuary Backdrop Lab Visibility & Live WCAG AAA Contrast Meter
+      const fsSrc = state.fsBackdropSource || 'shader';
+      document.getElementById('fsBgPanelShader')?.classList.toggle('hidden', fsSrc !== 'shader');
+      document.getElementById('fsBgPanelMedia')?.classList.toggle('hidden', fsSrc !== 'media');
+      document.getElementById('fsBgPanelSolid')?.classList.toggle('hidden', fsSrc !== 'solid');
+      const lockRefPos = state.fsLayout === 'frosted_card' || state.fsLayout === 'anchored_bar';
+      document.getElementById('wrapFsRefPosition')?.classList.toggle('hidden', lockRefPos);
+
+      document.querySelectorAll('.fs-bgsrc-btn').forEach(btn => {
+        const active = btn.getAttribute('data-bg-src') === fsSrc;
+        btn.className = active
+          ? 'fs-bgsrc-btn px-2 py-0.5 rounded text-[10px] font-semibold bg-white text-zinc-950 transition'
+          : 'fs-bgsrc-btn px-2 py-0.5 rounded text-[10px] font-medium text-zinc-400 hover:text-white transition';
+      });
+      const rPos = state.fsRefPosition || 'top';
+      document.querySelectorAll('.fs-refpos-btn').forEach(btn => {
+        const active = btn.getAttribute('data-ref-pos') === rPos;
+        btn.className = active
+          ? 'fs-refpos-btn flex-1 py-0.5 rounded text-[10px] font-semibold bg-white text-zinc-950 transition'
+          : 'fs-refpos-btn flex-1 py-0.5 rounded text-[10px] font-medium text-zinc-400 hover:text-white transition';
+      });
+      document.querySelectorAll('.fs-shader-btn').forEach(btn => {
+        const active = btn.getAttribute('data-shader') === (state.fsShaderPreset || 'deep_navy_waves');
+        btn.classList.toggle('border-white', active);
+        btn.classList.toggle('ring-1', active);
+        btn.classList.toggle('ring-white/60', active);
+        btn.classList.toggle('border-white/10', !active);
+      });
+      const contrastBadge = document.getElementById('fsContrastBadge');
+      if (contrastBadge && typeof computeEffectiveContrastRatio === 'function') {
+        const ratio = computeEffectiveContrastRatio(state);
+        if (ratio >= 7.0) {
+          contrastBadge.textContent = `AAA ${ratio.toFixed(1)}:1 ✓`;
+          contrastBadge.className = 'text-[10px] tabular-nums font-semibold px-1.5 py-0.5 rounded bg-emerald-500/15 text-emerald-300 border border-emerald-500/30';
+        } else if (ratio >= 4.5) {
+          contrastBadge.textContent = `AA ${ratio.toFixed(1)}:1 — Raise Dimmer`;
+          contrastBadge.className = 'text-[10px] tabular-nums font-semibold px-1.5 py-0.5 rounded bg-amber-500/15 text-amber-300 border border-amber-500/35';
+        } else {
+          contrastBadge.textContent = `Low ${ratio.toFixed(1)}:1 — Raise Dimmer`;
+          contrastBadge.className = 'text-[10px] tabular-nums font-semibold px-1.5 py-0.5 rounded bg-rose-500/20 text-rose-300 border border-rose-500/40';
+        }
+      }
       document.getElementById('verseWorkbenchCard')?.classList.toggle('hidden', noVerseBody);
       document.getElementById('composerClauseStepGroup')?.classList.toggle('hidden', noVerseBody);
       document.getElementById('btnToggleBilingual')?.classList.toggle('hidden', state.lang === 'en');
@@ -5205,11 +5866,18 @@
           existingFs.className = nextFs.className;
           existingFs.style.cssText = nextFs.style.cssText;
 
-          // Sync film-grain layer presence
-          const existingGrain = existingFs.querySelector('.fs-grain-layer');
-          const nextGrain = nextFs.querySelector('.fs-grain-layer');
-          if (existingGrain && !nextGrain) existingGrain.remove();
-          if (!existingGrain && nextGrain) existingFs.insertBefore(nextGrain, existingFs.firstChild);
+          // Sync Sanctuary Backdrop Layer (WebGL Shader / Video / Image / Texture) ONLY when bg-key changes (zero blink on verse step!)
+          const existingBg = existingFs.querySelector('.fs-backdrop-layer');
+          const nextBg = nextFs.querySelector('.fs-backdrop-layer');
+          if (existingBg && nextBg) {
+            if (existingBg.getAttribute('data-bg-key') !== nextBg.getAttribute('data-bg-key')) {
+              existingBg.replaceWith(nextBg);
+            }
+          } else if (existingBg && !nextBg) {
+            existingBg.remove();
+          } else if (!existingBg && nextBg) {
+            existingFs.insertBefore(nextBg, existingFs.firstChild);
+          }
 
           // Replace inner stage when content/layout changed & fire crisp GSAP broadcast motion
           const existingInner = existingFs.querySelector('.fs-inner-stage');
@@ -5228,6 +5896,8 @@
           }
 
           autoFitFullScreenStage(container);
+          syncSanctuaryShaderCanvas(existingFs, state);
+          syncSanctuaryVideoPlayback(existingFs);
           const nowVisible = existingFs.classList.contains('fs-visible');
           if (nowVisible && (!wasVisible || contentChanged)) {
             playFullScreenGsapMotion(existingFs, state.animStyle);
@@ -5240,8 +5910,12 @@
       if (isFullScreen) {
         autoFitFullScreenStage(container);
         const fsRoot = container.querySelector('.fs-wrapper[data-fs-root="1"]');
-        if (fsRoot && fsRoot.classList.contains('fs-visible')) {
-          playFullScreenGsapMotion(fsRoot, state.animStyle);
+        if (fsRoot) {
+          syncSanctuaryShaderCanvas(fsRoot, state);
+          syncSanctuaryVideoPlayback(fsRoot);
+          if (fsRoot.classList.contains('fs-visible')) {
+            playFullScreenGsapMotion(fsRoot, state.animStyle);
+          }
         }
       }
     }
@@ -5720,6 +6394,13 @@
       // Full-Screen & Bible Scene Overlay controls
       setVal('selectFsLayout', state.fsLayout);
       setVal('selectFsBackdrop', state.fsBackdrop);
+      setVal('selectFsTexture', state.fsTexture || 'fine_grain');
+      setVal('rangeFsShaderSpeed', state.fsShaderSpeed ?? 32);
+      setTxt('fsShaderSpeedLabel', (state.fsShaderSpeed ?? 32) === 0 ? 'Paused' : `${state.fsShaderSpeed ?? 32}%`);
+      setVal('rangeFsDimmer', state.fsDimmer ?? 24);
+      setTxt('fsDimmerLabel', `${state.fsDimmer ?? 24}%`);
+      setVal('rangeFsBgBlur', state.fsBgBlur || 0);
+      setTxt('fsBgBlurLabel', `${state.fsBgBlur || 0}px`);
       setVal('rangeFsScale', state.fsScalePercent);
       setTxt('fsScaleValueLabel', `${state.fsScalePercent}%`);
       setChk('chkObsBibleAutoSwitch', state.obsBibleAutoSwitch);
@@ -6786,16 +7467,186 @@
         broadcastStateToOverlays();
       });
 
-      // Full-Screen Style Controls & Profile Backup
+      // Full-Screen Style Controls, Sanctuary Backdrop Lab & Profile Backup
       document.getElementById('selectFsLayout')?.addEventListener('change', (e) => {
         state.fsLayout = e.target.value;
-        renderStagePreview();
-        broadcastStateToOverlays();
+        renderAll();
+        scheduleSavePreferences();
       });
       document.getElementById('selectFsBackdrop')?.addEventListener('change', (e) => {
         state.fsBackdrop = e.target.value;
         renderAll();
+        scheduleSavePreferences();
       });
+      document.querySelectorAll('.fs-bgsrc-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          state.fsBackdropSource = btn.getAttribute('data-bg-src') || 'shader';
+          if (state.fsBackdropSource === 'media') refreshBridgeBackgroundsList();
+          renderAll();
+          scheduleSavePreferences();
+        });
+      });
+      document.querySelectorAll('.fs-refpos-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          state.fsRefPosition = btn.getAttribute('data-ref-pos') || 'top';
+          renderAll();
+          scheduleSavePreferences();
+        });
+      });
+      document.querySelectorAll('.fs-shader-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          state.fsShaderPreset = btn.getAttribute('data-shader') || 'deep_navy_waves';
+          state.fsBackdropSource = 'shader';
+          renderAll();
+          scheduleSavePreferences();
+        });
+      });
+      document.getElementById('rangeFsShaderSpeed')?.addEventListener('input', (e) => {
+        state.fsShaderSpeed = parseInt(e.target.value, 10) || 0;
+        const lbl = document.getElementById('fsShaderSpeedLabel');
+        if (lbl) lbl.textContent = state.fsShaderSpeed === 0 ? 'Paused' : `${state.fsShaderSpeed}%`;
+        renderStagePreview();
+        broadcastStateToOverlays();
+        scheduleSavePreferences();
+      });
+      document.getElementById('selectFsTexture')?.addEventListener('change', (e) => {
+        state.fsTexture = e.target.value || 'none';
+        renderStagePreview();
+        broadcastStateToOverlays();
+        scheduleSavePreferences();
+      });
+      document.getElementById('rangeFsDimmer')?.addEventListener('input', (e) => {
+        state.fsDimmer = parseInt(e.target.value, 10) || 0;
+        const lbl = document.getElementById('fsDimmerLabel');
+        if (lbl) lbl.textContent = `${state.fsDimmer}%`;
+        renderAll();
+        scheduleSavePreferences();
+      });
+      document.getElementById('rangeFsBgBlur')?.addEventListener('input', (e) => {
+        state.fsBgBlur = parseInt(e.target.value, 10) || 0;
+        const lbl = document.getElementById('fsBgBlurLabel');
+        if (lbl) lbl.textContent = `${state.fsBgBlur}px`;
+        renderStagePreview();
+        broadcastStateToOverlays();
+        scheduleSavePreferences();
+      });
+
+      // Portable Image / Video Background Loader (IndexedDB for ANY PC + Bridge ./backgrounds/ auto-discovery)
+      function sampleImageLuminance(imgSrc) {
+        return new Promise((resolve) => {
+          const img = new Image();
+          img.crossOrigin = 'anonymous';
+          img.onload = () => {
+            try {
+              const c = document.createElement('canvas');
+              c.width = 24; c.height = 14;
+              const ctx = c.getContext('2d');
+              ctx.drawImage(img, 0, 0, 24, 14);
+              const d = ctx.getImageData(0, 0, 24, 14).data;
+              let sum = 0, cnt = 0;
+              for (let i = 0; i < d.length; i += 4) {
+                const r = d[i] / 255, g = d[i + 1] / 255, b = d[i + 2] / 255;
+                sum += 0.2126 * r + 0.7152 * g + 0.0722 * b;
+                cnt++;
+              }
+              resolve(cnt ? (sum / cnt) : 0.2);
+            } catch (_) { resolve(0.2); }
+          };
+          img.onerror = () => resolve(0.2);
+          img.src = imgSrc;
+        });
+      }
+
+      async function refreshBridgeBackgroundsList() {
+        const listEl = document.getElementById('fsBgMediaList');
+        if (!listEl) return;
+        const apiBase = window.location.port === '8765' ? window.location.origin : 'http://localhost:8765';
+        try {
+          const res = await fetch(apiBase + '/backgrounds-list', { cache: 'no-store' });
+          if (!res.ok) throw new Error('offline');
+          const items = await res.json();
+          if (!Array.isArray(items) || !items.length) {
+            listEl.innerHTML = '<span class="text-zinc-500">Drop .mp4 / .webm / .jpg into ./backgrounds/ or click Upload above.</span>';
+            return;
+          }
+          listEl.innerHTML = items.map((it) => `
+            <button type="button" data-bg-url="${escapeHtml(apiBase + it.url)}" data-bg-kind="${escapeHtml(it.kind)}" class="fs-bridge-bg-chip px-2 py-0.5 rounded bg-white/[0.06] hover:bg-white/[0.15] border border-white/10 text-zinc-200 truncate max-w-[160px] transition" title="${escapeHtml(it.name)}">
+              ${it.kind === 'video' ? '▶ ' : '▣ '}${escapeHtml(it.name)}
+            </button>
+          `).join('');
+          listEl.querySelectorAll('.fs-bridge-bg-chip').forEach(chip => {
+            chip.addEventListener('click', async () => {
+              state.fsCustomBgUrl = chip.getAttribute('data-bg-url') || '';
+              state.fsCustomBgKind = chip.getAttribute('data-bg-kind') || 'image';
+              state.fsBackdropSource = 'media';
+              if (state.fsCustomBgKind === 'image') {
+                const lum = await sampleImageLuminance(state.fsCustomBgUrl);
+                state.fsCustomBgLum = lum;
+                if (lum > 0.35 && state.fsDimmer < 55) state.fsDimmer = 58;
+              } else {
+                state.fsCustomBgLum = 0.25;
+                if (state.fsDimmer < 40) state.fsDimmer = 45;
+              }
+              syncUiControlsFromState();
+              renderAll();
+              scheduleSavePreferences();
+              showToast(`Backdrop: ${chip.textContent.trim()}`);
+            });
+          });
+        } catch (_) {
+          listEl.innerHTML = '<span class="text-zinc-500">Standalone mode — use Upload Image / MP4 / WebM above (saved offline).</span>';
+        }
+      }
+      document.getElementById('btnRefreshBridgeBgs')?.addEventListener('click', refreshBridgeBackgroundsList);
+
+      document.getElementById('inputFsCustomBgFile')?.addEventListener('change', async (e) => {
+        const file = e.target.files && e.target.files[0];
+        if (!file) return;
+        const isVid = file.type.startsWith('video/') || /\.(mp4|webm)$/i.test(file.name);
+        if (isVid) {
+          state.fsCustomBgUrl = URL.createObjectURL(file);
+          state.fsCustomBgKind = 'video';
+          state.fsCustomBgLum = 0.25;
+          if (state.fsDimmer < 42) state.fsDimmer = 45;
+          state.fsBackdropSource = 'media';
+          try { await idbPutSetting('fs_custom_bg_blob_v1', { blob: file, kind: 'video', name: file.name }); } catch (_) {}
+          showToast(`Loaded Loop Video: ${file.name}`);
+        } else {
+          const optimized = await compressAndNormalizeImage(file, 1920, 0.86);
+          if (!optimized) return;
+          const lum = await sampleImageLuminance(optimized);
+          state.fsCustomBgUrl = optimized;
+          state.fsCustomBgKind = 'image';
+          state.fsCustomBgLum = lum;
+          if (lum > 0.35 && state.fsDimmer < 55) state.fsDimmer = 58;
+          state.fsBackdropSource = 'media';
+          try { await idbPutSetting('fs_custom_bg_blob_v1', { dataUrl: optimized, kind: 'image', lum, name: file.name }); } catch (_) {}
+          showToast(`Loaded Backdrop Image (Auto-Contrast Checked)`);
+        }
+        syncUiControlsFromState();
+        renderAll();
+        scheduleSavePreferences();
+        e.target.value = '';
+      });
+
+      // Hydrate portable IndexedDB custom background on boot (works on any PC without Bridge)
+      (async () => {
+        try {
+          const savedBg = await idbGetSetting('fs_custom_bg_blob_v1');
+          if (savedBg && !state.fsCustomBgUrl) {
+            if (savedBg.kind === 'video' && savedBg.blob instanceof Blob) {
+              state.fsCustomBgUrl = URL.createObjectURL(savedBg.blob);
+              state.fsCustomBgKind = 'video';
+            } else if (savedBg.dataUrl) {
+              state.fsCustomBgUrl = savedBg.dataUrl;
+              state.fsCustomBgKind = 'image';
+              if (typeof savedBg.lum === 'number') state.fsCustomBgLum = savedBg.lum;
+            }
+            if (state.fsBackdropSource === 'media') renderAll();
+          }
+        } catch (_) {}
+      })();
+
       document.getElementById('rangeFsScale')?.addEventListener('input', (e) => {
         state.fsScalePercent = parseInt(e.target.value, 10) || 100;
         const lbl = document.getElementById('fsScaleValueLabel');
@@ -7683,6 +8534,17 @@
       state.presentationMode = payload.presentationMode || state.presentationMode;
       state.fsLayout = payload.fsLayout || state.fsLayout;
       state.fsBackdrop = payload.fsBackdrop || state.fsBackdrop;
+      state.fsBackdropSource = payload.fsBackdropSource || state.fsBackdropSource || 'shader';
+      state.fsShaderPreset = payload.fsShaderPreset || state.fsShaderPreset || 'deep_navy_waves';
+      state.fsShaderSpeed = payload.fsShaderSpeed !== undefined ? payload.fsShaderSpeed : state.fsShaderSpeed;
+      state.fsTexture = payload.fsTexture || state.fsTexture || 'fine_grain';
+      state.fsTextureOpacity = payload.fsTextureOpacity !== undefined ? payload.fsTextureOpacity : state.fsTextureOpacity;
+      state.fsDimmer = payload.fsDimmer !== undefined ? payload.fsDimmer : state.fsDimmer;
+      state.fsBgBlur = payload.fsBgBlur !== undefined ? payload.fsBgBlur : state.fsBgBlur;
+      state.fsRefPosition = payload.fsRefPosition || state.fsRefPosition || 'top';
+      if (payload.fsCustomBgUrl !== undefined) state.fsCustomBgUrl = payload.fsCustomBgUrl;
+      if (payload.fsCustomBgKind) state.fsCustomBgKind = payload.fsCustomBgKind;
+      if (typeof payload.fsCustomBgLum === 'number') state.fsCustomBgLum = payload.fsCustomBgLum;
       state.fsScalePercent = payload.fsScalePercent || state.fsScalePercent;
       state.bibleOverlayLayout = payload.bibleOverlayLayout || state.bibleOverlayLayout;
       state.bibleSplitWidth = payload.bibleSplitWidth || state.bibleSplitWidth;
