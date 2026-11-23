@@ -75,7 +75,9 @@
     body[data-workspace="media"] #pickerColumnSection,
     body[data-workspace="media"] #rightTabsStrip,
     body[data-workspace="media"] #dockViewNavBar,
-    body[data-workspace="media"] #headerSearchBars {
+    body[data-workspace="media"] #headerSearchBars,
+    body[data-workspace="media"] #btnToggleLiveHeader,
+    body[data-workspace="media"] #btnPanicHide {
       display: none !important;
     }
     body[data-workspace="media"] #rightColumnSection {
@@ -1422,112 +1424,114 @@
           <!-- TAB PANEL 2B: SERMON PICTURE / BOOK OVERLAY SPLIT-SCREEN PRESENTER + OBS WEBSOCKET -->
           <div id="panelMedia" class="hidden flex-1 flex flex-col gap-2 text-xs">
             <!-- Top Control Bar: Live Status + OBS WebSocket Tally + Air Buttons -->
-            <div class="flex flex-wrap items-center justify-between gap-1.5">
+            <div class="flex flex-wrap items-center justify-between gap-2 pb-2 border-b border-white/[0.07]">
               <div class="flex items-center gap-1.5">
-                <span id="mediaLiveStatusPill" class="px-2 py-0.5 rounded-full text-[10px] font-mono font-bold bg-slate-800 text-slate-400 border border-slate-700">
+                <span id="mediaLiveStatusPill" class="px-2 py-0.5 rounded-md text-[10px] font-medium bg-white/[0.05] text-zinc-400 border border-white/[0.08]">
                   ○ OFF AIR
                 </span>
-                <span id="obsWsStatusPill" class="px-2 py-0.5 rounded-full text-[10px] font-mono font-semibold bg-slate-900 text-slate-400 border border-slate-800" title="OBS WebSocket 5.x (ws://127.0.0.1:4455)">
+                <span id="obsWsStatusPill" class="px-2 py-0.5 rounded-md text-[10px] font-medium bg-white/[0.03] text-zinc-400 border border-white/[0.07]" title="OBS WebSocket 5.x (ws://127.0.0.1:4455)">
                   OBS WS: Connecting…
                 </span>
               </div>
               <div class="flex items-center gap-1.5">
-                <button id="btnPresentMediaNow" type="button" class="px-3 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-bold shadow-sm transition" title="Show Picture & Switch to Book Overlay (Hotkey: Alt+P)">
+                <button id="btnPresentMediaNow" type="button" class="px-3 py-1.5 rounded-lg bg-white hover:bg-zinc-200 text-zinc-950 font-semibold text-xs transition" title="Show Picture & Switch to Book Overlay (Hotkey: Alt+P)">
                   ▶ Show Picture (Alt+P)
                 </button>
-                <button id="btnHideMediaNow" type="button" class="px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-rose-600 text-slate-300 hover:text-white border border-slate-700 transition" title="Hide Picture & Return to Center Stage">
+                <button id="btnHideMediaNow" type="button" class="px-2.5 py-1.5 rounded-lg bg-white/[0.05] hover:bg-white/[0.12] text-zinc-300 hover:text-white border border-white/[0.09] text-xs font-medium transition" title="Hide Picture & Return to Center Stage">
                   Hide
                 </button>
               </div>
             </div>
 
             <!-- Drag & Drop / Paste Zone + Active Staged Thumbnail + Title/Subtitle -->
-            <div id="mediaDropZone" class="p-2 rounded-xl bg-slate-950/90 border border-dashed border-slate-700 hover:border-amber-500/60 transition flex items-center gap-2.5">
-              <div class="w-16 h-16 rounded-lg overflow-hidden bg-slate-900 border border-slate-800 shrink-0 relative">
-                <img id="stagedMediaThumb" src="" alt="Staged Preview" class="w-full h-full object-cover object-top" />
+            <div id="mediaDropZone" class="p-2.5 rounded-xl bg-[#0b0b0e] border border-dashed border-white/[0.12] hover:border-white/30 transition flex items-center gap-3">
+              <div class="w-20 aspect-video rounded-md overflow-hidden bg-[#121216] border border-white/[0.08] shrink-0 relative">
+                <img id="stagedMediaThumb" src="" alt="Staged Preview" class="w-full h-full object-contain" />
               </div>
               <div class="flex-1 min-w-0 flex flex-col gap-1.5">
-                <input id="mediaTitleInput" type="text" value="William Carey (1761–1834)" placeholder="Name / Title (e.g. J Wilbur, William Carey)..." class="w-full bg-slate-900 border border-slate-700 focus:border-amber-400 rounded-md px-2 py-1 text-xs font-bold text-white outline-none" />
-                <input id="mediaSubtitleInput" type="text" value="Pioneer Bible Translator — Serampore Mission" placeholder="Optional Subtitle / Context (leave blank for Name only)..." class="w-full bg-slate-900 border border-slate-700 focus:border-amber-400 rounded-md px-2 py-1 text-[11px] text-slate-300 outline-none" />
+                <input id="mediaTitleInput" type="text" value="William Carey (1761–1834)" placeholder="Name / Title (e.g. J Wilbur, William Carey)..." class="w-full bg-[#121216] border border-white/[0.09] focus:border-white/30 rounded-md px-2.5 py-1.5 text-xs font-semibold text-zinc-100 outline-none" />
+                <input id="mediaSubtitleInput" type="text" value="Pioneer Bible Translator — Serampore Mission" placeholder="Optional Subtitle / Context..." class="w-full bg-[#121216] border border-white/[0.09] focus:border-white/30 rounded-md px-2.5 py-1 text-[11px] text-zinc-300 outline-none" />
               </div>
             </div>
 
-            <!-- Layout, Fit Mode, Focal Point & Width Controls -->
-            <div class="grid grid-cols-2 sm:grid-cols-12 gap-1.5 items-center">
-              <select id="selectMediaLayout" class="sm:col-span-5 bg-slate-950 border border-slate-700 rounded-lg px-2 py-1 text-[11px] text-white font-semibold outline-none">
-                <option value="split_right_full" selected>Book Overlay — Full-Height Right Split</option>
-                <option value="split_left_full">Full-Height Left Split Panel</option>
-                <option value="slide_right">Floating Right Card (Center Stage)</option>
-                <option value="slide_left">Floating Left Card (Center Stage)</option>
-                <option value="news_ots">Over-The-Shoulder Broadcast Box</option>
-                <option value="center_spotlight">Center Documentary Spotlight</option>
+            <!-- Layout, Fit Mode & Focal Point -->
+            <div class="grid grid-cols-1 sm:grid-cols-12 gap-1.5 items-center">
+              <select id="selectMediaLayout" class="sm:col-span-5 bg-[#111114] border border-white/10 rounded-lg px-2 py-1.5 text-[11px] text-zinc-100 font-medium outline-none">
+                <option value="split_right_full" selected>Book Overlay — Right Split</option>
+                <option value="split_left_full">Full-Height Left Split</option>
+                <option value="slide_right">Floating Right Card</option>
+                <option value="slide_left">Floating Left Card</option>
+                <option value="news_ots">Over-The-Shoulder Box</option>
+                <option value="center_spotlight">Center Spotlight</option>
               </select>
-              <select id="selectMediaFitMode" class="sm:col-span-4 bg-slate-950 border border-slate-700 rounded-lg px-2 py-1 text-[11px] text-slate-200 outline-none" title="Portrait Fill covers edge-to-edge; Book Fit shows full uncropped cover over frosted blur">
+              <select id="selectMediaFitMode" class="sm:col-span-4 bg-[#111114] border border-white/10 rounded-lg px-2 py-1.5 text-[11px] text-zinc-200 outline-none" title="Portrait Fill covers edge-to-edge; Book Fit shows full uncropped cover over frosted blur">
                 <option value="cover">Portrait Fill (Edge-to-Edge)</option>
                 <option value="contain_blur">Book Fit (Uncropped + Blur)</option>
               </select>
-              <select id="selectMediaFocalPos" class="sm:col-span-3 bg-slate-950 border border-slate-700 rounded-lg px-1.5 py-1 text-[11px] text-slate-200 outline-none" title="Vertical framing position in Portrait Fill mode">
+              <select id="selectMediaFocalPos" class="sm:col-span-3 bg-[#111114] border border-white/10 rounded-lg px-2 py-1.5 text-[11px] text-zinc-200 outline-none" title="Vertical framing position in Portrait Fill mode">
                 <option value="top" selected>Frame: Top</option>
                 <option value="center">Frame: Mid</option>
                 <option value="bottom">Frame: Low</option>
               </select>
             </div>
 
-            <!-- Split Width Slider + Caption Toggle + Upload / Wiki Search -->
-            <div class="flex flex-wrap items-center gap-2 text-[11px]">
-              <div class="flex items-center gap-1.5 flex-1 min-w-[140px]">
-                <span class="text-slate-400 whitespace-nowrap">Split Width:</span>
-                <input id="rangeMediaSplitWidth" type="range" min="26" max="44" value="34" class="w-full accent-amber-500" />
-                <span id="mediaSplitWidthLabel" class="font-mono text-amber-400 w-8">34%</span>
+            <!-- Split Width Slider + Clean Monochrome Toggles -->
+            <div class="flex flex-wrap items-center gap-3 text-[11px]">
+              <div class="flex items-center gap-2 flex-1 min-w-[160px]">
+                <span class="text-zinc-400 whitespace-nowrap">Split Width:</span>
+                <input id="rangeMediaSplitWidth" type="range" min="26" max="44" value="34" class="w-full accent-white" />
+                <span id="mediaSplitWidthLabel" class="tabular-nums text-zinc-200 w-8 text-right">34%</span>
               </div>
-              <label class="flex items-center gap-1 cursor-pointer text-slate-300">
-                <input id="chkMediaShowCaption" type="checkbox" checked class="rounded bg-slate-900 border-slate-700 text-amber-500" />
+              <label class="flex items-center gap-1.5 cursor-pointer text-zinc-300">
+                <input id="chkMediaShowCaption" type="checkbox" checked class="rounded bg-zinc-900 border-zinc-700 accent-white" />
                 <span>Show Name</span>
               </label>
-              <label class="flex items-center gap-1 cursor-pointer text-sky-300" title="Show a private OFF-AIR preview of the staged picture in the 16:9 monitor before clicking Show Picture">
-                <input id="chkMediaStagedPreview" type="checkbox" checked class="rounded bg-slate-900 border-slate-700 text-sky-400" />
+              <label class="flex items-center gap-1.5 cursor-pointer text-zinc-300" title="Show private OFF-AIR preview in the 16:9 monitor">
+                <input id="chkMediaStagedPreview" type="checkbox" checked class="rounded bg-zinc-900 border-zinc-700 accent-white" />
                 <span>Stage Preview</span>
               </label>
             </div>
 
-            <!-- Ingestion Bar: Drop/Upload + Wikipedia Fetch + Pin to Deck -->
+            <!-- Ingestion Bar: Upload + Wiki Fetch + Pin to Deck -->
             <div class="flex flex-wrap items-center gap-1.5">
-              <label class="px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-amber-300 border border-slate-700 cursor-pointer font-semibold">
-                <span>Upload / Drop</span>
+              <label class="px-2.5 py-1.5 rounded-lg bg-white/[0.06] hover:bg-white/[0.12] text-zinc-100 border border-white/[0.09] cursor-pointer text-[11px] font-medium transition">
+                <span>Upload / Paste</span>
                 <input id="inputMediaUploadFile" type="file" accept="image/*" class="hidden" />
               </label>
-              <input id="wikiImageSearchInput" type="text" placeholder="Wiki Search (e.g. J. Wilbur Chapman, Hudson Taylor)..." class="flex-1 min-w-[130px] bg-slate-950 border border-slate-700 rounded-lg px-2 py-1 text-white outline-none" />
-              <button id="btnSearchWikiImage" type="button" class="px-2.5 py-1 rounded-lg bg-sky-500/20 hover:bg-sky-500/30 text-sky-300 border border-sky-500/30 font-semibold">
+              <input id="wikiImageSearchInput" type="text" placeholder="Wiki Search (e.g. Hudson Taylor, William Carey)..." class="flex-1 min-w-[140px] bg-[#111114] border border-white/[0.09] focus:border-white/30 rounded-lg px-2.5 py-1.5 text-xs text-zinc-100 placeholder-zinc-500 outline-none" />
+              <button id="btnSearchWikiImage" type="button" class="px-2.5 py-1.5 rounded-lg bg-white/[0.06] hover:bg-white/[0.12] text-zinc-200 border border-white/[0.09] text-[11px] font-medium transition">
                 Fetch
               </button>
-              <button id="btnPinMediaToDeck" type="button" class="px-2.5 py-1 rounded-lg bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border border-amber-500/40 font-semibold" title="Save current picture to Sunday Sermon Slide Deck (IndexedDB)">
-                ＋ Pin Deck
+              <button id="btnPinMediaToDeck" type="button" class="px-2.5 py-1.5 rounded-lg bg-white/[0.06] hover:bg-white/[0.12] text-zinc-200 border border-white/[0.09] text-[11px] font-medium transition" title="Save current picture to Sermon Slide Deck">
+                + Pin Deck
               </button>
             </div>
 
-            <!-- OBS Auto-Scene Switcher Strip (Center Stage ↔ Book Overlay) -->
-            <div class="p-2 rounded-lg bg-slate-950/90 border border-slate-800 flex flex-wrap items-center justify-between gap-1.5 text-[11px]">
-              <label class="flex items-center gap-1.5 cursor-pointer font-semibold text-slate-200">
-                <input id="chkObsAutoSwitchScene" type="checkbox" checked class="rounded bg-slate-900 border-slate-700 text-emerald-500" />
-                <span>Auto-Switch OBS Scene:</span>
+            <!-- OBS Auto-Scene Switcher Strip (Tight, Aligned, Zero Empty Gap) -->
+            <div class="px-2.5 py-2 rounded-lg bg-[#0b0b0e] border border-white/[0.07] flex flex-wrap items-center gap-2 text-[11px]">
+              <label class="flex items-center gap-1.5 cursor-pointer font-medium text-zinc-300 shrink-0">
+                <input id="chkObsAutoSwitchScene" type="checkbox" checked class="rounded bg-zinc-900 border-zinc-700 accent-white" />
+                <span>OBS Scene Switch</span>
               </label>
-              <div class="flex flex-wrap items-center gap-1">
-                <input id="obsCameraSceneInput" type="text" value="Center Stage" list="obsSceneListDatalist" class="w-24 bg-slate-900 border border-slate-700 rounded px-1.5 py-0.5 text-[10px] text-slate-200 outline-none" title="Full Camera Scene Name" />
-                <span class="text-slate-500">↔</span>
-                <input id="obsPictureSceneInput" type="text" value="Book Overlay" list="obsSceneListDatalist" class="w-24 bg-slate-900 border border-slate-700 rounded px-1.5 py-0.5 text-[10px] text-amber-300 outline-none" title="Picture Split-Screen Scene Name" />
+              <div class="flex flex-wrap items-center gap-1.5 flex-1">
+                <input id="obsCameraSceneInput" type="text" value="Center Stage" list="obsSceneListDatalist" class="w-28 bg-[#121216] border border-white/10 rounded-md px-2 py-1 text-[11px] text-zinc-200 outline-none" title="Full Camera Scene Name" />
+                <span class="text-zinc-500">↔</span>
+                <input id="obsPictureSceneInput" type="text" value="Book Overlay" list="obsSceneListDatalist" class="w-28 bg-[#121216] border border-white/10 rounded-md px-2 py-1 text-[11px] text-zinc-100 outline-none" title="Picture Split-Screen Scene Name" />
                 <datalist id="obsSceneListDatalist"></datalist>
-                <button id="btnObsJumpCamera" type="button" class="px-1.5 py-0.5 rounded bg-slate-800 hover:bg-slate-700 text-[10px] text-slate-300 border border-slate-700" title="Switch OBS to Camera Scene Now">Cam</button>
-                <button id="btnObsJumpPicture" type="button" class="px-1.5 py-0.5 rounded bg-slate-800 hover:bg-amber-500/20 text-[10px] text-amber-300 border border-slate-700" title="Switch OBS to Book Overlay Scene Now">Book</button>
-                <button id="btnObsWsReconnect" type="button" class="px-1.5 py-0.5 rounded bg-slate-800 hover:bg-sky-500/20 text-[10px] text-sky-300 border border-slate-700" title="Reconnect OBS WebSocket (ws://127.0.0.1:4455)">↻</button>
+              </div>
+              <div class="flex items-center gap-1 shrink-0">
+                <button id="btnObsJumpCamera" type="button" class="px-2 py-1 rounded-md bg-white/[0.05] hover:bg-white/[0.11] text-[10px] text-zinc-300 border border-white/[0.08]" title="Switch OBS to Camera Scene Now">Cam</button>
+                <button id="btnObsJumpPicture" type="button" class="px-2 py-1 rounded-md bg-white/[0.05] hover:bg-white/[0.11] text-[10px] text-zinc-200 border border-white/[0.08]" title="Switch OBS to Book Overlay Scene Now">Book</button>
+                <button id="btnObsWsReconnect" type="button" class="px-2 py-1 rounded-md bg-white/[0.05] hover:bg-white/[0.11] text-[10px] text-zinc-300 border border-white/[0.08]" title="Reconnect OBS WebSocket">↻</button>
               </div>
             </div>
 
-            <!-- Sermon Slide Deck & Built-In Presets -->
-            <div class="flex items-center justify-between text-[10px] text-slate-400">
-              <span>Sermon Slide Deck & Presets (Click to Stage • Double-Click to Air • Alt+Shift+1..9)</span>
-              <button id="btnClearMediaDeck" type="button" class="text-rose-400 hover:text-rose-300">Clear Deck</button>
+            <!-- Sermon Slide Deck & Built-In Presets (Clean Uncropped 16:9 Thumbnails) -->
+            <div class="flex items-center justify-between text-[11px] text-zinc-500 pt-1">
+              <span>Slide Deck &amp; Presets (Click to Stage • Double-Click to Air)</span>
+              <button id="btnClearMediaDeck" type="button" class="text-zinc-500 hover:text-rose-400 transition">Clear Deck</button>
             </div>
-            <div id="mediaPresetGallery" class="grid grid-cols-3 gap-1.5 max-h-[115px] overflow-y-auto">
+            <div id="mediaPresetGallery" class="grid grid-cols-3 gap-2 max-h-[185px] overflow-y-auto pr-0.5">
               <!-- Populated dynamically -->
             </div>
           </div>
@@ -3294,7 +3298,7 @@
 
       const objPosStyle = focalPos === 'top' ? 'center top' : focalPos === 'bottom' ? 'center bottom' : 'center center';
       const stagedBadgeMarkup = isStagedGhost ? `
-        <div class="absolute top-2 left-2 z-30 px-2 py-0.5 rounded bg-sky-500/90 text-slate-950 font-mono text-[9px] font-extrabold uppercase tracking-wider shadow">
+        <div class="absolute top-2 left-2 z-30 px-2 py-0.5 rounded-md bg-black/80 text-zinc-200 text-[9px] font-semibold uppercase tracking-wider border border-white/15">
           STAGED PREVIEW • OFF AIR
         </div>
       ` : '';
@@ -6646,22 +6650,24 @@
         const mediaGallery = document.getElementById('mediaPresetGallery');
         if (!mediaGallery) return;
         const deckCards = (state.mediaDeck || []).map((item, idx) => `
-          <div class="relative group rounded-lg bg-slate-950 border border-amber-500/35 hover:border-amber-400 p-1 flex flex-col gap-1 transition">
+          <div class="relative group rounded-lg bg-[#0b0b0e] border border-white/10 hover:border-white/30 p-1.5 flex flex-col gap-1 transition">
             <button type="button" data-deck-idx="${idx}" class="deck-item-btn text-left flex flex-col gap-1 w-full" title="Click to Stage • Double-Click to Air (Alt+Shift+${idx + 1})">
-              <div class="relative w-full h-12 rounded overflow-hidden bg-slate-900">
-                <img src="${escapeHtml(item.imageSrc)}" alt="${escapeHtml(item.title)}" class="w-full h-full object-cover object-top" />
-                <span class="absolute top-0.5 left-0.5 px-1 rounded bg-black/75 text-[9px] font-mono font-bold text-amber-300">${idx + 1}</span>
+              <div class="relative w-full aspect-video rounded overflow-hidden bg-[#121216]">
+                <img src="${escapeHtml(item.imageSrc)}" alt="${escapeHtml(item.title)}" class="w-full h-full object-contain" />
+                <span class="absolute top-1 left-1 px-1.5 rounded bg-black/80 text-[9px] tabular-nums font-semibold text-zinc-200">${idx + 1}</span>
               </div>
-              <span class="text-[10px] font-bold text-amber-200 truncate">${escapeHtml(item.title || 'Slide ' + (idx + 1))}</span>
+              <span class="text-[11px] font-medium text-zinc-200 truncate">${escapeHtml(item.title || 'Slide ' + (idx + 1))}</span>
             </button>
-            <button type="button" data-deck-remove="${idx}" class="deck-remove-btn absolute top-1 right-1 w-4 h-4 rounded-full bg-black/80 hover:bg-rose-600 text-white text-[9px] font-bold opacity-0 group-hover:opacity-100 transition" title="Remove from Deck">✕</button>
+            <button type="button" data-deck-remove="${idx}" class="deck-remove-btn absolute top-1.5 right-1.5 w-4 h-4 rounded-full bg-black/80 hover:bg-rose-600 text-white text-[9px] font-bold opacity-0 group-hover:opacity-100 transition" title="Remove from Deck">✕</button>
           </div>
         `).join('');
 
         const presetCards = SERMON_MEDIA_PRESETS.map((p, idx) => `
-          <button type="button" data-media-preset="${idx}" class="media-preset-card p-1 rounded-lg bg-slate-950 border border-slate-800 hover:border-amber-500/60 text-left flex flex-col gap-1 transition" title="Click to Stage • Double-Click to Air">
-            <img src="${escapeHtml(p.svgDataUri)}" alt="${escapeHtml(p.title)}" class="w-full h-12 object-cover rounded" />
-            <span class="text-[10px] font-bold text-slate-300 truncate">${escapeHtml(p.title)}</span>
+          <button type="button" data-media-preset="${idx}" class="media-preset-card p-1.5 rounded-lg bg-[#0b0b0e] border border-white/[0.08] hover:border-white/25 text-left flex flex-col gap-1 transition" title="Click to Stage • Double-Click to Air">
+            <div class="w-full aspect-video rounded overflow-hidden bg-[#121216]">
+              <img src="${escapeHtml(p.svgDataUri)}" alt="${escapeHtml(p.title)}" class="w-full h-full object-contain" />
+            </div>
+            <span class="text-[11px] font-medium text-zinc-300 truncate">${escapeHtml(p.title)}</span>
           </button>
         `).join('');
 

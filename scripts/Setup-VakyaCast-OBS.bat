@@ -19,6 +19,7 @@ if exist "%SRC_DIR%\obs\obs_dock.html" copy /Y "%SRC_DIR%\obs\obs_dock.html" "%T
 if exist "%SRC_DIR%\obs\obs_overlay.html" copy /Y "%SRC_DIR%\obs\obs_overlay.html" "%TARGET_DIR%\obs_overlay.html" >nul
 if exist "%SRC_DIR%\obs\VakyaCast-OBS-Scene-Import.json" copy /Y "%SRC_DIR%\obs\VakyaCast-OBS-Scene-Import.json" "%TARGET_DIR%\VakyaCast-OBS-Scene-Import.json" >nul
 if exist "%SRC_DIR%\scripts\Start-Browser-To-OBS-Bridge.bat" copy /Y "%SRC_DIR%\scripts\Start-Browser-To-OBS-Bridge.bat" "%TARGET_DIR%\Start-Browser-To-OBS-Bridge.bat" >nul
+if exist "%SRC_DIR%\scripts\Bridge-Server.ps1" copy /Y "%SRC_DIR%\scripts\Bridge-Server.ps1" "%TARGET_DIR%\Bridge-Server.ps1" >nul
 if exist "%SRC_DIR%\scripts\Download-Full-Bibles-Offline.bat" copy /Y "%SRC_DIR%\scripts\Download-Full-Bibles-Offline.bat" "%TARGET_DIR%\Download-Full-Bibles-Offline.bat" >nul
 if exist "%SRC_DIR%\scripts\Build-Offline-Bible-Bundles.ps1" copy /Y "%SRC_DIR%\scripts\Build-Offline-Bible-Bundles.ps1" "%TARGET_DIR%\Build-Offline-Bible-Bundles.ps1" >nul
 if exist "%SRC_DIR%\scripts\Configure-OBS-Integration.ps1" copy /Y "%SRC_DIR%\scripts\Configure-OBS-Integration.ps1" "%TARGET_DIR%\Configure-OBS-Integration.ps1" >nul
