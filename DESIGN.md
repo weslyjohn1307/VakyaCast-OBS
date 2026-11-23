@@ -57,3 +57,11 @@ Telugu glyphs feature tall ascending vowel signs (*dirgham*, *gudi*, *etvam*) an
    - Passive clicks (History, Queue, Books/Chapters/Verses, Chapter Feed, Search) MUST load into **Preview (`staged`)** ONLY — never hijacking the live Church TV!
    - Updating **ON AIR (`live`)** happens ONLY via `Enter`, `PRESENT`, double-click / inline `▶` Play button, `Alt+1..9` Queue hotkeys, or explicit *Auto-Live*.
    - **History** is a first-class, dedicated panel (40 persistent items, Telugu snippet + timestamp, `Alt+Z` quick-back) strictly separated from **Queue (`Alt+1..9`)**.
+
+---
+
+## 5. Workspace Separation, Bible Scene Overlay & Contextual Settings
+1. **Strict Bible ↔ Media Separation:** `Bible` and `Media` are separate top-level workspaces (`body[data-workspace="bible" | "media"]`) with strict On-Air mutual exclusion — going live with Bible automatically takes Media off air, and vice versa.
+2. **3 Bible Output Modes:** `lower_third`, `scene_overlay` (OBS WebSocket 5.x auto-switch `Center Stage` ↔ `Bible Overlay` with `split_right`, `split_left`, or `transparent_full`), and `full_screen`.
+3. **Contextual / Conditional Settings:** Automatically hide controls that do nothing in the active mode (Lower-Third vs Scene Overlay vs Full-Screen settings, Emblem Icon only in Lower-Third Ref-Only, Sub-label hidden when language is English, Word Workbench hidden in Ref-Only/Whole Chapter, Media Split Width hidden on floating layouts).
+4. **Cross-Origin Preference Sync:** OBS Dock (`file://`) and Browser Bridge (`localhost:8765`) mirror settings through `/prefs` so defaults and edits never drift.

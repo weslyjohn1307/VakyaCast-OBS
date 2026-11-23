@@ -68,6 +68,41 @@
     body.dock-compact-mode #rightTabsStrip {
       display: none !important;
     }
+    /* Strict Top-Level Workspace Separation (Bible vs Media — Never Clash) */
+    body[data-workspace="bible"] #rightTabMedia {
+      display: none !important;
+    }
+    body[data-workspace="media"] #pickerColumnSection,
+    body[data-workspace="media"] #rightTabsStrip,
+    body[data-workspace="media"] #dockViewNavBar,
+    body[data-workspace="media"] #headerSearchBars {
+      display: none !important;
+    }
+    body[data-workspace="media"] #rightColumnSection {
+      grid-column: span 12 / span 12 !important;
+      display: grid !important;
+      grid-template-columns: repeat(12, minmax(0, 1fr)) !important;
+      gap: 0.75rem !important;
+      align-items: start;
+    }
+    body[data-workspace="media"] #stagePreviewCard {
+      grid-column: span 5 / span 5;
+      order: 2;
+    }
+    body[data-workspace="media"] #rightPanelsCard {
+      grid-column: span 7 / span 7;
+      order: 1;
+    }
+    @media (max-width: 1023px) {
+      body[data-workspace="media"] #rightColumnSection {
+        display: flex !important;
+        flex-direction: column !important;
+      }
+    }
+    body.dock-compact-mode[data-workspace="media"] #rightColumnSection {
+      display: flex !important;
+      flex-direction: column !important;
+    }
     #appRoot .bg-slate-900, #appRoot .bg-slate-900\/95, #appRoot .bg-slate-900\/90, #appRoot .bg-slate-900\/80 {
       background-color: #0f0f12 !important;
     }
@@ -481,15 +516,26 @@
 
     <!-- TOP HEADER / CALM BROADCAST TALLY BAR -->
     <header class="bg-[#0b0b0e]/95 border-b border-white/[0.08] px-3 py-2 flex flex-wrap items-center justify-between gap-2 sticky top-0 z-30 backdrop-blur-md">
-      <div class="flex items-center gap-2">
-        <div class="w-7 h-7 rounded-md bg-white/[0.06] border border-white/10 flex items-center justify-center text-zinc-100 shrink-0">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"/></svg>
+      <div class="flex items-center gap-2.5">
+        <div class="flex items-center gap-2">
+          <div class="w-7 h-7 rounded-md bg-white/[0.06] border border-white/10 flex items-center justify-center text-zinc-100 shrink-0">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"/></svg>
+          </div>
+          <h1 class="text-sm font-semibold tracking-tight text-zinc-100">VakyaCast</h1>
         </div>
-        <h1 class="text-sm font-semibold tracking-tight text-zinc-100">VakyaCast</h1>
+        <!-- TOP-LEVEL WORKSPACE SWITCHER: BIBLE vs MEDIA (COMPLETELY SEPARATED) -->
+        <div class="flex items-center bg-[#111114] border border-white/[0.09] rounded-lg p-0.5">
+          <button id="btnWorkspaceBible" type="button" data-ws-target="bible" class="ws-switch-btn px-2.5 py-1 rounded-md text-xs font-semibold bg-white text-zinc-950 transition">
+            Bible
+          </button>
+          <button id="btnWorkspaceMedia" type="button" data-ws-target="media" class="ws-switch-btn px-2.5 py-1 rounded-md text-xs font-medium text-zinc-400 hover:text-white transition">
+            Media
+          </button>
+        </div>
       </div>
 
       <!-- DUAL SEARCH BARS: 1) QUICK REFERENCE (/)  2) FULL-BIBLE WORD CONCORDANCE (Ctrl+F) -->
-      <div class="order-3 sm:order-2 w-full sm:flex-1 sm:max-w-xl sm:mx-2 grid grid-cols-1 md:grid-cols-12 gap-1.5">
+      <div id="headerSearchBars" class="order-3 sm:order-2 w-full sm:flex-1 sm:max-w-xl sm:mx-2 grid grid-cols-1 md:grid-cols-12 gap-1.5">
         <div class="md:col-span-6 relative flex items-center">
           <span class="absolute left-2.5 text-zinc-500 text-[11px] font-semibold pointer-events-none">/</span>
           <span id="quickParsePreview" class="hidden"></span>
@@ -581,12 +627,11 @@
       </div>
     </header>
 
-    <!-- OBS DOCK MODE: FOCUSED 1-AT-A-TIME VIEW SWITCHER -->
+    <!-- OBS DOCK MODE: FOCUSED 1-AT-A-TIME VIEW SWITCHER (BIBLE WORKSPACE) -->
     <nav id="dockViewNavBar" class="px-2.5 py-1.5 bg-[#0b0b0e] border-b border-white/[0.07] items-center gap-1">
       <button type="button" data-dock-target="live" class="dock-nav-btn flex-1 py-1.5 rounded-lg text-xs font-semibold bg-white text-zinc-950 transition">Live</button>
       <button type="button" data-dock-target="history" class="dock-nav-btn flex-1 py-1.5 rounded-lg text-xs font-medium text-zinc-400 hover:text-white transition">History</button>
       <button type="button" data-dock-target="queue" class="dock-nav-btn flex-1 py-1.5 rounded-lg text-xs font-medium text-zinc-400 hover:text-white transition">Queue</button>
-      <button type="button" data-dock-target="media" class="dock-nav-btn flex-1 py-1.5 rounded-lg text-xs font-medium text-zinc-400 hover:text-white transition">Media</button>
       <button type="button" data-dock-target="style" class="dock-nav-btn flex-1 py-1.5 rounded-lg text-xs font-medium text-zinc-400 hover:text-white transition">Look</button>
     </nav>
 
@@ -710,69 +755,56 @@
             </div>
           </div>
 
-          <!-- Direct Numeric Chapter / Start Verse / End Verse Spinners -->
-          <div class="mt-2.5 pt-2.5 border-t border-slate-800/80 flex flex-wrap items-center justify-between gap-2 text-xs">
-            <div class="flex flex-wrap items-center gap-2">
-              <div class="flex items-center gap-1">
-                <span class="text-slate-400">Chapter:</span>
-                <input id="numChapterInput" type="number" min="1" max="150" value="15" class="w-14 bg-slate-950 border border-slate-700 rounded px-2 py-1 text-center font-mono font-bold text-white focus:border-amber-500 outline-none" />
-              </div>
-              <div class="flex items-center gap-1">
-                <span class="text-slate-400">Verse:</span>
-                <input id="numVerseStartInput" type="number" min="1" max="176" value="4" class="w-14 bg-slate-950 border border-slate-700 rounded px-2 py-1 text-center font-mono font-bold text-amber-400 focus:border-amber-500 outline-none" />
-              </div>
-              <div class="flex items-center gap-1">
-                <span class="text-slate-400">To (End Verse):</span>
-                <input id="numVerseEndInput" type="number" min="1" max="176" placeholder="—" value="" class="w-16 bg-slate-950 border border-slate-700 rounded px-2 py-1 text-center font-mono font-bold text-emerald-400 focus:border-amber-500 outline-none" />
-              </div>
-              <button id="btnQuickRangePlus5" type="button" class="px-2 py-1 rounded bg-slate-800/90 hover:bg-slate-700 text-[11px] font-mono text-slate-300 border border-slate-700 transition" title="Add +5 verses to range">
-                +5v
-              </button>
-              <button id="btnQuickRangePlus10" type="button" class="px-2 py-1 rounded bg-slate-800/90 hover:bg-slate-700 text-[11px] font-mono text-slate-300 border border-slate-700 transition" title="Add +10 verses to range">
-                +10v
-              </button>
-            </div>
-
-            <div class="flex items-center gap-2">
-              <label class="flex items-center gap-1.5 cursor-pointer text-[11px] text-slate-300">
-                <input id="chkInstantLiveOnPick" type="checkbox" class="rounded bg-slate-900 border-slate-700 text-amber-500 focus:ring-amber-500" />
-                <span>Auto-Live on Verse Click</span>
-              </label>
-            </div>
+          <!-- HIDDEN LEGACY SPINNERS (Kept in DOM for backwards JS compatibility; Fast 3-Box Tab-Jump Bar handles numeric jumps cleanly) -->
+          <div class="hidden" aria-hidden="true">
+            <input id="numChapterInput" type="number" min="1" max="150" value="15" />
+            <input id="numVerseStartInput" type="number" min="1" max="176" value="4" />
+            <input id="numVerseEndInput" type="number" min="1" max="176" value="" />
+            <button id="btnQuickRangePlus5" type="button">+5v</button>
+            <button id="btnQuickRangePlus10" type="button">+10v</button>
           </div>
 
-          <!-- REQUIREMENT 4: PRESENTATION MODE BAR (LOWER-THIRD vs FULL SCREEN + CONTENT MODE) -->
-          <div class="mt-2.5 pt-2.5 border-t border-slate-800/80 flex flex-wrap items-center justify-between gap-2 text-xs">
+          <!-- PRESENTATION MODE BAR (LOWER-THIRD | SCENE OVERLAY | FULL SCREEN + CONTENT MODE) -->
+          <div class="mt-2 pt-2 border-t border-white/[0.07] flex flex-wrap items-center justify-between gap-1.5 text-xs">
             <div class="flex flex-wrap items-center gap-1.5">
-              <!-- Presentation Mode Switcher: Lower-Third vs Full Screen -->
-              <div class="inline-flex items-center rounded-lg bg-slate-950 p-0.5 border border-slate-700/80 mr-1">
-                <button id="btnPresModeLowerThird" type="button" data-pres-mode="lower_third" class="pres-mode-btn px-2.5 py-1 rounded-md text-[11px] font-bold bg-amber-500 text-slate-950 transition" title="Compact Lower-Third Overlay over Camera">
-                  ▬ Lower-Third
+              <!-- 3-Mode Output Switcher: Lower-Third | Scene Overlay | Full Screen -->
+              <div class="inline-flex items-center rounded-lg bg-[#0b0b0e] p-0.5 border border-white/[0.09] mr-0.5">
+                <button id="btnPresModeLowerThird" type="button" data-pres-mode="lower_third" class="pres-mode-btn px-2 py-1 rounded-md text-[11px] font-semibold bg-white text-zinc-950 transition" title="Compact Lower-Third Overlay over Camera">
+                  Lower-Third
                 </button>
-                <button id="btnPresModeFullScreen" type="button" data-pres-mode="full_screen" class="pres-mode-btn px-2.5 py-1 rounded-md text-[11px] font-bold text-slate-300 hover:text-white transition" title="Full-Screen Bible Verse Slide (Hotkey: Alt+F)">
-                  ⛶ Full Screen (Alt+F)
+                <button id="btnPresModeSceneOverlay" type="button" data-pres-mode="scene_overlay" class="pres-mode-btn px-2 py-1 rounded-md text-[11px] font-medium text-zinc-400 hover:text-white transition" title="Auto-Switch OBS to Bible Overlay Scene + Verse Panel">
+                  Scene Overlay
+                </button>
+                <button id="btnPresModeFullScreen" type="button" data-pres-mode="full_screen" class="pres-mode-btn px-2 py-1 rounded-md text-[11px] font-medium text-zinc-400 hover:text-white transition" title="Full-Screen Church TV Slide (Hotkey: Alt+F)">
+                  Full Screen
                 </button>
               </div>
-              <button id="ltModeBtnRefOnly" type="button" data-lt-mode="ref_only" class="lt-mode-btn px-2.5 py-1 rounded-lg text-xs font-bold border border-slate-700 bg-slate-800 text-slate-300 transition">
-                1. Reference Only
+              <button id="ltModeBtnRefOnly" type="button" data-lt-mode="ref_only" class="lt-mode-btn px-2 py-1 rounded-lg text-[11px] font-medium border border-white/[0.08] bg-white/[0.04] text-zinc-300 transition">
+                Ref Only
               </button>
-              <button id="ltModeBtnRefTe" type="button" data-lt-mode="ref_te" class="lt-mode-btn px-2.5 py-1 rounded-lg text-xs font-bold border border-amber-500 bg-amber-500 text-slate-950 transition">
-                2. Ref + Telugu OV (BSI)
+              <button id="ltModeBtnRefTe" type="button" data-lt-mode="ref_te" class="lt-mode-btn px-2 py-1 rounded-lg text-[11px] font-semibold border border-white bg-white text-zinc-950 transition">
+                Telugu OV
               </button>
-              <button id="ltModeBtnRefEn" type="button" data-lt-mode="ref_en" class="lt-mode-btn px-2.5 py-1 rounded-lg text-xs font-bold border border-slate-700 bg-slate-800 text-slate-300 transition">
-                3. Ref + English KJV
+              <button id="ltModeBtnRefEn" type="button" data-lt-mode="ref_en" class="lt-mode-btn px-2 py-1 rounded-lg text-[11px] font-medium border border-white/[0.08] bg-white/[0.04] text-zinc-300 transition">
+                English KJV
               </button>
-              <button id="ltModeBtnRefDual" type="button" data-lt-mode="ref_dual" class="lt-mode-btn px-2.5 py-1 rounded-lg text-xs font-bold border border-slate-700 bg-slate-800 text-slate-300 transition">
-                4. Ref + Bilingual (TE + EN)
+              <button id="ltModeBtnRefDual" type="button" data-lt-mode="ref_dual" class="lt-mode-btn px-2 py-1 rounded-lg text-[11px] font-medium border border-white/[0.08] bg-white/[0.04] text-zinc-300 transition">
+                Dual (TE+EN)
               </button>
             </div>
-            <div class="flex items-center gap-1.5">
-              <button id="btnPrevClause" type="button" class="px-2 py-1 rounded bg-slate-900 hover:bg-slate-800 text-[11px] font-mono text-sky-300 border border-slate-700 transition" title="Previous Clause/Part (Alt + Left Arrow)">
-                ◀ Part (Alt+←)
-              </button>
-              <button id="btnNextClause" type="button" class="px-2 py-1 rounded bg-slate-900 hover:bg-slate-800 text-[11px] font-mono text-sky-300 border border-slate-700 transition" title="Next Clause/Part (Alt + Right Arrow)">
-                Part (Alt+→) ▶
-              </button>
+            <div class="flex items-center gap-2">
+              <div id="composerClauseStepGroup" class="flex items-center gap-1">
+                <button id="btnPrevClause" type="button" class="px-1.5 py-0.5 rounded bg-white/[0.04] hover:bg-white/[0.09] text-[10px] text-zinc-300 border border-white/[0.08] transition" title="Previous Clause/Part (Alt + Left Arrow)">
+                  ◀ Part
+                </button>
+                <button id="btnNextClause" type="button" class="px-1.5 py-0.5 rounded bg-white/[0.04] hover:bg-white/[0.09] text-[10px] text-zinc-300 border border-white/[0.08] transition" title="Next Clause/Part (Alt + Right Arrow)">
+                  Part ▶
+                </button>
+              </div>
+              <label class="flex items-center gap-1.5 cursor-pointer text-[11px] text-zinc-400 hover:text-zinc-200">
+                <input id="chkInstantLiveOnPick" type="checkbox" class="rounded bg-zinc-900 border-zinc-700 accent-white" />
+                <span>Auto-Live</span>
+              </label>
             </div>
           </div>
         </div>
@@ -1138,7 +1170,7 @@
         </div>
 
         <!-- TABS FOR: 1) HISTORY (PRIORITY DEFAULT)  2) QUEUE (Alt+1..9)  3) LOOK & MOTION  4) MEDIA  5) BOOK NAMES -->
-        <div class="bg-[#0f0f12] border border-white/[0.08] rounded-xl p-3 flex-1 flex flex-col">
+        <div id="rightPanelsCard" class="bg-[#0f0f12] border border-white/[0.08] rounded-xl p-3 flex-1 flex flex-col">
           <div id="rightTabsStrip" class="flex flex-wrap items-center gap-1 border-b border-white/[0.07] pb-2 mb-3">
             <button id="rightTabHistory" type="button" class="px-2.5 py-1.5 rounded-lg text-xs font-semibold bg-white text-zinc-950 transition">
               History
@@ -1229,11 +1261,11 @@
               </div>
             </div>
 
-            <!-- Position, Animation, Font Studio, Auto-Hide -->
+            <!-- Core Controls: Screen Position (LT Only), Motion, Font, Auto-Hide -->
             <div class="grid grid-cols-2 gap-2.5">
-              <div>
-                <label for="selectScreenPosition" class="block text-[11px] text-slate-400 mb-1">Screen Position</label>
-                <select id="selectScreenPosition" class="w-full bg-slate-950 border border-slate-700 rounded-lg px-2 py-1.5 text-white outline-none">
+              <div id="wrapScreenPosition">
+                <label for="selectScreenPosition" class="block text-[11px] text-zinc-400 mb-1">Lower-Third Position</label>
+                <select id="selectScreenPosition" class="w-full bg-[#111114] border border-white/10 rounded-lg px-2 py-1.5 text-zinc-100 outline-none">
                   <option value="bottom-left">Bottom Left (Standard)</option>
                   <option value="bottom-center">Bottom Center (Wide Verse)</option>
                   <option value="bottom-right">Bottom Right</option>
@@ -1242,16 +1274,16 @@
                 </select>
               </div>
               <div>
-                <label for="selectAnimStyle" class="block text-[11px] text-slate-400 mb-1">Motion Choreography</label>
-                <select id="selectAnimStyle" class="w-full bg-slate-950 border border-slate-700 rounded-lg px-2 py-1.5 text-white outline-none">
+                <label for="selectAnimStyle" class="block text-[11px] text-zinc-400 mb-1">Motion Choreography</label>
+                <select id="selectAnimStyle" class="w-full bg-[#111114] border border-white/10 rounded-lg px-2 py-1.5 text-zinc-100 outline-none">
                   <option value="broadcast_mask">Broadcast Mask (Crisp Rise)</option>
                   <option value="sanctuary_dissolve">Sanctuary Dissolve (Calm Fade)</option>
                   <option value="editorial_wipe">Editorial Wipe (Clip Reveal)</option>
                 </select>
               </div>
               <div>
-                <label for="selectFontFamily" class="block text-[11px] text-slate-400 mb-1">Telugu & Broadcast Font</label>
-                <select id="selectFontFamily" class="w-full bg-slate-950 border border-slate-700 rounded-lg px-2 py-1.5 text-white outline-none">
+                <label for="selectFontFamily" class="block text-[11px] text-zinc-400 mb-1">Telugu &amp; Broadcast Font</label>
+                <select id="selectFontFamily" class="w-full bg-[#111114] border border-white/10 rounded-lg px-2 py-1.5 text-zinc-100 outline-none">
                   <option value="anek">Anek Telugu (Variable 300–800)</option>
                   <option value="ramabhadra">Ramabhadra (Heavy Display)</option>
                   <option value="suranna">Suranna (Classical Literary Serif)</option>
@@ -1267,8 +1299,8 @@
                 </select>
               </div>
               <div>
-                <label for="selectAutoHide" class="block text-[11px] text-slate-400 mb-1">Auto-Hide Timer</label>
-                <select id="selectAutoHide" class="w-full bg-slate-950 border border-slate-700 rounded-lg px-2 py-1.5 text-white outline-none">
+                <label for="selectAutoHide" class="block text-[11px] text-zinc-400 mb-1">Auto-Hide Timer</label>
+                <select id="selectAutoHide" class="w-full bg-[#111114] border border-white/10 rounded-lg px-2 py-1.5 text-zinc-100 outline-none">
                   <option value="0">Manual (Stay Until Hidden)</option>
                   <option value="6">Auto-Hide after 6 sec</option>
                   <option value="10">Auto-Hide after 10 sec</option>
@@ -1279,18 +1311,18 @@
               </div>
             </div>
 
-            <!-- Local PC Font Loader & Anek Width/Weight Controls -->
-            <div class="flex flex-wrap items-center justify-between gap-2 pt-1 border-t border-slate-800">
-              <button id="btnScanLocalPcFonts" type="button" class="px-2.5 py-1 rounded bg-slate-800 hover:bg-slate-700 text-amber-300 border border-slate-700 text-[11px] font-medium">
-                Scan Local PC Fonts
+            <!-- Local PC Font Loader & Weight Controls -->
+            <div class="flex flex-wrap items-center justify-between gap-2 pt-2 border-t border-white/[0.07]">
+              <button id="btnScanLocalPcFonts" type="button" class="px-2.5 py-1 rounded-md bg-white/[0.05] hover:bg-white/[0.10] text-zinc-200 border border-white/[0.09] text-[11px] font-medium">
+                Scan PC Fonts
               </button>
-              <label class="px-2.5 py-1 rounded bg-slate-800 hover:bg-slate-700 text-sky-300 border border-slate-700 text-[11px] font-medium cursor-pointer">
+              <label class="px-2.5 py-1 rounded-md bg-white/[0.05] hover:bg-white/[0.10] text-zinc-200 border border-white/[0.09] text-[11px] font-medium cursor-pointer">
                 <span>Load .TTF / .OTF</span>
                 <input id="inputCustomFontFile" type="file" accept=".ttf,.otf,.woff,.woff2" class="hidden" />
               </label>
               <div class="flex items-center gap-1.5">
-                <span class="text-[11px] text-slate-400">Weight:</span>
-                <select id="selectFontWeight" class="bg-slate-950 border border-slate-700 rounded px-1.5 py-0.5 text-[11px] text-white">
+                <span class="text-[11px] text-zinc-400">Weight:</span>
+                <select id="selectFontWeight" class="bg-[#111114] border border-white/10 rounded-md px-1.5 py-0.5 text-[11px] text-zinc-100">
                   <option value="600">600 SemiBold</option>
                   <option value="700">700 Bold</option>
                   <option value="800" selected>800 ExtraBold</option>
@@ -1298,47 +1330,77 @@
               </div>
             </div>
 
-            <!-- Scale & Icon Emblem Toggle -->
-            <div class="flex flex-wrap items-center justify-between gap-3 pt-1 border-t border-slate-800">
+            <!-- CONTEXTUAL GROUP A: LOWER-THIRD OPTIONS (Hidden when Full-Screen or Scene Overlay is active) -->
+            <div id="styleGroupLowerThird" class="flex flex-wrap items-center justify-between gap-3 pt-2 border-t border-white/[0.07]">
               <div class="flex items-center gap-2 flex-1">
-                <label for="rangeBadgeScale" class="text-[11px] text-slate-400 whitespace-nowrap">LT Scale:</label>
-                <input id="rangeBadgeScale" type="range" min="80" max="150" value="105" class="w-full accent-amber-500" />
-                <span id="scaleValueLabel" class="text-[11px] font-mono text-amber-400 w-10">105%</span>
+                <label for="rangeBadgeScale" class="text-[11px] text-zinc-400 whitespace-nowrap">Lower-Third Scale:</label>
+                <input id="rangeBadgeScale" type="range" min="80" max="150" value="105" class="w-full accent-white" />
+                <span id="scaleValueLabel" class="text-[11px] tabular-nums text-zinc-200 w-10 text-right">105%</span>
               </div>
-              <label class="flex items-center gap-1.5 cursor-pointer text-[11px] text-slate-300">
-                <input id="chkShowBibleIcon" type="checkbox" checked class="rounded bg-slate-900 border-slate-700 text-amber-500" />
-                <span>Show Emblem Icon</span>
+              <label id="wrapShowBibleIcon" class="flex items-center gap-1.5 cursor-pointer text-[11px] text-zinc-300">
+                <input id="chkShowBibleIcon" type="checkbox" checked class="rounded bg-zinc-900 border-zinc-700 accent-white" />
+                <span>Emblem Icon</span>
               </label>
             </div>
 
-            <!-- Full-Screen Bible Mode Layout, Backdrop & Scale Controls -->
-            <div class="pt-2 border-t border-slate-800 flex flex-col gap-2">
+            <!-- CONTEXTUAL GROUP B: BIBLE SCENE OVERLAY OPTIONS (OBS Auto-Scene Switch: Center Stage ↔ Bible Overlay) -->
+            <div id="styleGroupSceneOverlay" class="hidden pt-2 border-t border-white/[0.07] flex flex-col gap-2">
               <div class="flex items-center justify-between">
-                <span class="text-[11px] font-bold uppercase tracking-wider text-sky-300">Full-Screen Bible Slide Options (Alt+F)</span>
-                <span class="text-[10px] font-mono text-slate-400">Reference First → Verse</span>
+                <span class="text-[11px] font-semibold text-zinc-200">Bible Scene Overlay (OBS Auto-Switch)</span>
+                <label class="flex items-center gap-1.5 cursor-pointer text-[11px] text-zinc-300">
+                  <input id="chkObsBibleAutoSwitch" type="checkbox" checked class="rounded bg-zinc-900 border-zinc-700 accent-white" />
+                  <span>Auto-Switch Scene</span>
+                </label>
               </div>
               <div class="grid grid-cols-2 gap-2">
                 <div>
-                  <label for="selectFsLayout" class="block text-[10px] text-slate-400 mb-0.5">Full-Screen Alignment</label>
-                  <select id="selectFsLayout" class="w-full bg-slate-950 border border-slate-700 rounded-lg px-2 py-1 text-[11px] text-white outline-none">
+                  <label for="obsBibleSceneInput" class="block text-[10px] text-zinc-400 mb-0.5">OBS Bible Scene Name</label>
+                  <input id="obsBibleSceneInput" type="text" value="Bible Overlay" list="obsSceneListDatalist" class="w-full bg-[#111114] border border-white/10 rounded-lg px-2 py-1 text-[11px] text-zinc-100 outline-none" />
+                </div>
+                <div>
+                  <label for="selectBibleOverlayLayout" class="block text-[10px] text-zinc-400 mb-0.5">Overlay Panel Position</label>
+                  <select id="selectBibleOverlayLayout" class="w-full bg-[#111114] border border-white/10 rounded-lg px-2 py-1 text-[11px] text-zinc-100 outline-none">
+                    <option value="split_right">Right Panel (Pastor Left)</option>
+                    <option value="split_left">Left Panel (Pastor Right)</option>
+                    <option value="transparent_full">Full Transparent Scrim</option>
+                  </select>
+                </div>
+              </div>
+              <div id="wrapBibleSplitWidth" class="flex items-center gap-2">
+                <label for="rangeBibleSplitWidth" class="text-[11px] text-zinc-400 whitespace-nowrap">Panel Width:</label>
+                <input id="rangeBibleSplitWidth" type="range" min="34" max="58" value="44" class="w-full accent-white" />
+                <span id="bibleSplitWidthLabel" class="text-[11px] tabular-nums text-zinc-200 w-10 text-right">44%</span>
+              </div>
+            </div>
+
+            <!-- CONTEXTUAL GROUP C: FULL-SCREEN TV OPTIONS (Hidden when Lower-Third or Scene Overlay is active) -->
+            <div id="styleGroupFullScreen" class="pt-2 border-t border-white/[0.07] flex flex-col gap-2">
+              <div class="flex items-center justify-between">
+                <span class="text-[11px] font-semibold text-zinc-200">Full-Screen TV Options (Alt+F)</span>
+                <span id="pureBlackHintNote" class="hidden text-[10px] text-amber-300">Accent color only — canvas Pure Black</span>
+              </div>
+              <div class="grid grid-cols-2 gap-2">
+                <div>
+                  <label for="selectFsLayout" class="block text-[10px] text-zinc-400 mb-0.5">TV Alignment</label>
+                  <select id="selectFsLayout" class="w-full bg-[#111114] border border-white/10 rounded-lg px-2 py-1 text-[11px] text-zinc-100 outline-none">
                     <option value="editorial">Sanctuary Editorial (Left + Hairline)</option>
                     <option value="centered">Sanctuary Centered (Pure Type)</option>
                     <option value="tag_header">Architectural Ref Tag (Centered)</option>
                   </select>
                 </div>
                 <div>
-                  <label for="selectFsBackdrop" class="block text-[10px] text-slate-400 mb-0.5">Full-Screen Backdrop</label>
-                  <select id="selectFsBackdrop" class="w-full bg-slate-950 border border-slate-700 rounded-lg px-2 py-1 text-[11px] text-white outline-none">
-                    <option value="theme_solid">Opaque Sanctuary Canvas</option>
-                    <option value="frosted_glass">Frosted Dark Camera Glass</option>
-                    <option value="pure_black">Solid Black (LED / Keying)</option>
+                  <label for="selectFsBackdrop" class="block text-[10px] text-zinc-400 mb-0.5">TV Backdrop</label>
+                  <select id="selectFsBackdrop" class="w-full bg-[#111114] border border-white/10 rounded-lg px-2 py-1 text-[11px] text-zinc-100 outline-none">
+                    <option value="theme_solid">Matte Sanctuary Canvas</option>
+                    <option value="frosted_glass">Frosted Camera Scrim</option>
+                    <option value="pure_black">Pure Black (LED / Keying)</option>
                   </select>
                 </div>
               </div>
               <div class="flex items-center gap-2">
-                <label for="rangeFsScale" class="text-[11px] text-slate-400 whitespace-nowrap">Full-Screen Size:</label>
-                <input id="rangeFsScale" type="range" min="75" max="135" value="100" class="w-full accent-sky-400" />
-                <span id="fsScaleValueLabel" class="text-[11px] font-mono text-sky-300 w-10">100%</span>
+                <label for="rangeFsScale" class="text-[11px] text-zinc-400 whitespace-nowrap">Text Size:</label>
+                <input id="rangeFsScale" type="range" min="75" max="135" value="100" class="w-full accent-white" />
+                <span id="fsScaleValueLabel" class="text-[11px] tabular-nums text-zinc-200 w-10 text-right">100%</span>
               </div>
             </div>
 
@@ -2161,10 +2223,15 @@
       history: [],
       // Phase 9: Full Bible, Concordance, Part-of-Verse Highlighting & Part-Verse Presentation
       ltDisplayMode: 'ref_te',          // 'ref_only' | 'ref_te' | 'ref_en' | 'ref_dual'
-      presentationMode: 'lower_third',  // 'lower_third' | 'full_screen'
+      presentationMode: 'lower_third',  // 'lower_third' | 'scene_overlay' | 'full_screen'
       fsLayout: 'editorial',            // 'editorial' | 'centered' | 'tag_header'
       fsBackdrop: 'theme_solid',        // 'theme_solid' | 'frosted_glass' | 'pure_black'
       fsScalePercent: 100,              // 75..135
+      // Bible Scene Overlay Mode (OBS Auto-Scene Switch: Center Stage ↔ Bible Overlay)
+      obsBibleAutoSwitch: true,
+      obsBibleScene: 'Bible Overlay',
+      bibleOverlayLayout: 'split_right', // 'split_right' | 'split_left' | 'transparent_full'
+      bibleSplitWidth: 44,               // 34..58 (% of 1920px canvas)
       workbenchActionMode: 'highlight', // 'highlight' | 'part_only'
       highlightColor: 'gold',           // 'gold' | 'cyan' | 'emerald' | 'crimson'
       selectedTeWordIndices: [],        // Array of 0-based word indices selected in Telugu verse
@@ -2297,6 +2364,8 @@
         fsLayout: state.fsLayout,
         fsBackdrop: state.fsBackdrop,
         fsScalePercent: state.fsScalePercent,
+        bibleOverlayLayout: state.bibleOverlayLayout,
+        bibleSplitWidth: state.bibleSplitWidth,
         workbenchActionMode: state.workbenchActionMode,
         highlightColor: state.highlightColor,
         appendClauseLetter: Boolean(state.appendClauseLetter),
@@ -2311,10 +2380,21 @@
         obsAutoSwitchScene: Boolean(state.obsAutoSwitchScene),
         obsCameraScene: state.obsCameraScene,
         obsPictureScene: state.obsPictureScene,
+        obsBibleAutoSwitch: Boolean(state.obsBibleAutoSwitch),
+        obsBibleScene: state.obsBibleScene,
+        bibleOverlayLayout: state.bibleOverlayLayout,
+        bibleSplitWidth: state.bibleSplitWidth,
         obsWsUrl: state.obsWsUrl,
         obsWsPassword: state.obsWsPassword,
         savedAt: Date.now()
       };
+    }
+
+    function normalizeAnimStyle(val) {
+      if (val === 'broadcast_mask' || val === 'sanctuary_dissolve' || val === 'editorial_wipe') return val;
+      if (val === 'spring_island' || val === 'pop') return 'sanctuary_dissolve';
+      if (val === 'wipe' || val === 'laser_draw') return 'editorial_wipe';
+      return 'broadcast_mask';
     }
 
     function applyPrefsObjectToState(prefs) {
@@ -2324,7 +2404,8 @@
         'showBilingual', 'rangeClickMode', 'instantLiveOnPick', 'theme', 'position',
         'animStyle', 'fontFamily', 'fontWeight', 'customFontFamilyName', 'autoHideSeconds',
         'scalePercent', 'showBibleIcon', 'ltDisplayMode', 'presentationMode',
-        'fsLayout', 'fsBackdrop', 'fsScalePercent', 'workbenchActionMode',
+        'fsLayout', 'fsBackdrop', 'fsScalePercent', 'obsBibleAutoSwitch', 'obsBibleScene',
+        'bibleOverlayLayout', 'bibleSplitWidth', 'workbenchActionMode',
         'highlightColor', 'appendClauseLetter', 'mediaTitle', 'mediaSubtitle',
         'mediaLayout', 'mediaFitMode', 'mediaFocalPos', 'mediaSplitWidth',
         'mediaShowCaption', 'mediaStagedPreview', 'obsAutoSwitchScene',
@@ -2333,6 +2414,7 @@
       keys.forEach((k) => {
         if (prefs[k] !== undefined) state[k] = prefs[k];
       });
+      state.animStyle = normalizeAnimStyle(state.animStyle);
     }
 
     function scheduleSavePreferences() {
@@ -2342,6 +2424,16 @@
       prefsSaveTimerId = setTimeout(async () => {
         const prefs = extractPersistablePrefs();
         safeSetStorage(STORAGE_KEY_PREFS, prefs);
+        // Mirror preferences across OBS Dock (file://) ↔ Chrome Bridge (localhost:8765)
+        try {
+          const prefsUrl = window.location.port === '8765' ? (window.location.origin + '/prefs') : 'http://localhost:8765/prefs';
+          fetch(prefsUrl, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(prefs),
+            mode: 'cors'
+          }).catch(() => {});
+        } catch (e) {}
         const db = await openBibleIndexedDB();
         if (db && db.objectStoreNames.contains('settings')) {
           try {
@@ -3600,6 +3692,100 @@
         return buildFullScreenBibleMarkup(renderState, isFullOverlay, theme, fontStack, fontWeight, mainCitation, englishParallel, showSub, mediaMarkup);
       }
 
+      // BIBLE SCENE OVERLAY MODE (OBS Auto-Scene Switch: Center Stage ↔ Bible Overlay)
+      if ((renderState.presentationMode || 'lower_third') === 'scene_overlay') {
+        const bLayout = renderState.bibleOverlayLayout || 'split_right';
+        if (bLayout === 'transparent_full') {
+          const transState = Object.assign({}, renderState, { fsBackdrop: 'frosted_glass' });
+          return buildFullScreenBibleMarkup(transState, isFullOverlay, theme, fontStack, fontWeight, mainCitation, englishParallel, showSub, mediaMarkup);
+        }
+        // Split Right or Split Left full-height broadcast panel over your OBS Bible Overlay scene
+        const visibilityClass = renderState.isLive ? 'fs-visible' : 'fs-hidden';
+        const animClass = `fs-anim-${renderState.animStyle || 'broadcast_mask'}`;
+        const fsScale = (renderState.fsScalePercent || 100) / 100;
+        let previewMult = 1.0;
+        if (!isFullOverlay) {
+          const previewEl = document.getElementById('previewLowerThirdMount');
+          const stageW = previewEl ? previewEl.clientWidth : 0;
+          previewMult = stageW > 120 ? Math.max(0.18, Math.min(0.65, stageW / 1920)) : 0.29;
+        }
+        const eff = fsScale * previewMult;
+        const panelW = Math.max(34, Math.min(58, parseInt(renderState.bibleSplitWidth, 10) || 44));
+        const isLeftPanel = bLayout === 'split_left';
+        const isLightCanvas = renderState.theme === 'clean_light';
+        const lightClass = isLightCanvas ? 'fs-theme-light' : '';
+        const panelBg = getFullScreenBackdropStyle(renderState.theme, 'theme_solid', theme);
+        const enFontStack = resolveEnglishFontStack(renderState);
+        const hairlineColor = isLightCanvas ? 'rgba(15, 23, 42, 0.14)' : 'rgba(255, 255, 255, 0.14)';
+        const edgeBorder = isLeftPanel
+          ? `border-right: 1px solid ${hairlineColor};`
+          : `border-left: 1px solid ${hairlineColor};`;
+        const teProcessed = buildProcessedVerseOverlayHtml(renderState.bookId, renderState.chapter, renderState.verseStart, renderState.verseEnd, renderState.wholeChapter, 'te', renderState);
+        const enProcessed = buildProcessedVerseOverlayHtml(renderState.bookId, renderState.chapter, renderState.verseStart, renderState.verseEnd, renderState.wholeChapter, 'en', renderState);
+        const isDual = ltMode === 'ref_dual';
+        const isEnOnly = ltMode === 'ref_en';
+        const primaryLen = isEnOnly ? enProcessed.charLength : (isDual ? Math.max(teProcessed.charLength, enProcessed.charLength) : teProcessed.charLength);
+
+        let baseRefRem = 3.20, baseSubRem = 1.40, baseTeRem = 2.65, baseEnRem = 2.15;
+        if (isDual) {
+          if (primaryLen <= 160) { baseRefRem = 2.95; baseTeRem = 2.35; baseEnRem = 1.85; }
+          else if (primaryLen <= 320) { baseRefRem = 2.60; baseTeRem = 1.95; baseEnRem = 1.55; }
+          else { baseRefRem = 2.30; baseTeRem = 1.65; baseEnRem = 1.32; }
+        } else {
+          if (primaryLen <= 150) { baseRefRem = 3.30; baseTeRem = 2.80; baseEnRem = 2.35; }
+          else if (primaryLen <= 320) { baseRefRem = 2.90; baseTeRem = 2.30; baseEnRem = 1.95; }
+          else { baseRefRem = 2.55; baseTeRem = 1.88; baseEnRem = 1.60; }
+        }
+        const headerPrimaryText = isEnOnly ? englishParallel : mainCitation;
+        const headerPrimaryFont = isEnOnly ? enFontStack : fontStack;
+        const teHtml = styleFullScreenVerseNumbers(teProcessed.html, theme.badgeColor);
+        const enHtml = styleFullScreenVerseNumbers(enProcessed.html, theme.badgeColor);
+        const dualEnColor = isLightCanvas ? '#1e293b' : '#f1f5f9';
+        const contentKey = [renderState.bookId, renderState.chapter, renderState.verseStart, renderState.verseEnd, renderState.wholeChapter, ltMode, bLayout, panelW].join('|');
+
+        return `
+          ${mediaMarkup}
+          <div
+            class="fs-wrapper ${animClass} ${lightClass} ${visibilityClass} absolute top-0 bottom-0 ${isLeftPanel ? 'left-0' : 'right-0'} z-10 flex flex-col justify-center items-start text-left pointer-events-none"
+            data-fs-root="1"
+            style="width: ${panelW}%; ${panelBg} ${edgeBorder} padding: 5% 4.5%; font-family: ${fontStack}; box-shadow: 0 0 48px rgba(0,0,0,0.65);"
+          >
+            ${!isLightCanvas ? '<div class="fs-grain-layer"></div>' : ''}
+            <div class="fs-inner-stage relative z-10 w-full flex flex-col items-start text-left" data-fs-content-key="${escapeHtml(contentKey)}" style="transform-origin: left center;">
+              <div class="fs-mask w-full">
+                <div class="fs-stage-ref w-full flex flex-col gap-0.5">
+                  <span style="color: ${theme.badgeColor}; font-size: ${(baseRefRem * eff).toFixed(3)}rem; font-weight: 800; line-height: 1.40; letter-spacing: 0; font-family: ${headerPrimaryFont};">
+                    ${escapeHtml(headerPrimaryText)}
+                  </span>
+                  ${(!isEnOnly && (showSub || isDual) && renderState.lang !== 'en') ? `
+                    <span class="font-semibold tracking-[0.10em] opacity-80" style="color: ${theme.subColor}; font-size: ${(baseSubRem * eff).toFixed(3)}rem; line-height: 1.35; font-family: ${enFontStack};">
+                      ${formatParallelRefHtml(englishParallel)}
+                    </span>
+                  ` : ''}
+                </div>
+              </div>
+              <div class="fs-stage-divider w-full" style="height: 1px; background: ${hairlineColor}; margin-top: ${(0.75 * eff).toFixed(3)}rem; margin-bottom: ${(1.15 * eff).toFixed(3)}rem; transform-origin: left center;"></div>
+              ${(ltMode !== 'ref_only' && !renderState.wholeChapter) ? `
+                <div class="fs-mask w-full">
+                  <div class="fs-stage-verse w-full flex flex-col items-start text-left" style="gap: ${(0.95 * eff).toFixed(3)}rem;">
+                    ${(ltMode === 'ref_te' || isDual) ? `
+                      <div style="color: ${theme.textColor}; font-size: ${(baseTeRem * eff).toFixed(3)}rem; font-weight: 700; line-height: 1.50; letter-spacing: 0;">
+                        ${teHtml}
+                      </div>
+                    ` : ''}
+                    ${(isEnOnly || isDual) ? `
+                      <div class="w-full" style="color: ${isDual ? dualEnColor : theme.textColor}; font-size: ${(baseEnRem * eff).toFixed(3)}rem; font-weight: 600; line-height: 1.38; font-family: ${enFontStack}; ${isDual ? `padding-top: ${(0.85 * eff).toFixed(3)}rem; border-top: 1px solid ${hairlineColor};` : ''}">
+                        ${enHtml}
+                      </div>
+                    ` : ''}
+                  </div>
+                </div>
+              ` : ''}
+            </div>
+          </div>
+        `;
+      }
+
       // Smart Collision Guard when Book Overlay Right Split Panel is active simultaneously with a Bible Lower-Third
       const splitW = Math.max(26, Math.min(44, parseInt(renderState.mediaSplitWidth, 10) || 34));
       const rightSplitActive = Boolean(renderState.mediaIsLive) && renderState.mediaLayout === 'split_right_full';
@@ -3808,6 +3994,8 @@
         fsLayout: state.fsLayout,
         fsBackdrop: state.fsBackdrop,
         fsScalePercent: state.fsScalePercent,
+        bibleOverlayLayout: state.bibleOverlayLayout,
+        bibleSplitWidth: state.bibleSplitWidth,
         workbenchActionMode: state.workbenchActionMode,
         highlightColor: state.highlightColor,
         selectedTeWordIndices: liveSrc.selectedTeWordIndices,
@@ -3958,17 +4146,35 @@
           : 'px-2 py-0.5 rounded text-[10px] font-medium border border-white/[0.08] bg-white/[0.03] text-zinc-400 transition';
       }
 
-      // Update Presentation Mode Switcher (Lower-Third vs Full Screen)
-      const btnPresLt = document.getElementById('btnPresModeLowerThird');
-      const btnPresFs = document.getElementById('btnPresModeFullScreen');
-      if (btnPresLt && btnPresFs) {
-        if (state.presentationMode === 'full_screen') {
-          btnPresFs.className = 'pres-mode-btn px-2.5 py-1 rounded-md text-[11px] font-semibold bg-white text-zinc-950 transition';
-          btnPresLt.className = 'pres-mode-btn px-2.5 py-1 rounded-md text-[11px] font-medium text-zinc-400 hover:text-white transition';
-        } else {
-          btnPresLt.className = 'pres-mode-btn px-2.5 py-1 rounded-md text-[11px] font-semibold bg-white text-zinc-950 transition';
-          btnPresFs.className = 'pres-mode-btn px-2.5 py-1 rounded-md text-[11px] font-medium text-zinc-400 hover:text-white transition';
-        }
+      // Update 3-Mode Presentation Switcher (Lower-Third | Scene Overlay | Full Screen) + Contextual Controls
+      const pm = state.presentationMode || 'lower_third';
+      document.querySelectorAll('.pres-mode-btn').forEach(btn => {
+        const active = btn.getAttribute('data-pres-mode') === pm;
+        btn.className = active
+          ? 'pres-mode-btn px-2 py-1 rounded-md text-[11px] font-semibold bg-white text-zinc-950 transition'
+          : 'pres-mode-btn px-2 py-1 rounded-md text-[11px] font-medium text-zinc-400 hover:text-white transition';
+      });
+
+      // Contextual / Conditional UI Visibility (Hide Irrelevant Controls Automatically!)
+      const isLt = pm === 'lower_third';
+      const isSceneOv = pm === 'scene_overlay';
+      const isFs = pm === 'full_screen';
+      const noVerseBody = state.ltDisplayMode === 'ref_only' || Boolean(state.wholeChapter);
+
+      document.getElementById('wrapScreenPosition')?.classList.toggle('hidden', !isLt);
+      document.getElementById('styleGroupLowerThird')?.classList.toggle('hidden', !isLt);
+      document.getElementById('wrapShowBibleIcon')?.classList.toggle('hidden', !(isLt && state.ltDisplayMode === 'ref_only'));
+      document.getElementById('styleGroupSceneOverlay')?.classList.toggle('hidden', !isSceneOv);
+      document.getElementById('wrapBibleSplitWidth')?.classList.toggle('hidden', (state.bibleOverlayLayout || 'split_right') === 'transparent_full');
+      document.getElementById('styleGroupFullScreen')?.classList.toggle('hidden', !isFs);
+      document.getElementById('pureBlackHintNote')?.classList.toggle('hidden', state.fsBackdrop !== 'pure_black');
+      document.getElementById('verseWorkbenchCard')?.classList.toggle('hidden', noVerseBody);
+      document.getElementById('composerClauseStepGroup')?.classList.toggle('hidden', noVerseBody);
+      document.getElementById('btnToggleBilingual')?.classList.toggle('hidden', state.lang === 'en');
+      const mediaSplitRow = document.getElementById('rangeMediaSplitWidth')?.closest('div');
+      if (mediaSplitRow) {
+        const isMediaSplit = state.mediaLayout === 'split_right_full' || state.mediaLayout === 'split_left_full';
+        mediaSplitRow.classList.toggle('hidden', !isMediaSplit);
       }
 
       // Update Picture Live Status Pill & Staged Thumbnail
@@ -4722,7 +4928,7 @@
       if (!container) return;
       const renderSrc = getLiveRenderState();
       const html = buildLowerThirdMarkup(renderSrc, isFullOverlay);
-      const isFullScreen = (state.presentationMode || 'lower_third') === 'full_screen';
+      const isFullScreen = (state.presentationMode || 'lower_third') === 'full_screen' || (state.presentationMode || 'lower_third') === 'scene_overlay';
       const existingFs = isFullScreen ? container.querySelector('.fs-wrapper[data-fs-root="1"]') : null;
 
       if (isFullScreen && existingFs) {
@@ -5168,6 +5374,8 @@
     }
 
     function presentLive() {
+      // Mutual Exclusion: Going LIVE with Bible automatically takes Media OFF AIR (never clash!)
+      state.mediaIsLive = false;
       state.isLive = true;
       state.liveProgram = snapshotStagedProgram();
       const top = state.history[0];
@@ -5185,14 +5393,24 @@
       }
       startAutoHideIfConfigured();
       renderAll();
+      // OBS WebSocket Auto-Scene Switch for Bible Scene Overlay mode (Center Stage → Bible Overlay)
+      if (state.presentationMode === 'scene_overlay' && state.obsBibleAutoSwitch && typeof obsWsConnected !== 'undefined' && obsWsConnected) {
+        const bibleScene = (state.obsBibleScene || 'Bible Overlay').trim();
+        if (bibleScene && typeof obsSwitchToScene === 'function') obsSwitchToScene(bibleScene);
+      }
       showToast(`ON AIR: ${(state.customOverride || getFormattedCitation())}`);
     }
 
     function hideLowerThird() {
+      const wasSceneOverlay = state.isLive && state.presentationMode === 'scene_overlay';
       state.isLive = false;
       clearAutoHideTimers();
       renderAll();
-      showToast('Lower-Third Hidden (OFF AIR)');
+      if (wasSceneOverlay && state.obsBibleAutoSwitch && typeof obsWsConnected !== 'undefined' && obsWsConnected) {
+        const camScene = (state.obsCameraScene || 'Center Stage').trim();
+        if (camScene && typeof obsSwitchToScene === 'function') obsSwitchToScene(camScene);
+      }
+      showToast('Bible Hidden (OFF AIR)');
     }
 
     function toggleLiveState() {
@@ -5249,11 +5467,16 @@
       setVal('selectHighlightColor', state.highlightColor);
       setChk('chkAppendClauseLetter', state.appendClauseLetter);
 
-      // Full-Screen Bible controls
+      // Full-Screen & Bible Scene Overlay controls
       setVal('selectFsLayout', state.fsLayout);
       setVal('selectFsBackdrop', state.fsBackdrop);
       setVal('rangeFsScale', state.fsScalePercent);
       setTxt('fsScaleValueLabel', `${state.fsScalePercent}%`);
+      setChk('chkObsBibleAutoSwitch', state.obsBibleAutoSwitch);
+      setVal('obsBibleSceneInput', state.obsBibleScene);
+      setVal('selectBibleOverlayLayout', state.bibleOverlayLayout);
+      setVal('rangeBibleSplitWidth', state.bibleSplitWidth);
+      setTxt('bibleSplitWidthLabel', `${state.bibleSplitWidth}%`);
 
       // Picture / Book Overlay & OBS WebSocket controls
       setVal('mediaTitleInput', state.mediaTitle);
@@ -5491,6 +5714,22 @@
 
       // Load persisted 40-item History from localStorage on boot
       loadPersistedHistory();
+      // Pull shared preferences from local HTTP Bridge if newer (keeps OBS Dock & Chrome 100% synced!)
+      try {
+        const prefsUrl = window.location.port === '8765' ? (window.location.origin + '/prefs') : 'http://localhost:8765/prefs';
+        fetch(prefsUrl, { mode: 'cors', cache: 'no-store' })
+          .then(r => (r && r.ok ? r.json() : null))
+          .then(remotePrefs => {
+            if (!remotePrefs || !remotePrefs.savedAt) return;
+            const localPrefs = safeGetStorage(STORAGE_KEY_PREFS, null);
+            if (!localPrefs || !localPrefs.savedAt || remotePrefs.savedAt > localPrefs.savedAt) {
+              applyPrefsObjectToState(remotePrefs);
+              safeSetStorage(STORAGE_KEY_PREFS, remotePrefs);
+              syncUiControlsFromState();
+              renderAll();
+            }
+          }).catch(() => {});
+      } catch (e) {}
 
       // 4-Step Navigator Tab Buttons & Live Chapter Feed Controls
       document.querySelectorAll('.nav-step-btn').forEach(btn => {
@@ -5994,6 +6233,29 @@
         }
         renderStagePreview();
       }
+      // Top-Level Workspace Switcher (Bible | Media — Completely Separated)
+      let lastBibleRightTab = 'history';
+      function setWorkspace(ws) {
+        const nextWs = ws === 'media' ? 'media' : 'bible';
+        document.body.dataset.workspace = nextWs;
+        document.querySelectorAll('.ws-switch-btn').forEach(b => {
+          const active = b.getAttribute('data-ws-target') === nextWs;
+          b.className = active
+            ? 'ws-switch-btn px-2.5 py-1 rounded-md text-xs font-semibold bg-white text-zinc-950 transition'
+            : 'ws-switch-btn px-2.5 py-1 rounded-md text-xs font-medium text-zinc-400 hover:text-white transition';
+        });
+        if (nextWs === 'media') {
+          if (activeRightTabName !== 'media') lastBibleRightTab = activeRightTabName;
+          activateRightTab('media');
+        } else {
+          activateRightTab(lastBibleRightTab === 'media' ? 'history' : lastBibleRightTab);
+        }
+      }
+      document.body.dataset.workspace = 'bible';
+      document.querySelectorAll('.ws-switch-btn').forEach(btn => {
+        btn.addEventListener('click', () => setWorkspace(btn.getAttribute('data-ws-target')));
+      });
+
       if (tabHistory) tabHistory.addEventListener('click', () => activateRightTab('history'));
       tabQueue.addEventListener('click', () => activateRightTab('queue'));
       tabStyle.addEventListener('click', () => activateRightTab('style'));
@@ -6234,16 +6496,41 @@
         }
       });
 
-      // Presentation Mode Switcher (Lower-Third vs Full Screen)
+      // Presentation Mode Switcher (Lower-Third | Scene Overlay | Full Screen)
       function setPresentationMode(nextMode) {
-        state.presentationMode = nextMode === 'full_screen' ? 'full_screen' : 'lower_third';
+        state.presentationMode = (nextMode === 'full_screen' || nextMode === 'scene_overlay') ? nextMode : 'lower_third';
         renderAll();
-        showToast(state.presentationMode === 'full_screen'
-          ? 'Mode: Full-Screen Bible Slide (Ref First → Verse)'
-          : 'Mode: Lower-Third Overlay');
+        const labelMap = {
+          lower_third: 'Mode: Lower-Third Overlay',
+          scene_overlay: 'Mode: Bible Scene Overlay (OBS Auto-Switch)',
+          full_screen: 'Mode: Full-Screen Church TV Slide'
+        };
+        showToast(labelMap[state.presentationMode]);
       }
       document.getElementById('btnPresModeLowerThird')?.addEventListener('click', () => setPresentationMode('lower_third'));
+      document.getElementById('btnPresModeSceneOverlay')?.addEventListener('click', () => setPresentationMode('scene_overlay'));
       document.getElementById('btnPresModeFullScreen')?.addEventListener('click', () => setPresentationMode('full_screen'));
+
+      // Bible Scene Overlay Controls
+      document.getElementById('chkObsBibleAutoSwitch')?.addEventListener('change', (e) => {
+        state.obsBibleAutoSwitch = e.target.checked;
+        scheduleSavePreferences();
+      });
+      document.getElementById('obsBibleSceneInput')?.addEventListener('input', (e) => {
+        state.obsBibleScene = e.target.value.trim() || 'Bible Overlay';
+        scheduleSavePreferences();
+      });
+      document.getElementById('selectBibleOverlayLayout')?.addEventListener('change', (e) => {
+        state.bibleOverlayLayout = e.target.value;
+        renderAll();
+      });
+      document.getElementById('rangeBibleSplitWidth')?.addEventListener('input', (e) => {
+        state.bibleSplitWidth = parseInt(e.target.value, 10) || 44;
+        const lbl = document.getElementById('bibleSplitWidthLabel');
+        if (lbl) lbl.textContent = `${state.bibleSplitWidth}%`;
+        renderStagePreview();
+        broadcastStateToOverlays();
+      });
 
       // Full-Screen Style Controls & Profile Backup
       document.getElementById('selectFsLayout')?.addEventListener('change', (e) => {
@@ -6253,8 +6540,7 @@
       });
       document.getElementById('selectFsBackdrop')?.addEventListener('change', (e) => {
         state.fsBackdrop = e.target.value;
-        renderStagePreview();
-        broadcastStateToOverlays();
+        renderAll();
       });
       document.getElementById('rangeFsScale')?.addEventListener('input', (e) => {
         state.fsScalePercent = parseInt(e.target.value, 10) || 100;
@@ -6307,6 +6593,9 @@
 
       // Wire Picture / Book Overlay Split-Screen Presenter Controls & Slide Deck
       function showPictureOnAir() {
+        // Mutual Exclusion: Going LIVE with Media automatically takes Bible OFF AIR (never clash!)
+        state.isLive = false;
+        clearAutoHideTimers();
         state.mediaTitle = (document.getElementById('mediaTitleInput')?.value || '').trim();
         state.mediaSubtitle = (document.getElementById('mediaSubtitleInput')?.value || '').trim();
         state.mediaIsLive = true;
@@ -6812,6 +7101,8 @@
       state.fsLayout = payload.fsLayout || state.fsLayout;
       state.fsBackdrop = payload.fsBackdrop || state.fsBackdrop;
       state.fsScalePercent = payload.fsScalePercent || state.fsScalePercent;
+      state.bibleOverlayLayout = payload.bibleOverlayLayout || state.bibleOverlayLayout;
+      state.bibleSplitWidth = payload.bibleSplitWidth || state.bibleSplitWidth;
       state.workbenchActionMode = payload.workbenchActionMode || state.workbenchActionMode;
       state.highlightColor = payload.highlightColor || state.highlightColor;
       state.selectedTeWordIndices = Array.isArray(payload.selectedTeWordIndices) ? payload.selectedTeWordIndices : [];
