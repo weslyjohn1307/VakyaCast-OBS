@@ -7,6 +7,7 @@ echo.
 
 set "TARGET_DIR=C:\OBS-VakyaCast"
 if not exist "%TARGET_DIR%" mkdir "%TARGET_DIR%"
+if not exist "%TARGET_DIR%\backgrounds" mkdir "%TARGET_DIR%\backgrounds"
 
 set "SRC_DIR=%~dp0.."
 if not exist "%SRC_DIR%\bible_lower_third_studio.html" (
