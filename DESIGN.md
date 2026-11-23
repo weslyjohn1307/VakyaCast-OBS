@@ -65,3 +65,26 @@ Telugu glyphs feature tall ascending vowel signs (*dirgham*, *gudi*, *etvam*) an
 2. **3 Bible Output Modes:** `lower_third`, `scene_overlay` (OBS WebSocket 5.x auto-switch `Center Stage` ↔ `Bible Overlay` with `split_right`, `split_left`, or `transparent_full`), and `full_screen`.
 3. **Contextual / Conditional Settings:** Automatically hide controls that do nothing in the active mode (Lower-Third vs Scene Overlay vs Full-Screen settings, Emblem Icon only in Lower-Third Ref-Only, Sub-label hidden when language is English, Word Workbench hidden in Ref-Only/Whole Chapter, Media Split Width hidden on floating layouts).
 4. **Cross-Origin Preference Sync:** OBS Dock (`file://`) and Browser Bridge (`localhost:8765`) mirror settings through `/prefs` so defaults and edits never drift.
+
+---
+
+## 6. Core Frontend & UX Architecture Principles (For All Future Sessions & Agents)
+Every fresh session or agent designing or modifying frontend/UX in VakyaCast LT MUST follow these 6 foundational engineering principles:
+
+1. **Fluid Container-Relative Typography (`cqi` / `clamp`) — Never Fixed Pixel Sizes on Variable Panels:**
+   - Broadcast media overlays and split panels vary in width (34% Split, 50% Split, 100% Full-Screen, or 16:9 Studio preview).
+   - Always declare `container-type: inline-size` on overlay panels and size captions/quotes fluidly with `clamp(..., Xcqi, ...)` + length scaling so text stays legible from 40+ feet on Church TVs at every panel width and matches pixel-for-pixel in the 16:9 preview.
+2. **Contextual Viewer & Conditional Controls:**
+   - Never display controls that have zero effect in the active mode or content type (e.g., hide Image Search/Crop in `Quote` mode; hide Split Width on floating/full-screen layouts; hide Lower-Third Position in Full-Screen mode).
+3. **Operational Hierarchy (4-Tier Workspace Order):**
+   - Structure every control workspace in strict live-operator priority:
+     - **Level 1 (Top):** Immediate Live Action (`Show On Air` / `Hide`, Live Status, Deck `Prev / Next`).
+     - **Level 2 (Center):** Primary Content inputs for the active mode (`Picture | Quote | Sermon Point | Map` or `Books | Chapters | Verses | Read`).
+     - **Level 3 (Collapsible Drawer):** Secondary framing, zoom, or OBS scene-routing controls tucked behind a 1-click progressive disclosure bar (`Framing & OBS Scene ▸`, `Highlight & Slice ▸`).
+     - **Level 4 (Bottom):** Saved Deck / History for fast recall.
+4. **Progressive Disclosure:**
+   - Tuck rare setup/utility actions into calm popovers (`Tools ▾`) or collapsible drawers so the live operator viewport stays calm and fits compact laptop heights (`1536×639`) and narrow OBS docks (`420px`) without clutter.
+5. **Church-Native Domain Language:**
+   - Never dump raw secular encyclopedic jargon (`clergyman`, `Anglican divine`, `vicar`, `curate`, `hymnographer`) onto a church screen. Always normalize into warm, congregation-understood language (`Missionary`, `Preacher`, `Evangelist`, `Bible Teacher`, `Hymn Writer`) or clean `Years Only (1703–1791)`.
+6. **Preview-First Safety & Mutual Exclusion:**
+   - Passive clicks stage into Preview only; Bible and Media are top-level separated workspaces with strict On-Air mutual exclusion.

@@ -1421,9 +1421,9 @@
             </div>
           </div>
 
-          <!-- TAB PANEL 2B: SERMON PICTURE / BOOK OVERLAY SPLIT-SCREEN PRESENTER + OBS WEBSOCKET -->
-          <div id="panelMedia" class="hidden flex-1 flex flex-col gap-2 text-xs">
-            <!-- Top Control Bar: Live Status + OBS WebSocket Tally + Air Buttons -->
+          <!-- MEDIA WORKSPACE: 4-TIER OPERATIONAL HIERARCHY (LIVE BAR → TYPE & CONTENT → COLLAPSIBLE FRAMING/OBS → DECK) -->
+          <div id="panelMedia" class="hidden flex-1 flex flex-col gap-2.5 text-xs">
+            <!-- LEVEL 1: IMMEDIATE LIVE ACTION BAR + DECK STEPPER -->
             <div class="flex flex-wrap items-center justify-between gap-2 pb-2 border-b border-white/[0.07]">
               <div class="flex items-center gap-1.5">
                 <span id="mediaLiveStatusPill" class="px-2 py-0.5 rounded-md text-[10px] font-medium bg-white/[0.05] text-zinc-400 border border-white/[0.08]">
@@ -1434,104 +1434,162 @@
                 </span>
               </div>
               <div class="flex items-center gap-1.5">
-                <button id="btnPresentMediaNow" type="button" class="px-3 py-1.5 rounded-lg bg-white hover:bg-zinc-200 text-zinc-950 font-semibold text-xs transition" title="Show Picture & Switch to Book Overlay (Hotkey: Alt+P)">
-                  ▶ Show Picture (Alt+P)
+                <div class="flex items-center bg-[#0b0b0e] border border-white/[0.08] rounded-lg p-0.5">
+                  <button id="btnMediaDeckPrev" type="button" class="px-2 py-1 rounded text-[11px] text-zinc-400 hover:text-white transition" title="Previous Slide in Deck">◀</button>
+                  <button id="btnMediaDeckNext" type="button" class="px-2 py-1 rounded text-[11px] text-zinc-400 hover:text-white transition" title="Next Slide in Deck">▶</button>
+                </div>
+                <button id="btnPresentMediaNow" type="button" class="px-3 py-1.5 rounded-lg bg-white hover:bg-zinc-200 text-zinc-950 font-semibold text-xs transition" title="Show On Air & Switch OBS Scene (Hotkey: Alt+P)">
+                  ▶ Show On Air (Alt+P)
                 </button>
-                <button id="btnHideMediaNow" type="button" class="px-2.5 py-1.5 rounded-lg bg-white/[0.05] hover:bg-white/[0.12] text-zinc-300 hover:text-white border border-white/[0.09] text-xs font-medium transition" title="Hide Picture & Return to Center Stage">
+                <button id="btnHideMediaNow" type="button" class="px-2.5 py-1.5 rounded-lg bg-white/[0.05] hover:bg-white/[0.12] text-zinc-300 hover:text-white border border-white/[0.09] text-xs font-medium transition" title="Hide & Return to Center Stage">
                   Hide
                 </button>
               </div>
             </div>
 
-            <!-- Drag & Drop / Paste Zone + Active Staged Thumbnail + Title/Subtitle -->
-            <div id="mediaDropZone" class="p-2.5 rounded-xl bg-[#0b0b0e] border border-dashed border-white/[0.12] hover:border-white/30 transition flex items-center gap-3">
-              <div class="w-20 aspect-video rounded-md overflow-hidden bg-[#121216] border border-white/[0.08] shrink-0 relative">
+            <!-- LEVEL 2: CONTEXTUAL MEDIA TYPE SWITCHER (Picture | Quote | Sermon Point | Map) -->
+            <div class="flex flex-wrap items-center justify-between gap-2">
+              <div class="inline-flex items-center bg-[#0b0b0e] border border-white/[0.09] rounded-lg p-0.5">
+                <button type="button" data-media-type="picture" class="media-type-btn px-2.5 py-1 rounded-md text-xs font-semibold bg-white text-zinc-950 transition">Picture</button>
+                <button type="button" data-media-type="quote" class="media-type-btn px-2.5 py-1 rounded-md text-xs font-medium text-zinc-400 hover:text-white transition">Quote</button>
+                <button type="button" data-media-type="point" class="media-type-btn px-2.5 py-1 rounded-md text-xs font-medium text-zinc-400 hover:text-white transition">Sermon Point</button>
+                <button type="button" data-media-type="map" class="media-type-btn px-2.5 py-1 rounded-md text-xs font-medium text-zinc-400 hover:text-white transition">Map / Diagram</button>
+              </div>
+              <button id="btnPinMediaToDeck" type="button" class="px-2.5 py-1 rounded-lg bg-white/[0.06] hover:bg-white/[0.12] text-zinc-200 border border-white/[0.09] text-[11px] font-medium transition" title="Save current slide to Sunday Sermon Deck">
+                + Pin to Deck
+              </button>
+            </div>
+
+            <!-- CONTEXTUAL INPUT BLOCK: QUOTE / POINT TEXT (Shown ONLY in Quote or Sermon Point mode) -->
+            <div id="mediaTextCardGroup" class="hidden flex flex-col gap-1.5 bg-[#0b0b0e] border border-white/[0.08] rounded-xl p-2.5">
+              <div id="wrapMediaPointLabel" class="hidden flex items-center gap-2">
+                <span class="text-[11px] text-zinc-400 shrink-0">Label:</span>
+                <input id="mediaPointLabelInput" type="text" value="Point 1" placeholder="Point 1 / Key Truth..." class="w-40 bg-[#121216] border border-white/[0.09] focus:border-white/30 rounded-md px-2 py-1 text-xs font-semibold text-zinc-100 outline-none" />
+              </div>
+              <div id="wrapMediaQuoteText">
+                <textarea id="mediaQuoteTextarea" rows="2" placeholder="Paste or type a sermon quote (English or Telugu)..." class="w-full bg-[#121216] border border-white/[0.09] focus:border-white/30 rounded-md px-2.5 py-1.5 text-xs text-zinc-100 placeholder-zinc-500 outline-none resize-none">Expect great things from God; attempt great things for God.</textarea>
+              </div>
+            </div>
+
+            <!-- PRIMARY STAGED CARD: THUMBNAIL + TITLE / CHURCH SUBTITLE + 1-CLICK SUBTITLE PILLS -->
+            <div id="mediaDropZone" class="p-2.5 rounded-xl bg-[#0b0b0e] border border-dashed border-white/[0.12] hover:border-white/30 transition flex items-start gap-3">
+              <div id="wrapMediaDropThumb" class="w-20 aspect-video rounded-md overflow-hidden bg-[#121216] border border-white/[0.08] shrink-0 relative mt-0.5">
                 <img id="stagedMediaThumb" src="" alt="Staged Preview" class="w-full h-full object-contain" />
               </div>
               <div class="flex-1 min-w-0 flex flex-col gap-1.5">
-                <input id="mediaTitleInput" type="text" value="William Carey (1761–1834)" placeholder="Name / Title (e.g. J Wilbur, William Carey)..." class="w-full bg-[#121216] border border-white/[0.09] focus:border-white/30 rounded-md px-2.5 py-1.5 text-xs font-semibold text-zinc-100 outline-none" />
-                <input id="mediaSubtitleInput" type="text" value="Pioneer Bible Translator — Serampore Mission" placeholder="Optional Subtitle / Context..." class="w-full bg-[#121216] border border-white/[0.09] focus:border-white/30 rounded-md px-2.5 py-1 text-[11px] text-zinc-300 outline-none" />
+                <input id="mediaTitleInput" type="text" value="William Carey" placeholder="Name / Author / Sermon Point Heading..." class="w-full bg-[#121216] border border-white/[0.09] focus:border-white/30 rounded-md px-2.5 py-1.5 text-xs font-semibold text-zinc-100 outline-none" />
+                <div class="flex flex-wrap items-center gap-1.5">
+                  <input id="mediaSubtitleInput" type="text" value="Missionary to India • 1761–1834" placeholder="Subtitle / Years (e.g. 1703–1791)..." class="flex-1 min-w-[140px] bg-[#121216] border border-white/[0.09] focus:border-white/30 rounded-md px-2.5 py-1 text-[11px] text-zinc-300 outline-none" />
+                  <div id="wrapMediaSubModePills" class="flex items-center gap-1 shrink-0">
+                    <button type="button" data-submode="role_years" class="media-submode-btn px-2 py-0.5 rounded-md text-[10px] font-semibold bg-white text-zinc-950 transition" title="Church Role + Life Years">Role + Years</button>
+                    <button type="button" data-submode="years" class="media-submode-btn px-2 py-0.5 rounded-md text-[10px] font-medium bg-white/[0.04] text-zinc-400 hover:text-white transition" title="Show Years Only (e.g. 1703–1791)">Years</button>
+                    <button type="button" data-submode="none" class="media-submode-btn px-2 py-0.5 rounded-md text-[10px] font-medium bg-white/[0.04] text-zinc-400 hover:text-white transition" title="Hide Subtitle (Name Only)">None</button>
+                  </div>
+                </div>
               </div>
             </div>
 
-            <!-- Layout, Fit Mode & Focal Point -->
-            <div class="grid grid-cols-1 sm:grid-cols-12 gap-1.5 items-center">
-              <select id="selectMediaLayout" class="sm:col-span-5 bg-[#111114] border border-white/10 rounded-lg px-2 py-1.5 text-[11px] text-zinc-100 font-medium outline-none">
-                <option value="split_right_full" selected>Book Overlay — Right Split</option>
-                <option value="split_left_full">Full-Height Left Split</option>
-                <option value="slide_right">Floating Right Card</option>
-                <option value="slide_left">Floating Left Card</option>
-                <option value="news_ots">Over-The-Shoulder Box</option>
-                <option value="center_spotlight">Center Spotlight</option>
-              </select>
-              <select id="selectMediaFitMode" class="sm:col-span-4 bg-[#111114] border border-white/10 rounded-lg px-2 py-1.5 text-[11px] text-zinc-200 outline-none" title="Portrait Fill covers edge-to-edge; Book Fit shows full uncropped cover over frosted blur">
-                <option value="cover">Portrait Fill (Edge-to-Edge)</option>
-                <option value="contain_blur">Book Fit (Uncropped + Blur)</option>
-              </select>
-              <select id="selectMediaFocalPos" class="sm:col-span-3 bg-[#111114] border border-white/10 rounded-lg px-2 py-1.5 text-[11px] text-zinc-200 outline-none" title="Vertical framing position in Portrait Fill mode">
-                <option value="top" selected>Frame: Top</option>
-                <option value="center">Frame: Mid</option>
-                <option value="bottom">Frame: Low</option>
-              </select>
-            </div>
-
-            <!-- Split Width Slider + Clean Monochrome Toggles -->
-            <div class="flex flex-wrap items-center gap-3 text-[11px]">
-              <div class="flex items-center gap-2 flex-1 min-w-[160px]">
-                <span class="text-zinc-400 whitespace-nowrap">Split Width:</span>
-                <input id="rangeMediaSplitWidth" type="range" min="26" max="44" value="34" class="w-full accent-white" />
-                <span id="mediaSplitWidthLabel" class="tabular-nums text-zinc-200 w-8 text-right">34%</span>
+            <!-- CONTEXTUAL IMAGE FINDER (Hidden in Quote / Sermon Point modes) -->
+            <div id="mediaImageSourceGroup" class="flex flex-col gap-1.5">
+              <div class="flex flex-wrap items-center gap-1.5">
+                <label class="px-2.5 py-1.5 rounded-lg bg-white/[0.06] hover:bg-white/[0.12] text-zinc-100 border border-white/[0.09] cursor-pointer text-[11px] font-medium transition shrink-0">
+                  <span>Upload / Ctrl+V</span>
+                  <input id="inputMediaUploadFile" type="file" accept="image/*" class="hidden" />
+                </label>
+                <div class="inline-flex items-center bg-[#0b0b0e] border border-white/[0.08] rounded-lg p-0.5 shrink-0">
+                  <button type="button" data-search-src="wiki" class="media-src-btn px-2 py-1 rounded text-[10px] font-semibold bg-white text-zinc-950 transition">Portraits</button>
+                  <button type="button" data-search-src="commons" class="media-src-btn px-2 py-1 rounded text-[10px] font-medium text-zinc-400 hover:text-white transition">Maps &amp; History</button>
+                  <button type="button" data-search-src="openverse" class="media-src-btn px-2 py-1 rounded text-[10px] font-medium text-zinc-400 hover:text-white transition">Illustrations</button>
+                </div>
+                <input id="wikiImageSearchInput" type="text" placeholder="Search (John Wesley, Galilee map, shepherd)..." class="flex-1 min-w-[140px] bg-[#111114] border border-white/[0.09] focus:border-white/30 rounded-lg px-2.5 py-1.5 text-xs text-zinc-100 placeholder-zinc-500 outline-none" />
+                <button id="btnSearchWikiImage" type="button" class="px-3 py-1.5 rounded-lg bg-white hover:bg-zinc-200 text-zinc-950 text-[11px] font-semibold transition shrink-0">
+                  Search
+                </button>
               </div>
-              <label class="flex items-center gap-1.5 cursor-pointer text-zinc-300">
-                <input id="chkMediaShowCaption" type="checkbox" checked class="rounded bg-zinc-900 border-zinc-700 accent-white" />
-                <span>Show Name</span>
-              </label>
-              <label class="flex items-center gap-1.5 cursor-pointer text-zinc-300" title="Show private OFF-AIR preview in the 16:9 monitor">
-                <input id="chkMediaStagedPreview" type="checkbox" checked class="rounded bg-zinc-900 border-zinc-700 accent-white" />
-                <span>Stage Preview</span>
-              </label>
+              <!-- 6-Image Contact Sheet Results (Appears only after searching) -->
+              <div id="mediaSearchResultsStrip" class="hidden grid grid-cols-6 gap-1.5 p-1.5 rounded-lg bg-[#0b0b0e] border border-white/[0.07]">
+                <!-- Populated dynamically -->
+              </div>
             </div>
 
-            <!-- Ingestion Bar: Upload + Wiki Fetch + Pin to Deck -->
-            <div class="flex flex-wrap items-center gap-1.5">
-              <label class="px-2.5 py-1.5 rounded-lg bg-white/[0.06] hover:bg-white/[0.12] text-zinc-100 border border-white/[0.09] cursor-pointer text-[11px] font-medium transition">
-                <span>Upload / Paste</span>
-                <input id="inputMediaUploadFile" type="file" accept="image/*" class="hidden" />
-              </label>
-              <input id="wikiImageSearchInput" type="text" placeholder="Wiki Search (e.g. Hudson Taylor, William Carey)..." class="flex-1 min-w-[140px] bg-[#111114] border border-white/[0.09] focus:border-white/30 rounded-lg px-2.5 py-1.5 text-xs text-zinc-100 placeholder-zinc-500 outline-none" />
-              <button id="btnSearchWikiImage" type="button" class="px-2.5 py-1.5 rounded-lg bg-white/[0.06] hover:bg-white/[0.12] text-zinc-200 border border-white/[0.09] text-[11px] font-medium transition">
-                Fetch
+            <!-- LEVEL 3: COLLAPSIBLE PROGRESSIVE DISCLOSURE DRAWER (Framing, Layout, Zoom & OBS Scene) -->
+            <div class="bg-[#0b0b0e] border border-white/[0.08] rounded-xl overflow-hidden flex flex-col">
+              <button id="btnToggleMediaConfigDrawer" type="button" class="w-full px-3 py-2 flex items-center justify-between text-left hover:bg-white/[0.03] transition">
+                <div class="flex items-center gap-2">
+                  <span id="mediaConfigChevron" class="text-xs text-zinc-400 transition-transform">▸</span>
+                  <span class="text-xs font-medium text-zinc-200">Layout, Framing &amp; OBS Scene</span>
+                </div>
+                <span id="mediaConfigSummaryBadge" class="text-[10px] text-zinc-500">Right Split • 34% • Book Overlay</span>
               </button>
-              <button id="btnPinMediaToDeck" type="button" class="px-2.5 py-1.5 rounded-lg bg-white/[0.06] hover:bg-white/[0.12] text-zinc-200 border border-white/[0.09] text-[11px] font-medium transition" title="Save current picture to Sermon Slide Deck">
-                + Pin Deck
-              </button>
+              <div id="mediaConfigDrawerBody" class="hidden px-3 pb-3 pt-2 border-t border-white/[0.07] flex flex-col gap-2">
+                <div class="grid grid-cols-1 sm:grid-cols-12 gap-1.5 items-center">
+                  <select id="selectMediaLayout" class="sm:col-span-5 bg-[#121216] border border-white/10 rounded-lg px-2 py-1.5 text-[11px] text-zinc-100 font-medium outline-none">
+                    <option value="split_right_full" selected>Right Split (Book Overlay)</option>
+                    <option value="split_left_full">Left Split Panel</option>
+                    <option value="full_screen_media">Full-Screen (100% TV)</option>
+                    <option value="slide_right">Floating Right Card</option>
+                    <option value="slide_left">Floating Left Card</option>
+                    <option value="news_ots">Over-The-Shoulder Box</option>
+                    <option value="center_spotlight">Center Spotlight</option>
+                  </select>
+                  <select id="selectMediaFitMode" class="sm:col-span-4 bg-[#121216] border border-white/10 rounded-lg px-2 py-1.5 text-[11px] text-zinc-200 outline-none">
+                    <option value="cover">Portrait Fill (Edge-to-Edge)</option>
+                    <option value="contain_blur">Book / Map Fit (Uncropped)</option>
+                  </select>
+                  <select id="selectMediaFocalPos" class="sm:col-span-3 bg-[#121216] border border-white/10 rounded-lg px-1.5 py-1.5 text-[11px] text-zinc-200 outline-none">
+                    <option value="top" selected>Frame: Top</option>
+                    <option value="center">Frame: Mid</option>
+                    <option value="bottom">Frame: Low</option>
+                  </select>
+                </div>
+
+                <div class="flex flex-wrap items-center gap-3 text-[11px]">
+                  <div class="flex items-center gap-2 flex-1 min-w-[140px]">
+                    <span class="text-zinc-400 whitespace-nowrap">Split Width:</span>
+                    <input id="rangeMediaSplitWidth" type="range" min="26" max="48" value="34" class="w-full accent-white" />
+                    <span id="mediaSplitWidthLabel" class="tabular-nums text-zinc-200 w-8 text-right">34%</span>
+                  </div>
+                  <div id="wrapMediaZoom" class="flex items-center gap-2 flex-1 min-w-[130px]">
+                    <span class="text-zinc-400 whitespace-nowrap">Zoom:</span>
+                    <input id="rangeMediaZoom" type="range" min="100" max="160" value="100" class="w-full accent-white" />
+                    <span id="mediaZoomLabel" class="tabular-nums text-zinc-200 w-9 text-right">100%</span>
+                  </div>
+                  <label class="flex items-center gap-1.5 cursor-pointer text-zinc-300">
+                    <input id="chkMediaShowCaption" type="checkbox" checked class="rounded bg-zinc-900 border-zinc-700 accent-white" />
+                    <span>Show Caption</span>
+                  </label>
+                  <label class="flex items-center gap-1.5 cursor-pointer text-zinc-300">
+                    <input id="chkMediaStagedPreview" type="checkbox" checked class="rounded bg-zinc-900 border-zinc-700 accent-white" />
+                    <span>Stage Preview</span>
+                  </label>
+                </div>
+
+                <div class="pt-2 border-t border-white/[0.07] flex flex-wrap items-center gap-2 text-[11px]">
+                  <label class="flex items-center gap-1.5 cursor-pointer font-medium text-zinc-300 shrink-0">
+                    <input id="chkObsAutoSwitchScene" type="checkbox" checked class="rounded bg-zinc-900 border-zinc-700 accent-white" />
+                    <span>OBS Scene Switch</span>
+                  </label>
+                  <div class="flex flex-wrap items-center gap-1.5 flex-1">
+                    <input id="obsCameraSceneInput" type="text" value="Center Stage" list="obsSceneListDatalist" class="w-28 bg-[#121216] border border-white/10 rounded-md px-2 py-1 text-[11px] text-zinc-200 outline-none" />
+                    <span class="text-zinc-500">↔</span>
+                    <input id="obsPictureSceneInput" type="text" value="Book Overlay" list="obsSceneListDatalist" class="w-28 bg-[#121216] border border-white/10 rounded-md px-2 py-1 text-[11px] text-zinc-100 outline-none" />
+                    <datalist id="obsSceneListDatalist"></datalist>
+                  </div>
+                  <div class="flex items-center gap-1 shrink-0">
+                    <button id="btnObsJumpCamera" type="button" class="px-2 py-1 rounded-md bg-white/[0.05] hover:bg-white/[0.11] text-[10px] text-zinc-300 border border-white/[0.08]">Cam</button>
+                    <button id="btnObsJumpPicture" type="button" class="px-2 py-1 rounded-md bg-white/[0.05] hover:bg-white/[0.11] text-[10px] text-zinc-200 border border-white/[0.08]">Book</button>
+                    <button id="btnObsWsReconnect" type="button" class="px-2 py-1 rounded-md bg-white/[0.05] hover:bg-white/[0.11] text-[10px] text-zinc-300 border border-white/[0.08]">↻</button>
+                  </div>
+                </div>
+              </div>
             </div>
 
-            <!-- OBS Auto-Scene Switcher Strip (Tight, Aligned, Zero Empty Gap) -->
-            <div class="px-2.5 py-2 rounded-lg bg-[#0b0b0e] border border-white/[0.07] flex flex-wrap items-center gap-2 text-[11px]">
-              <label class="flex items-center gap-1.5 cursor-pointer font-medium text-zinc-300 shrink-0">
-                <input id="chkObsAutoSwitchScene" type="checkbox" checked class="rounded bg-zinc-900 border-zinc-700 accent-white" />
-                <span>OBS Scene Switch</span>
-              </label>
-              <div class="flex flex-wrap items-center gap-1.5 flex-1">
-                <input id="obsCameraSceneInput" type="text" value="Center Stage" list="obsSceneListDatalist" class="w-28 bg-[#121216] border border-white/10 rounded-md px-2 py-1 text-[11px] text-zinc-200 outline-none" title="Full Camera Scene Name" />
-                <span class="text-zinc-500">↔</span>
-                <input id="obsPictureSceneInput" type="text" value="Book Overlay" list="obsSceneListDatalist" class="w-28 bg-[#121216] border border-white/10 rounded-md px-2 py-1 text-[11px] text-zinc-100 outline-none" title="Picture Split-Screen Scene Name" />
-                <datalist id="obsSceneListDatalist"></datalist>
-              </div>
-              <div class="flex items-center gap-1 shrink-0">
-                <button id="btnObsJumpCamera" type="button" class="px-2 py-1 rounded-md bg-white/[0.05] hover:bg-white/[0.11] text-[10px] text-zinc-300 border border-white/[0.08]" title="Switch OBS to Camera Scene Now">Cam</button>
-                <button id="btnObsJumpPicture" type="button" class="px-2 py-1 rounded-md bg-white/[0.05] hover:bg-white/[0.11] text-[10px] text-zinc-200 border border-white/[0.08]" title="Switch OBS to Book Overlay Scene Now">Book</button>
-                <button id="btnObsWsReconnect" type="button" class="px-2 py-1 rounded-md bg-white/[0.05] hover:bg-white/[0.11] text-[10px] text-zinc-300 border border-white/[0.08]" title="Reconnect OBS WebSocket">↻</button>
-              </div>
-            </div>
-
-            <!-- Sermon Slide Deck & Built-In Presets (Clean Uncropped 16:9 Thumbnails) -->
-            <div class="flex items-center justify-between text-[11px] text-zinc-500 pt-1">
+            <!-- LEVEL 4: SUNDAY SLIDE DECK & PRESETS -->
+            <div class="flex items-center justify-between text-[11px] text-zinc-500">
               <span>Slide Deck &amp; Presets (Click to Stage • Double-Click to Air)</span>
               <button id="btnClearMediaDeck" type="button" class="text-zinc-500 hover:text-rose-400 transition">Clear Deck</button>
             </div>
-            <div id="mediaPresetGallery" class="grid grid-cols-3 gap-2 max-h-[185px] overflow-y-auto pr-0.5">
+            <div id="mediaPresetGallery" class="grid grid-cols-3 gap-2 max-h-[175px] overflow-y-auto pr-0.5">
               <!-- Populated dynamically -->
             </div>
           </div>
@@ -2244,8 +2302,16 @@
       appendClauseLetter: true,         // Appends 'a', 'b', 'c' to citation (e.g. యోహాను 15:4a) when presenting a clause
       // Sermon Media Picture / Book Overlay Split-Screen State
       mediaIsLive: false,
+      mediaType: 'picture',             // 'picture' | 'quote' | 'point' | 'map'
       mediaTitle: SERMON_MEDIA_PRESETS[0].title,
-      mediaSubtitle: SERMON_MEDIA_PRESETS[0].subtitle,
+      mediaSubtitle: 'Missionary to India • 1761–1834',
+      mediaSubMode: 'role_years',       // 'years' | 'role_years' | 'none'
+      mediaRawRole: 'Missionary to India',
+      mediaRawYears: '1761–1834',
+      mediaQuoteText: 'Expect great things from God; attempt great things for God.',
+      mediaPointLabel: 'Point 1',
+      mediaZoom: 100,                   // 100..160 (%)
+      mediaSearchSource: 'wiki',        // 'wiki' | 'commons' | 'openverse'
       mediaImageSrc: SERMON_MEDIA_PRESETS[0].svgDataUri,
       mediaLayout: 'split_right_full',  // 'split_right_full' | 'split_left_full' | 'slide_right' | 'slide_left' | 'news_ots' | 'center_spotlight'
       mediaFitMode: 'cover',            // 'cover' | 'contain_blur'
@@ -2375,6 +2441,10 @@
         appendClauseLetter: Boolean(state.appendClauseLetter),
         mediaTitle: state.mediaTitle,
         mediaSubtitle: state.mediaSubtitle,
+        mediaType: state.mediaType,
+        mediaSubMode: state.mediaSubMode,
+        mediaZoom: state.mediaZoom,
+        mediaSearchSource: state.mediaSearchSource,
         mediaLayout: state.mediaLayout,
         mediaFitMode: state.mediaFitMode,
         mediaFocalPos: state.mediaFocalPos,
@@ -2386,8 +2456,6 @@
         obsPictureScene: state.obsPictureScene,
         obsBibleAutoSwitch: Boolean(state.obsBibleAutoSwitch),
         obsBibleScene: state.obsBibleScene,
-        bibleOverlayLayout: state.bibleOverlayLayout,
-        bibleSplitWidth: state.bibleSplitWidth,
         obsWsUrl: state.obsWsUrl,
         obsWsPassword: state.obsWsPassword,
         savedAt: Date.now()
@@ -2411,6 +2479,7 @@
         'fsLayout', 'fsBackdrop', 'fsScalePercent', 'obsBibleAutoSwitch', 'obsBibleScene',
         'bibleOverlayLayout', 'bibleSplitWidth', 'workbenchActionMode',
         'highlightColor', 'appendClauseLetter', 'mediaTitle', 'mediaSubtitle',
+        'mediaType', 'mediaSubMode', 'mediaZoom', 'mediaSearchSource',
         'mediaLayout', 'mediaFitMode', 'mediaFocalPos', 'mediaSplitWidth',
         'mediaShowCaption', 'mediaStagedPreview', 'obsAutoSwitchScene',
         'obsCameraScene', 'obsPictureScene', 'obsWsUrl', 'obsWsPassword'
@@ -3303,53 +3372,110 @@
         </div>
       ` : '';
 
-      // FULL-HEIGHT VERTICAL SPLIT PANELS (Book Overlay Right Split / Left Split)
-      if (layout === 'split_right_full' || layout === 'split_left_full') {
-        const isRight = layout === 'split_right_full';
-        const animCls = isRight ? 'media-anim-split-right' : 'media-anim-split-left';
-        const edgeSideStyle = isRight
-          ? `right: 0; border-left: 2px solid ${theme.borderColor}; box-shadow: -24px 0 56px rgba(0,0,0,0.82);`
-          : `left: 0; border-right: 2px solid ${theme.borderColor}; box-shadow: 24px 0 56px rgba(0,0,0,0.82);`;
+      const mediaType = renderState.mediaType || 'picture';
+      const zoomPct = Math.max(100, Math.min(160, parseInt(renderState.mediaZoom, 10) || 100));
+      const zoomTransform = zoomPct > 100 ? `transform: scale(${(zoomPct / 100).toFixed(2)}); transform-origin: ${objPosStyle};` : '';
+      const isLightTheme = renderState.theme === 'clean_light';
+      const matteBg = getFullScreenBackdropStyle(renderState.theme, 'theme_solid', theme);
+      const hairlineColor = isLightTheme ? 'rgba(15, 23, 42, 0.16)' : 'rgba(255, 255, 255, 0.16)';
+      const enFontStack = resolveEnglishFontStack(renderState);
 
-        const titleSize = isFullOverlay ? '2.15rem' : '0.88rem';
-        const subSize = isFullOverlay ? '1.08rem' : '0.62rem';
-        const capPad = isFullOverlay ? '2.4rem 1.75rem 2.1rem 1.75rem' : '1rem 0.65rem 0.6rem 0.65rem';
+      // =========================================================================
+      // MODE A: SERMON QUOTE & SERMON POINT BROADCAST CARDS (Zero Photoshop Needed)
+      // =========================================================================
+      if (mediaType === 'quote' || mediaType === 'point') {
+        const isFullCard = layout === 'full_screen_media' || layout === 'center_spotlight';
+        const isLeft = layout === 'split_left_full' || layout === 'slide_left';
+        const animCls = isFullCard ? 'media-anim-center' : (isLeft ? 'media-anim-split-left' : 'media-anim-split-right');
+        const boxPosStyle = isFullCard
+          ? 'inset: 0; width: 100%;'
+          : (isLeft
+              ? `top: 0; bottom: 0; left: 0; width: ${Math.max(splitW, 40)}%; border-right: 1px solid ${hairlineColor}; box-shadow: 24px 0 56px rgba(0,0,0,0.75);`
+              : `top: 0; bottom: 0; right: 0; width: ${Math.max(splitW, 40)}%; border-left: 1px solid ${hairlineColor}; box-shadow: -24px 0 56px rgba(0,0,0,0.75);`);
 
-        const cameraGuideMarkup = isStagedGhost ? `
-          <div class="absolute top-0 bottom-0 ${isRight ? 'left-0' : 'right-0'} pointer-events-none flex items-center justify-center z-10" style="width: ${100 - splitW}%;">
-            <div class="px-2.5 py-1 rounded-full bg-black/50 border border-dashed border-slate-600/70 text-[9px] font-mono text-slate-400">
-              Book Overlay Camera Zone (${100 - splitW}% • -284px)
+        const quoteText = (renderState.mediaQuoteText || '').trim() || 'Expect great things from God; attempt great things for God.';
+        const pointBadge = (renderState.mediaPointLabel || 'Point 1').trim();
+        const qLen = quoteText.length;
+        const quoteCqi = isFullCard
+          ? (qLen > 140 ? '3.1cqi' : qLen > 80 ? '3.9cqi' : '4.8cqi')
+          : (qLen > 140 ? '4.8cqi' : qLen > 80 ? '5.8cqi' : '6.8cqi');
+        const authorCqi = isFullCard ? '2.5cqi' : '4.6cqi';
+        const subCqi = isFullCard ? '1.8cqi' : '3.4cqi';
+
+        return `
+          <div
+            class="media-overlay-wrapper ${visClass} ${animCls} absolute z-20 pointer-events-none flex flex-col justify-center ${isFullCard ? 'items-center text-center' : 'items-start text-left'} ${isStagedGhost ? 'opacity-95' : ''}"
+            style="${boxPosStyle} ${matteBg} container-type: inline-size; padding: ${isFullCard ? '6% 7%' : '6% 7.5%'}; font-family: ${fontStack};"
+          >
+            ${!isLightTheme ? '<div class="fs-grain-layer"></div>' : ''}
+            ${stagedBadgeMarkup}
+            <div class="relative z-10 w-full flex flex-col ${isFullCard ? 'items-center text-center max-w-[1460px]' : 'items-start text-left'}" style="gap: ${isFullCard ? '2.2cqi' : '3.8cqi'};">
+              ${mediaType === 'point' ? `
+                <div style="color: ${theme.badgeColor}; font-size: ${isFullCard ? '2.1cqi' : '4.0cqi'}; font-weight: 800; letter-spacing: 0.14em; text-transform: uppercase; font-family: ${enFontStack};">
+                  ${escapeHtml(pointBadge)}
+                </div>
+                <div style="width: 100%; height: 1px; background: ${hairlineColor};"></div>
+                <div style="color: ${theme.textColor}; font-size: ${isFullCard ? '4.6cqi' : '7.4cqi'}; font-weight: 800; line-height: 1.40; padding: 0.2em 0;">
+                  ${escapeHtml(titleText || 'Main Sermon Point')}
+                </div>
+                ${subtitleText ? `
+                  <div style="color: ${isLightTheme ? '#334155' : 'rgba(241,245,249,0.88)'}; font-size: ${isFullCard ? '2.3cqi' : '4.2cqi'}; font-weight: 500; line-height: 1.48; padding: 0.15em 0;">
+                    ${escapeHtml(subtitleText)}
+                  </div>
+                ` : ''}
+              ` : `
+                <div style="color: ${theme.badgeColor}; font-size: ${isFullCard ? '5.2cqi' : '8.5cqi'}; line-height: 0.7; font-family: Georgia, serif; opacity: 0.85;">“</div>
+                <div style="color: ${theme.textColor}; font-size: ${quoteCqi}; font-weight: 700; line-height: 1.48; padding: 0.18em 0;">
+                  ${escapeHtml(quoteText)}
+                </div>
+                <div style="width: ${isFullCard ? '12cqi' : '24cqi'}; height: 1px; background: ${hairlineColor};"></div>
+                ${titleText ? `
+                  <div style="color: ${theme.badgeColor}; font-size: ${authorCqi}; font-weight: 800; line-height: 1.38; padding: 0.1em 0;">
+                    ${escapeHtml(titleText)}
+                  </div>
+                ` : ''}
+                ${subtitleText ? `
+                  <div style="color: ${isLightTheme ? '#475569' : 'rgba(241,245,249,0.82)'}; font-size: ${subCqi}; font-weight: 600; font-family: ${enFontStack}; font-variant-numeric: tabular-nums;">
+                    ${escapeHtml(subtitleText)}
+                  </div>
+                ` : ''}
+              `}
             </div>
           </div>
-        ` : '';
+        `;
+      }
 
-        const imgMarkup = fitMode === 'contain_blur' ? `
+      // =========================================================================
+      // MODE B: FULL-SCREEN 100% TV PICTURE / BIBLE MAP (Fluid cqi Captions + Zoom)
+      // =========================================================================
+      if (layout === 'full_screen_media' || mediaType === 'map') {
+        const useUncropped = mediaType === 'map' || fitMode === 'contain_blur';
+        const fullImgMarkup = useUncropped ? `
           <img src="${escapeHtml(renderState.mediaImageSrc || '')}" alt="" class="media-contain-blur-bg" />
-          <div class="relative z-10 w-full h-full flex items-center justify-center ${hasCaption ? 'pb-[18%]' : ''} p-[6%]">
-            <img src="${escapeHtml(renderState.mediaImageSrc || '')}" alt="${escapeHtml(titleText)}" class="max-w-full max-h-full object-contain rounded-xl shadow-[0_20px_50px_rgba(0,0,0,0.75)] border border-white/15" />
+          <div class="relative z-10 w-full h-full flex items-center justify-center ${hasCaption ? 'pb-[9%]' : ''} p-[3%] overflow-hidden">
+            <img src="${escapeHtml(renderState.mediaImageSrc || '')}" alt="${escapeHtml(titleText)}" class="max-w-full max-h-full object-contain rounded-lg shadow-[0_24px_60px_rgba(0,0,0,0.85)]" style="${zoomTransform}" />
           </div>
         ` : `
-          <img src="${escapeHtml(renderState.mediaImageSrc || '')}" alt="${escapeHtml(titleText)}" class="w-full h-full object-cover" style="object-position: ${objPosStyle};" />
+          <img src="${escapeHtml(renderState.mediaImageSrc || '')}" alt="${escapeHtml(titleText)}" class="w-full h-full object-cover" style="object-position: ${objPosStyle}; ${zoomTransform}" />
         `;
 
         return `
-          ${cameraGuideMarkup}
           <div
-            class="media-overlay-wrapper ${visClass} ${animCls} absolute top-0 bottom-0 h-full z-20 pointer-events-none overflow-hidden bg-slate-950 ${isStagedGhost ? 'opacity-90' : ''}"
-            style="width: ${splitW}%; ${edgeSideStyle} font-family: ${fontStack};"
+            class="media-overlay-wrapper ${visClass} media-anim-center absolute inset-0 w-full h-full z-20 pointer-events-none overflow-hidden bg-[#07090e] ${isStagedGhost ? 'opacity-95' : ''}"
+            style="container-type: inline-size; font-family: ${fontStack};"
           >
             ${stagedBadgeMarkup}
-            <div class="relative w-full h-full overflow-hidden bg-slate-950">
-              ${imgMarkup}
+            <div class="relative w-full h-full overflow-hidden">
+              ${fullImgMarkup}
               ${hasCaption ? `
-                <div class="absolute inset-x-0 bottom-0 z-20 flex flex-col items-center text-center" style="background: linear-gradient(to top, rgba(0,0,0,0.94) 0%, rgba(0,0,0,0.62) 58%, transparent 100%); padding: ${capPad};">
+                <div class="absolute inset-x-0 bottom-0 z-20 flex flex-col items-center text-center" style="background: linear-gradient(to top, rgba(0,0,0,0.94) 0%, rgba(0,0,0,0.62) 55%, transparent 100%); padding: 4.5cqi 4cqi 2.6cqi 4cqi;">
                   ${titleText ? `
-                    <div class="font-extrabold tracking-wide leading-tight drop-shadow-[0_2px_10px_rgba(0,0,0,0.95)]" style="color: #ffffff; font-size: ${titleSize};">
+                    <div style="color: #ffffff; font-size: clamp(12px, 3.3cqi, 64px); font-weight: 800; line-height: 1.32; padding: 0.12em 0; text-shadow: 0 3px 16px rgba(0,0,0,0.92);">
                       ${escapeHtml(titleText)}
                     </div>
                   ` : ''}
                   ${subtitleText ? `
-                    <div class="font-semibold tracking-normal leading-snug mt-1 drop-shadow-[0_2px_6px_rgba(0,0,0,0.95)]" style="color: ${theme.badgeColor}; font-size: ${subSize};">
+                    <div style="color: ${theme.badgeColor}; font-size: clamp(9px, 1.75cqi, 32px); font-weight: 600; line-height: 1.35; margin-top: 0.25cqi; font-family: ${enFontStack}; font-variant-numeric: tabular-nums; text-shadow: 0 2px 10px rgba(0,0,0,0.92);">
                       ${escapeHtml(subtitleText)}
                     </div>
                   ` : ''}
@@ -3360,35 +3486,97 @@
         `;
       }
 
-      // FLOATING CARD LAYOUTS (slide_right, slide_left, news_ots, center_spotlight)
-      let posClasses = 'top-[8%] right-[4%] w-[36%] max-w-[540px] media-anim-right';
+      // =========================================================================
+      // MODE C: FULL-HEIGHT VERTICAL SPLIT PANELS (Fluid cqi Typography — Big & Crisp on TV!)
+      // =========================================================================
+      if (layout === 'split_right_full' || layout === 'split_left_full') {
+        const isRight = layout === 'split_right_full';
+        const animCls = isRight ? 'media-anim-split-right' : 'media-anim-split-left';
+        const edgeSideStyle = isRight
+          ? `right: 0; border-left: 1px solid ${hairlineColor}; box-shadow: -24px 0 56px rgba(0,0,0,0.82);`
+          : `left: 0; border-right: 1px solid ${hairlineColor}; box-shadow: 24px 0 56px rgba(0,0,0,0.82);`;
+
+        // Fluid container-relative sizing: scales cleanly with panel width & name length!
+        const nameLen = titleText.length;
+        const titleCqi = nameLen > 24 ? '6.4cqi' : nameLen > 16 ? '7.5cqi' : '8.6cqi';
+        const subCqi = subtitleText.length > 30 ? '3.8cqi' : '4.6cqi';
+
+        const cameraGuideMarkup = isStagedGhost ? `
+          <div class="absolute top-0 bottom-0 ${isRight ? 'left-0' : 'right-0'} pointer-events-none flex items-center justify-center z-10" style="width: ${100 - splitW}%;">
+            <div class="px-2.5 py-1 rounded-md bg-black/60 border border-dashed border-white/15 text-[10px] text-zinc-400">
+              Camera Zone (${100 - splitW}%)
+            </div>
+          </div>
+        ` : '';
+
+        const imgMarkup = fitMode === 'contain_blur' ? `
+          <img src="${escapeHtml(renderState.mediaImageSrc || '')}" alt="" class="media-contain-blur-bg" />
+          <div class="relative z-10 w-full h-full flex items-center justify-center ${hasCaption ? 'pb-[22%]' : ''} p-[6%] overflow-hidden">
+            <img src="${escapeHtml(renderState.mediaImageSrc || '')}" alt="${escapeHtml(titleText)}" class="max-w-full max-h-full object-contain rounded-lg shadow-[0_20px_50px_rgba(0,0,0,0.75)] border border-white/10" style="${zoomTransform}" />
+          </div>
+        ` : `
+          <img src="${escapeHtml(renderState.mediaImageSrc || '')}" alt="${escapeHtml(titleText)}" class="w-full h-full object-cover" style="object-position: ${objPosStyle}; ${zoomTransform}" />
+        `;
+
+        return `
+          ${cameraGuideMarkup}
+          <div
+            class="media-overlay-wrapper ${visClass} ${animCls} absolute top-0 bottom-0 h-full z-20 pointer-events-none overflow-hidden bg-[#09090b] ${isStagedGhost ? 'opacity-95' : ''}"
+            style="width: ${splitW}%; ${edgeSideStyle} container-type: inline-size; font-family: ${fontStack};"
+          >
+            ${stagedBadgeMarkup}
+            <div class="relative w-full h-full overflow-hidden bg-[#09090b]">
+              ${imgMarkup}
+              ${hasCaption ? `
+                <div class="absolute inset-x-0 bottom-0 z-20 flex flex-col items-center text-center" style="background: linear-gradient(to top, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.72) 52%, transparent 100%); padding: 14cqi 6cqi 7cqi 6cqi;">
+                  ${titleText ? `
+                    <div style="color: #ffffff; font-size: ${titleCqi}; font-weight: 800; line-height: 1.32; padding: 0.14em 0; text-shadow: 0 3px 16px rgba(0,0,0,0.95);">
+                      ${escapeHtml(titleText)}
+                    </div>
+                  ` : ''}
+                  ${subtitleText ? `
+                    <div style="color: ${theme.badgeColor}; font-size: ${subCqi}; font-weight: 600; line-height: 1.35; margin-top: 0.8cqi; font-family: ${enFontStack}; font-variant-numeric: tabular-nums; text-shadow: 0 2px 10px rgba(0,0,0,0.95);">
+                      ${escapeHtml(subtitleText)}
+                    </div>
+                  ` : ''}
+                </div>
+              ` : ''}
+            </div>
+          </div>
+        `;
+      }
+
+      // =========================================================================
+      // MODE D: FLOATING CARD LAYOUTS (Fluid cqi Typography)
+      // =========================================================================
+      let posClasses = 'top-[8%] right-[4%] w-[36%] max-w-[620px] media-anim-right';
       if (layout === 'slide_left') {
-        posClasses = 'top-[8%] left-[4%] w-[36%] max-w-[540px] media-anim-left';
+        posClasses = 'top-[8%] left-[4%] w-[36%] max-w-[620px] media-anim-left';
       } else if (layout === 'news_ots') {
-        posClasses = 'top-[10%] right-[5%] w-[32%] max-w-[460px] media-anim-right';
+        posClasses = 'top-[10%] right-[5%] w-[32%] max-w-[540px] media-anim-right';
       } else if (layout === 'center_spotlight') {
-        posClasses = 'top-[10%] left-1/2 -translate-x-1/2 w-[56%] max-w-[820px] media-anim-center';
+        posClasses = 'top-[10%] left-1/2 -translate-x-1/2 w-[56%] max-w-[960px] media-anim-center';
       }
 
       const cardImgMarkup = fitMode === 'contain_blur' ? `
         <img src="${escapeHtml(renderState.mediaImageSrc || '')}" alt="" class="media-contain-blur-bg" />
-        <img src="${escapeHtml(renderState.mediaImageSrc || '')}" alt="${escapeHtml(titleText)}" class="relative z-10 w-full h-full object-contain p-2" />
+        <img src="${escapeHtml(renderState.mediaImageSrc || '')}" alt="${escapeHtml(titleText)}" class="relative z-10 w-full h-full object-contain p-2" style="${zoomTransform}" />
       ` : `
-        <img src="${escapeHtml(renderState.mediaImageSrc || '')}" alt="${escapeHtml(titleText)}" class="w-full h-full object-cover" style="object-position: ${objPosStyle};" />
+        <img src="${escapeHtml(renderState.mediaImageSrc || '')}" alt="${escapeHtml(titleText)}" class="w-full h-full object-cover" style="object-position: ${objPosStyle}; ${zoomTransform}" />
       `;
 
       return `
-        <div class="media-overlay-wrapper ${visClass} absolute ${posClasses} z-20 pointer-events-none" style="font-family: ${fontStack};">
-          <div class="relative rounded-2xl overflow-hidden bg-slate-950/95 shadow-2xl backdrop-blur-md" style="border: 1.5px solid ${theme.borderColor};">
+        <div class="media-overlay-wrapper ${visClass} absolute ${posClasses} z-20 pointer-events-none" style="container-type: inline-size; font-family: ${fontStack};">
+          <div class="relative rounded-xl overflow-hidden bg-[#0b0b0e]/95 shadow-2xl backdrop-blur-md" style="border: 1px solid ${hairlineColor};">
             ${stagedBadgeMarkup}
-            <div class="relative aspect-video w-full bg-slate-900 overflow-hidden">
+            <div class="relative aspect-video w-full bg-[#111114] overflow-hidden">
               ${cardImgMarkup}
-              <div class="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-transparent pointer-events-none z-10"></div>
+              <div class="absolute inset-0 bg-gradient-to-t from-black/75 via-transparent to-transparent pointer-events-none z-10"></div>
             </div>
             ${hasCaption ? `
-              <div class="${isFullOverlay ? 'p-4' : 'p-2'} border-t border-white/10">
-                ${titleText ? `<div class="${isFullOverlay ? 'text-xl' : 'text-xs'} font-extrabold leading-tight" style="color: ${theme.badgeColor};">${escapeHtml(titleText)}</div>` : ''}
-                ${subtitleText ? `<div class="${isFullOverlay ? 'text-sm' : 'text-[10px]'} text-slate-300 mt-0.5">${escapeHtml(subtitleText)}</div>` : ''}
+              <div style="padding: 3.5cqi 4.5cqi; border-top: 1px solid ${hairlineColor};">
+                ${titleText ? `<div style="color: #ffffff; font-size: 5.8cqi; font-weight: 800; line-height: 1.32; padding: 0.1em 0;">${escapeHtml(titleText)}</div>` : ''}
+                ${subtitleText ? `<div style="color: ${theme.badgeColor}; font-size: 3.4cqi; font-weight: 600; margin-top: 0.4cqi; font-family: ${enFontStack}; font-variant-numeric: tabular-nums;">${escapeHtml(subtitleText)}</div>` : ''}
               </div>
             ` : ''}
           </div>
@@ -4007,8 +4195,12 @@
         activeClauseIndex: liveSrc.activeClauseIndex,
         appendClauseLetter: state.appendClauseLetter,
         mediaIsLive: state.mediaIsLive,
+        mediaType: state.mediaType,
         mediaTitle: state.mediaTitle,
         mediaSubtitle: state.mediaSubtitle,
+        mediaQuoteText: state.mediaQuoteText,
+        mediaPointLabel: state.mediaPointLabel,
+        mediaZoom: state.mediaZoom,
         mediaImageSrc: state.mediaImageSrc,
         mediaLayout: state.mediaLayout,
         mediaFitMode: state.mediaFitMode,
@@ -4179,6 +4371,57 @@
       if (mediaSplitRow) {
         const isMediaSplit = state.mediaLayout === 'split_right_full' || state.mediaLayout === 'split_left_full';
         mediaSplitRow.classList.toggle('hidden', !isMediaSplit);
+      }
+
+      // Contextual Media Studio Visibility (Picture | Quote | Sermon Point | Map)
+      const mType = state.mediaType || 'picture';
+      const isTextCard = mType === 'quote' || mType === 'point';
+      document.getElementById('mediaTextCardGroup')?.classList.toggle('hidden', !isTextCard);
+      document.getElementById('wrapMediaPointLabel')?.classList.toggle('hidden', mType !== 'point');
+      document.getElementById('wrapMediaQuoteText')?.classList.toggle('hidden', mType !== 'quote');
+      document.getElementById('wrapMediaDropThumb')?.classList.toggle('hidden', isTextCard);
+      document.getElementById('mediaImageSourceGroup')?.classList.toggle('hidden', isTextCard);
+      document.getElementById('wrapMediaZoom')?.classList.toggle('hidden', isTextCard);
+      document.getElementById('wrapMediaSubModePills')?.classList.toggle('hidden', isTextCard);
+
+      // Update Media Type Switcher active pills
+      document.querySelectorAll('.media-type-btn').forEach(btn => {
+        const active = btn.getAttribute('data-media-type') === mType;
+        btn.className = active
+          ? 'media-type-btn px-2.5 py-1 rounded-md text-[11px] font-semibold bg-white text-zinc-950 transition'
+          : 'media-type-btn px-2.5 py-1 rounded-md text-[11px] font-medium text-zinc-400 hover:text-white transition';
+      });
+      // Update Sub-text format pills
+      const mSubMode = state.mediaSubMode || 'role_years';
+      document.querySelectorAll('.media-submode-btn').forEach(btn => {
+        const active = btn.getAttribute('data-submode') === mSubMode;
+        btn.className = active
+          ? 'media-submode-btn px-2 py-0.5 rounded text-[10px] font-semibold bg-white text-zinc-950 transition'
+          : 'media-submode-btn px-2 py-0.5 rounded text-[10px] font-medium text-zinc-400 hover:text-white transition';
+      });
+      // Update Image Source pills
+      const mSrc = state.mediaSearchSource || 'wiki';
+      document.querySelectorAll('.media-src-btn').forEach(btn => {
+        const active = btn.getAttribute('data-search-src') === mSrc;
+        btn.className = active
+          ? 'media-src-btn px-2 py-0.5 rounded text-[10px] font-semibold bg-white text-zinc-950 transition'
+          : 'media-src-btn px-2 py-0.5 rounded text-[10px] font-medium text-zinc-400 hover:text-white transition';
+      });
+      // Update Media Config Drawer Summary Badge
+      const cfgBadge = document.getElementById('mediaConfigSummaryBadge');
+      if (cfgBadge) {
+        const layoutShort = {
+          split_right_full: `Right Split ${state.mediaSplitWidth || 34}%`,
+          split_left_full: `Left Split ${state.mediaSplitWidth || 34}%`,
+          full_screen_media: 'Full-Screen TV',
+          slide_right: 'Right Card',
+          slide_left: 'Left Card',
+          news_ots: 'OTS Box',
+          center_spotlight: 'Spotlight'
+        }[state.mediaLayout || 'split_right_full'] || 'Split';
+        const zoomTxt = (state.mediaZoom && state.mediaZoom > 100 && !isTextCard) ? ` • ${state.mediaZoom}%` : '';
+        const sceneTxt = state.obsAutoSwitchScene ? ` • ${state.obsPictureScene || 'Book Overlay'}` : '';
+        cfgBadge.textContent = isTextCard ? `Broadcast Card${sceneTxt}` : `${layoutShort}${zoomTxt}${sceneTxt}`;
       }
 
       // Update Picture Live Status Pill & Staged Thumbnail
@@ -5485,11 +5728,15 @@
       // Picture / Book Overlay & OBS WebSocket controls
       setVal('mediaTitleInput', state.mediaTitle);
       setVal('mediaSubtitleInput', state.mediaSubtitle);
+      setVal('mediaQuoteTextarea', state.mediaQuoteText || '');
+      setVal('mediaPointLabelInput', state.mediaPointLabel || 'POINT 1');
       setVal('selectMediaLayout', state.mediaLayout);
       setVal('selectMediaFitMode', state.mediaFitMode);
       setVal('selectMediaFocalPos', state.mediaFocalPos);
       setVal('rangeMediaSplitWidth', state.mediaSplitWidth);
       setTxt('mediaSplitWidthLabel', `${state.mediaSplitWidth}%`);
+      setVal('rangeMediaZoom', state.mediaZoom || 100);
+      setTxt('mediaZoomLabel', `${state.mediaZoom || 100}%`);
       setChk('chkMediaShowCaption', state.mediaShowCaption);
       setChk('chkMediaStagedPreview', state.mediaStagedPreview);
       setChk('chkObsAutoSwitchScene', state.obsAutoSwitchScene);
@@ -6602,13 +6849,18 @@
         clearAutoHideTimers();
         state.mediaTitle = (document.getElementById('mediaTitleInput')?.value || '').trim();
         state.mediaSubtitle = (document.getElementById('mediaSubtitleInput')?.value || '').trim();
+        const qEl = document.getElementById('mediaQuoteTextarea');
+        if (qEl) state.mediaQuoteText = qEl.value.trim();
+        const pEl = document.getElementById('mediaPointLabelInput');
+        if (pEl) state.mediaPointLabel = pEl.value.trim() || 'POINT 1';
         state.mediaIsLive = true;
         renderAll();
         if (state.obsAutoSwitchScene && obsWsConnected && (state.mediaLayout === 'split_right_full' || state.mediaLayout === 'split_left_full')) {
           const picScene = (state.obsPictureScene || 'Book Overlay').trim();
           if (picScene) obsSwitchToScene(picScene);
         }
-        showToast(`Picture ON AIR: ${state.mediaTitle || 'Visual Slide'}`);
+        const airLabel = state.mediaType === 'quote' ? 'Quote Card' : state.mediaType === 'point' ? 'Sermon Point' : (state.mediaTitle || 'Visual Slide');
+        showToast(`Media ON AIR: ${airLabel}`);
       }
 
       function hidePictureOffAir(shouldReturnCamera = true) {
@@ -6630,37 +6882,86 @@
         }
       }
 
+      let activeDeckStepIndex = -1;
+
       function loadSlideItemIntoStage(item, autoAir = false) {
         if (!item) return;
+        state.mediaType = item.mediaType || 'picture';
         state.mediaTitle = item.title || '';
         state.mediaSubtitle = item.subtitle || '';
+        state.mediaQuoteText = item.quoteText || '';
+        state.mediaPointLabel = item.pointLabel || 'POINT 1';
         state.mediaImageSrc = item.imageSrc || item.svgDataUri || '';
+        if (item.layout) state.mediaLayout = item.layout;
         if (item.fitMode) state.mediaFitMode = item.fitMode;
         if (item.focalPos) state.mediaFocalPos = item.focalPos;
+        if (item.zoom) state.mediaZoom = item.zoom;
         syncUiControlsFromState();
         if (autoAir) {
           showPictureOnAir();
         } else {
           renderAll();
-          showToast(`Staged: ${state.mediaTitle || 'Picture'}`);
+          showToast(`Staged: ${state.mediaTitle || (state.mediaType === 'quote' ? 'Quote Card' : 'Slide')}`);
         }
+      }
+
+      function setMediaType(type) {
+        const nextType = ['picture', 'quote', 'point', 'map'].includes(type) ? type : 'picture';
+        state.mediaType = nextType;
+        const titleEl = document.getElementById('mediaTitleInput');
+        const subEl = document.getElementById('mediaSubtitleInput');
+        if (nextType === 'quote') {
+          if (titleEl) titleEl.placeholder = 'Author Name (e.g. John Wesley, Charles Spurgeon)...';
+          if (subEl) subEl.placeholder = 'Context / Year (e.g. 1703–1791 or Sermon on the Mount)...';
+        } else if (nextType === 'point') {
+          if (titleEl) titleEl.placeholder = 'Sermon Point Headline (Telugu or English)...';
+          if (subEl) subEl.placeholder = 'Supporting Note or Reference (optional)...';
+        } else if (nextType === 'map') {
+          if (titleEl) titleEl.placeholder = 'Map / Place Title (e.g. Paul’s Missionary Journeys)...';
+          if (subEl) subEl.placeholder = 'Context (e.g. Acts 13–28)...';
+          state.mediaLayout = 'full_screen_media';
+          state.mediaFitMode = 'contain_blur';
+          state.mediaSearchSource = 'commons';
+        } else {
+          if (titleEl) titleEl.placeholder = 'Headline / Name (e.g. John Wesley)...';
+          if (subEl) subEl.placeholder = 'Sub-text / Role or Years (e.g. Missionary & Preacher • 1703–1791)...';
+        }
+        syncUiControlsFromState();
+        renderAll();
+        scheduleSavePreferences();
+      }
+
+      function stepMediaDeck(delta) {
+        const list = (state.mediaDeck && state.mediaDeck.length) ? state.mediaDeck : SERMON_MEDIA_PRESETS;
+        if (!list.length) return;
+        activeDeckStepIndex = (activeDeckStepIndex + delta + list.length) % list.length;
+        loadSlideItemIntoStage(list[activeDeckStepIndex], Boolean(state.mediaIsLive));
       }
 
       function renderMediaDeckAndPresets() {
         const mediaGallery = document.getElementById('mediaPresetGallery');
         if (!mediaGallery) return;
-        const deckCards = (state.mediaDeck || []).map((item, idx) => `
+        const deckCards = (state.mediaDeck || []).map((item, idx) => {
+          const isTxt = item.mediaType === 'quote' || item.mediaType === 'point';
+          const thumbHtml = isTxt
+            ? `<div class="w-full h-full flex flex-col items-center justify-center p-2 text-center bg-gradient-to-br from-zinc-900 to-zinc-950">
+                 <span class="text-[9px] uppercase tracking-widest text-amber-400 font-semibold">${item.mediaType === 'quote' ? 'QUOTE' : escapeHtml(item.pointLabel || 'POINT')}</span>
+                 <span class="text-[10px] text-zinc-200 line-clamp-2 mt-0.5 leading-snug">${escapeHtml(item.mediaType === 'quote' ? (item.quoteText || item.title) : item.title)}</span>
+               </div>`
+            : `<img src="${escapeHtml(item.imageSrc)}" alt="${escapeHtml(item.title)}" class="w-full h-full object-contain" />`;
+          return `
           <div class="relative group rounded-lg bg-[#0b0b0e] border border-white/10 hover:border-white/30 p-1.5 flex flex-col gap-1 transition">
             <button type="button" data-deck-idx="${idx}" class="deck-item-btn text-left flex flex-col gap-1 w-full" title="Click to Stage • Double-Click to Air (Alt+Shift+${idx + 1})">
               <div class="relative w-full aspect-video rounded overflow-hidden bg-[#121216]">
-                <img src="${escapeHtml(item.imageSrc)}" alt="${escapeHtml(item.title)}" class="w-full h-full object-contain" />
+                ${thumbHtml}
                 <span class="absolute top-1 left-1 px-1.5 rounded bg-black/80 text-[9px] tabular-nums font-semibold text-zinc-200">${idx + 1}</span>
               </div>
               <span class="text-[11px] font-medium text-zinc-200 truncate">${escapeHtml(item.title || 'Slide ' + (idx + 1))}</span>
             </button>
             <button type="button" data-deck-remove="${idx}" class="deck-remove-btn absolute top-1.5 right-1.5 w-4 h-4 rounded-full bg-black/80 hover:bg-rose-600 text-white text-[9px] font-bold opacity-0 group-hover:opacity-100 transition" title="Remove from Deck">✕</button>
           </div>
-        `).join('');
+        `;
+        }).join('');
 
         const presetCards = SERMON_MEDIA_PRESETS.map((p, idx) => `
           <button type="button" data-media-preset="${idx}" class="media-preset-card p-1.5 rounded-lg bg-[#0b0b0e] border border-white/[0.08] hover:border-white/25 text-left flex flex-col gap-1 transition" title="Click to Stage • Double-Click to Air">
@@ -6770,14 +7071,66 @@
         showToast('Reconnecting to OBS WebSocket :4455…');
       });
 
+      document.getElementById('btnMediaDeckPrev')?.addEventListener('click', () => stepMediaDeck(-1));
+      document.getElementById('btnMediaDeckNext')?.addEventListener('click', () => stepMediaDeck(1));
+
+      document.querySelectorAll('.media-type-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          setMediaType(btn.getAttribute('data-media-type') || 'picture');
+        });
+      });
+      document.querySelectorAll('.media-submode-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          applyMediaSubMode(btn.getAttribute('data-submode') || 'role_years');
+        });
+      });
+      document.querySelectorAll('.media-src-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          state.mediaSearchSource = btn.getAttribute('data-search-src') || 'wiki';
+          renderAll();
+          scheduleSavePreferences();
+        });
+      });
+      document.getElementById('mediaQuoteTextarea')?.addEventListener('input', (e) => {
+        state.mediaQuoteText = e.target.value;
+        renderStagePreview();
+        broadcastStateToOverlays();
+      });
+      document.getElementById('mediaPointLabelInput')?.addEventListener('input', (e) => {
+        state.mediaPointLabel = e.target.value;
+        renderStagePreview();
+        broadcastStateToOverlays();
+      });
+      document.getElementById('rangeMediaZoom')?.addEventListener('input', (e) => {
+        state.mediaZoom = parseInt(e.target.value, 10) || 100;
+        const lbl = document.getElementById('mediaZoomLabel');
+        if (lbl) lbl.textContent = `${state.mediaZoom}%`;
+        renderStagePreview();
+        broadcastStateToOverlays();
+      });
+      document.getElementById('btnToggleMediaConfigDrawer')?.addEventListener('click', () => {
+        const body = document.getElementById('mediaConfigDrawerBody');
+        const chev = document.getElementById('mediaConfigChevron');
+        if (!body) return;
+        const willOpen = body.classList.contains('hidden');
+        body.classList.toggle('hidden', !willOpen);
+        if (chev) chev.style.transform = willOpen ? 'rotate(90deg)' : 'rotate(0deg)';
+      });
+
       document.getElementById('btnPinMediaToDeck')?.addEventListener('click', () => {
-        if (!state.mediaImageSrc) return;
+        const isTxt = state.mediaType === 'quote' || state.mediaType === 'point';
+        if (!isTxt && !state.mediaImageSrc) return;
         state.mediaDeck.push({
+          mediaType: state.mediaType || 'picture',
           title: (state.mediaTitle || '').trim() || `Slide ${state.mediaDeck.length + 1}`,
           subtitle: (state.mediaSubtitle || '').trim(),
-          imageSrc: state.mediaImageSrc,
+          quoteText: (state.mediaQuoteText || '').trim(),
+          pointLabel: (state.mediaPointLabel || 'POINT 1').trim(),
+          imageSrc: isTxt ? '' : state.mediaImageSrc,
+          layout: state.mediaLayout,
           fitMode: state.mediaFitMode,
-          focalPos: state.mediaFocalPos
+          focalPos: state.mediaFocalPos,
+          zoom: state.mediaZoom || 100
         });
         saveMediaDeckToIndexedDB();
         renderMediaDeckAndPresets();
@@ -6794,8 +7147,29 @@
         if (!file) return;
         const optimized = await compressAndNormalizeImage(file, 1440, 0.88);
         if (!optimized) return;
+        // Auto-detect portrait vs landscape to pick the cleanest TV framing automatically
+        try {
+          const dims = await new Promise((resolve) => {
+            const img = new Image();
+            img.onload = () => resolve({ w: img.naturalWidth || 0, h: img.naturalHeight || 0 });
+            img.onerror = () => resolve({ w: 0, h: 0 });
+            img.src = optimized;
+          });
+          if (dims.w > 0 && dims.h > 0) {
+            if (dims.w > dims.h * 1.15) {
+              state.mediaFitMode = 'contain_blur';
+            } else {
+              state.mediaFitMode = 'cover';
+              state.mediaFocalPos = 'top';
+            }
+          }
+        } catch (_) {}
+        if (state.mediaType === 'quote' || state.mediaType === 'point') {
+          state.mediaType = 'picture';
+        }
         state.mediaImageSrc = optimized;
         activateRightTab('media');
+        syncUiControlsFromState();
         renderAll();
         showToast(`Staged ${labelSource} (Optimized for Broadcast)`);
       }
@@ -6826,30 +7200,230 @@
         });
       }
 
+      // Church-Native Christian Heritage Dictionary (Replaces dry secular Wikipedia jargon like 'clergyman' / 'divine')
+      const CHURCH_HERITAGE_BIOS = {
+        'john wesley': { role: 'Missionary & Preacher', years: '1703–1791' },
+        'william carey': { role: 'Missionary to India', years: '1761–1834' },
+        'c. t. studd': { role: 'Missionary', years: '1860–1931' },
+        'charles studd': { role: 'Missionary', years: '1860–1931' },
+        'hudson taylor': { role: 'Missionary to China', years: '1832–1905' },
+        'amy carmichael': { role: 'Missionary to India', years: '1867–1951' },
+        'sadhu sundar singh': { role: 'Indian Evangelist', years: '1889–1929' },
+        'bakht singh': { role: 'Indian Evangelist & Bible Teacher', years: '1903–2000' },
+        'pandita ramabai': { role: 'Indian Christian Reformer', years: '1858–1922' },
+        'charles spurgeon': { role: 'Preacher & Author', years: '1834–1892' },
+        'charles haddon spurgeon': { role: 'Preacher & Author', years: '1834–1892' },
+        'george müller': { role: 'Man of Faith', years: '1805–1898' },
+        'george muller': { role: 'Man of Faith', years: '1805–1898' },
+        'dwight l. moody': { role: 'Evangelist', years: '1837–1899' },
+        'd. l. moody': { role: 'Evangelist', years: '1837–1899' },
+        'martin luther': { role: 'Reformer & Bible Translator', years: '1483–1546' },
+        'john bunyan': { role: 'Preacher & Author', years: '1628–1688' },
+        'fanny crosby': { role: 'Hymn Writer', years: '1820–1915' },
+        'john newton': { role: 'Pastor & Hymn Writer', years: '1725–1807' },
+        'corrie ten boom': { role: 'Christian Witness & Author', years: '1892–1983' },
+        'jim elliot': { role: 'Missionary', years: '1927–1956' },
+        'billy graham': { role: 'Evangelist', years: '1918–2018' },
+        'a. w. tozer': { role: 'Pastor & Author', years: '1897–1963' },
+        'watchman nee': { role: 'Bible Teacher & Author', years: '1903–1972' },
+        'leonard ravenhill': { role: 'Revival Preacher', years: '1907–1994' },
+        'jonathan edwards': { role: 'Revival Preacher', years: '1703–1758' },
+        'david brainerd': { role: 'Missionary', years: '1718–1747' },
+        'adoniram judson': { role: 'Missionary to Burma', years: '1788–1850' },
+        'gladys aylward': { role: 'Missionary to China', years: '1902–1970' },
+        'j. wilbur chapman': { role: 'Evangelist', years: '1859–1918' }
+      };
+
+      function extractLifeYears(text) {
+        const m = String(text || '').match(/(\d{4})\s*[–—-]\s*(\d{4})/);
+        return m ? `${m[1]}–${m[2]}` : '';
+      }
+
+      function normalizeChurchBio(title, rawDesc, rawExtract) {
+        const key = String(title || '').trim().toLowerCase().replace(/\s*\([^)]*\)\s*/g, '');
+        if (CHURCH_HERITAGE_BIOS[key]) {
+          return CHURCH_HERITAGE_BIOS[key];
+        }
+        const years = extractLifeYears(rawDesc) || extractLifeYears(rawExtract);
+        let role = String(rawDesc || '')
+          .replace(/\(?\d{4}\s*[–—-]\s*\d{4}\)?/g, '')
+          .replace(/\b(anglican|english|british|scottish|american|german|welsh|irish|dutch)\s+/gi, '')
+          .replace(/\b(clergyman|cleric|ecclesiastic|divine|vicar|curate|rector|presbyter)\b/gi, 'Preacher')
+          .replace(/\b(hymnographer|hymnodist)\b/gi, 'Hymn Writer')
+          .replace(/\b(theologian)\b/gi, 'Bible Teacher')
+          .replace(/\b(minister)\b/gi, 'Pastor')
+          .replace(/\s+/g, ' ')
+          .replace(/^[,;\s-]+|[,;\s-]+$/g, '')
+          .trim();
+        if (role) role = role.charAt(0).toUpperCase() + role.slice(1);
+        return { role: role || '', years: years || '' };
+      }
+
+      function formatChurchSubtitle(role, years, mode) {
+        if (mode === 'none') return '';
+        if (mode === 'years') return years || role || '';
+        if (role && years) return `${role} • ${years}`;
+        return role || years || '';
+      }
+
+      function applyMediaSubMode(mode) {
+        state.mediaSubMode = mode;
+        state.mediaShowCaption = true;
+        const formatted = formatChurchSubtitle(state.mediaRawRole, state.mediaRawYears, mode);
+        state.mediaSubtitle = formatted;
+        const subEl = document.getElementById('mediaSubtitleInput');
+        if (subEl) subEl.value = formatted;
+        document.querySelectorAll('.media-submode-btn').forEach(b => {
+          const active = b.getAttribute('data-submode') === mode;
+          b.className = active
+            ? 'media-submode-btn px-2 py-0.5 rounded-md text-[10px] font-semibold bg-white text-zinc-950 transition'
+            : 'media-submode-btn px-2 py-0.5 rounded-md text-[10px] font-medium bg-white/[0.04] text-zinc-400 hover:text-white transition';
+        });
+        renderStagePreview();
+        broadcastStateToOverlays();
+      }
+
+      function renderMediaSearchResults(items) {
+        const strip = document.getElementById('mediaSearchResultsStrip');
+        if (!strip) return;
+        if (!items || !items.length) {
+          strip.classList.add('hidden');
+          strip.innerHTML = '';
+          return;
+        }
+        strip.classList.remove('hidden');
+        strip.innerHTML = items.slice(0, 6).map((it, i) => `
+          <button type="button" data-search-pick="${i}" class="media-search-pick-btn rounded-md overflow-hidden bg-[#121216] border border-white/10 hover:border-white/45 aspect-video relative group transition" title="${escapeHtml(it.title || 'Select image')}">
+            <img src="${escapeHtml(it.thumb || it.url)}" alt="" class="w-full h-full object-contain" loading="lazy" />
+          </button>
+        `).join('');
+        strip.querySelectorAll('.media-search-pick-btn').forEach(btn => {
+          btn.addEventListener('click', () => {
+            const picked = items[parseInt(btn.getAttribute('data-search-pick'), 10)];
+            if (!picked) return;
+            state.mediaImageSrc = picked.url;
+            if (picked.w && picked.h && picked.w > picked.h * 1.15) {
+              state.mediaFitMode = 'contain_blur';
+            } else {
+              state.mediaFitMode = 'cover';
+            }
+            syncUiControlsFromState();
+            renderAll();
+            showToast('Selected image staged');
+          });
+        });
+      }
+
+      async function searchWikimediaCommons(query, limit = 6) {
+        const params = new URLSearchParams({
+          action: 'query', format: 'json', origin: '*',
+          generator: 'search', gsrnamespace: '6', gsrsearch: query, gsrlimit: String(limit),
+          prop: 'imageinfo', iiprop: 'url|size', iiurlwidth: '900'
+        });
+        const res = await fetch(`https://commons.wikimedia.org/w/api.php?${params.toString()}`).catch(() => null);
+        if (!res || !res.ok) return [];
+        const data = await res.json();
+        const pages = data?.query?.pages ? Object.values(data.query.pages) : [];
+        return pages.map(pg => {
+          const info = pg.imageinfo && pg.imageinfo[0];
+          if (!info) return null;
+          const u = info.thumburl || info.url;
+          if (!u || /\.(pdf|djvu|ogv|webm|svg)$/i.test(info.url || '')) return null;
+          return { title: (pg.title || '').replace(/^File:/i, ''), url: u, thumb: u, w: info.width, h: info.height };
+        }).filter(Boolean);
+      }
+
+      async function searchOpenverse(query, limit = 6) {
+        const res = await fetch(`https://api.openverse.org/v1/images/?q=${encodeURIComponent(query)}&page_size=${limit}`).catch(() => null);
+        if (!res || !res.ok) return [];
+        const data = await res.json();
+        return (data.results || []).map(r => ({
+          title: r.title || query,
+          url: r.url || r.thumbnail,
+          thumb: r.thumbnail || r.url,
+          w: r.width,
+          h: r.height
+        })).filter(x => x.url);
+      }
+
       async function runWikiImageFetch() {
         const q = (document.getElementById('wikiImageSearchInput')?.value || '').trim();
         if (!q) return;
-        showToast(`Searching Wikipedia: ${q}…`);
+        const src = state.mediaSearchSource || 'wiki';
+        showToast(`Searching ${src === 'commons' ? 'Wikimedia Commons' : src === 'openverse' ? 'Openverse' : 'Wikipedia'}: ${q}…`);
         try {
+          if (src === 'commons') {
+            const hits = await searchWikimediaCommons(q, 6);
+            if (hits.length) {
+              state.mediaImageSrc = hits[0].url;
+              state.mediaTitle = q;
+              const tEl = document.getElementById('mediaTitleInput');
+              if (tEl) tEl.value = q;
+              renderMediaSearchResults(hits);
+              renderAll();
+              showToast(`Found ${hits.length} images on Commons`);
+            } else {
+              renderMediaSearchResults([]);
+              showToast('No Commons results — try another keyword or Ctrl+V');
+            }
+            return;
+          }
+          if (src === 'openverse') {
+            const hits = await searchOpenverse(q, 6);
+            if (hits.length) {
+              state.mediaImageSrc = hits[0].url;
+              state.mediaTitle = q;
+              const tEl = document.getElementById('mediaTitleInput');
+              if (tEl) tEl.value = q;
+              renderMediaSearchResults(hits);
+              renderAll();
+              showToast(`Found ${hits.length} illustrations on Openverse`);
+            } else {
+              renderMediaSearchResults([]);
+              showToast('No Openverse results — try another keyword or Ctrl+V');
+            }
+            return;
+          }
+
+          // Primary Portraits (Wiki + Commons multi-portrait alternatives)
           const wikiUrl = 'https://en.wikipedia.org/api/rest_v1/page/summary/' + encodeURIComponent(q);
-          const res = await fetch(wikiUrl).catch(() => null);
+          const [res, commonsHits] = await Promise.all([
+            fetch(wikiUrl).catch(() => null),
+            searchWikimediaCommons(q + ' portrait', 5)
+          ]);
+          const resultsList = [];
           if (res && res.ok) {
             const data = await res.json();
             const imgSrc = (data.originalimage && data.originalimage.source) || (data.thumbnail && data.thumbnail.source) || '';
-            if (imgSrc) state.mediaImageSrc = imgSrc;
+            if (imgSrc) {
+              state.mediaImageSrc = imgSrc;
+              resultsList.push({ title: data.title || q, url: imgSrc, thumb: imgSrc });
+            }
             if (data.title) {
               state.mediaTitle = data.title;
-              document.getElementById('mediaTitleInput').value = data.title;
+              const tEl = document.getElementById('mediaTitleInput');
+              if (tEl) tEl.value = data.title;
             }
-            if (data.description) {
-              state.mediaSubtitle = data.description;
-              document.getElementById('mediaSubtitleInput').value = data.description;
-            }
-            renderAll();
-            showToast(`Fetched: ${data.title}`);
-          } else {
-            showToast('No Wikipedia match; paste any image with Ctrl+V');
+            const bio = normalizeChurchBio(data.title || q, data.description || '', data.extract || '');
+            state.mediaRawRole = bio.role;
+            state.mediaRawYears = bio.years;
+            const formattedSub = formatChurchSubtitle(bio.role, bio.years, state.mediaSubMode || 'role_years');
+            state.mediaSubtitle = formattedSub;
+            const sEl = document.getElementById('mediaSubtitleInput');
+            if (sEl) sEl.value = formattedSub;
           }
+          commonsHits.forEach(c => {
+            if (!resultsList.some(r => r.url === c.url)) resultsList.push(c);
+          });
+          if (!resultsList.length) {
+            renderMediaSearchResults([]);
+            showToast('No match found — try Commons/Openverse or paste with Ctrl+V');
+            return;
+          }
+          if (!state.mediaImageSrc && resultsList[0]) state.mediaImageSrc = resultsList[0].url;
+          renderMediaSearchResults(resultsList);
+          renderAll();
+          showToast(`Fetched ${state.mediaTitle} (${resultsList.length} images)`);
         } catch (err) {
           showToast('Offline: Paste any image from clipboard (Ctrl+V)');
         }
@@ -7116,8 +7690,12 @@
       state.activeClauseIndex = typeof payload.activeClauseIndex === 'number' ? payload.activeClauseIndex : -1;
       state.appendClauseLetter = payload.appendClauseLetter !== undefined ? Boolean(payload.appendClauseLetter) : true;
       state.mediaIsLive = Boolean(payload.mediaIsLive);
+      state.mediaType = payload.mediaType || state.mediaType || 'picture';
       state.mediaTitle = payload.mediaTitle !== undefined ? payload.mediaTitle : state.mediaTitle;
       state.mediaSubtitle = payload.mediaSubtitle !== undefined ? payload.mediaSubtitle : state.mediaSubtitle;
+      state.mediaQuoteText = payload.mediaQuoteText !== undefined ? payload.mediaQuoteText : state.mediaQuoteText;
+      state.mediaPointLabel = payload.mediaPointLabel !== undefined ? payload.mediaPointLabel : state.mediaPointLabel;
+      state.mediaZoom = payload.mediaZoom || state.mediaZoom || 100;
       state.mediaImageSrc = payload.mediaImageSrc || state.mediaImageSrc;
       state.mediaLayout = payload.mediaLayout || state.mediaLayout;
       state.mediaFitMode = payload.mediaFitMode || state.mediaFitMode;
