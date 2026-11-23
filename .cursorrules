@@ -238,3 +238,16 @@ When continuing development in Google Antigravity, all agents MUST obey these 7 
    - `B`: Toggle English Parallel Sub-label
    - `Ctrl+V`: Paste clipboard image directly into Sermon Picture Slide-Over Presenter
 7. **Recommended Next Tasks in Antigravity**: See `docs/ROADMAP_NEXT_TASKS.md` for modularizing into a Vite + React + TypeScript + GSAP workspace (if desired) or adding offline SQLite/JSON bundling, multi-verse auto-pagination, and two-way OBS WebSocket 5.x Tally integration.
+
+---
+
+## 6. Mandatory UI, UX, Broadcast & Telugu Zero-Clip Rules (Authoritative — See `DESIGN.md`)
+
+All future changes and new AI agents working on VakyaCast LT MUST follow [DESIGN.md](./DESIGN.md):
+
+1. **Global Telugu Zero-Clipping:** NEVER apply `overflow: hidden`, `truncate`, `leading-tight`, negative `tracking-tight`, or permanent `will-change` on Telugu text lines/headings. Always use `line-height >= 1.40`, `letter-spacing: 0`, `padding-top/bottom: 0.24em` on animated Telugu nodes, and `-0.35em` vertical bleed on any `clip-path` wipe.
+2. **Church TV Readability First:** Full 1080p title-safe width (`4.5%` horizontal / `4%` vertical margins), Reference ALWAYS bigger & identified first, distinct optical sizing for Telugu (`Anek Telugu`) vs English (`Anek Latin` / `Source Serif 4` — never hardcoded `Inter`), and `autoFitFullScreenStage` (`92%` height guard).
+3. **Zero Broadcast Slop:** No floating yellow divider bar, no radial spotlight blobs (use matte surfaces + subtle fine grain), no `📖` emoji icons, no shimmer sweeps, and persistent DOM GSAP transitions (zero backdrop flash on verse step, real `power3.in` fade-out on hide).
+4. **Contrast & Collision Safety:** Auto-invert ink for `clean_light` + `pure_black`, keep `.fs-theme-light` dark-ink highlights, and preserve Split-Screen Media collision guards in both Lower-Third and Full-Screen modes.
+5. **Calm Monochrome Operator UI:** Linear/Raycast monochrome palette (`#09090b` / `#0f0f12`), proportional `Anek Latin` + `tabular-nums` (never `JetBrains Mono` / `font-mono`), Red strictly for `ON AIR`, progressive disclosure (`Tools ▾`, collapsible Workbench, focused OBS Dock tabs).
+6. **Preview-First Safety (`staged` vs `live`):** Clicking History, Queue, Books/Chapters/Verses, Chapter Feed, or Search results MUST load into Preview ONLY — never hijacking the live Church TV until `Enter`, `PRESENT`, inline `▶` Play, or `Alt+1..9` is triggered. Keep **History** (40 persistent items, snippet + timestamp, `Alt+Z` quick-back) separate from **Queue**.

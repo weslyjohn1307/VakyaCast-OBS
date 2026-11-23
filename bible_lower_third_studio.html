@@ -584,6 +584,7 @@
     <!-- OBS DOCK MODE: FOCUSED 1-AT-A-TIME VIEW SWITCHER -->
     <nav id="dockViewNavBar" class="px-2.5 py-1.5 bg-[#0b0b0e] border-b border-white/[0.07] items-center gap-1">
       <button type="button" data-dock-target="live" class="dock-nav-btn flex-1 py-1.5 rounded-lg text-xs font-semibold bg-white text-zinc-950 transition">Live</button>
+      <button type="button" data-dock-target="history" class="dock-nav-btn flex-1 py-1.5 rounded-lg text-xs font-medium text-zinc-400 hover:text-white transition">History</button>
       <button type="button" data-dock-target="queue" class="dock-nav-btn flex-1 py-1.5 rounded-lg text-xs font-medium text-zinc-400 hover:text-white transition">Queue</button>
       <button type="button" data-dock-target="media" class="dock-nav-btn flex-1 py-1.5 rounded-lg text-xs font-medium text-zinc-400 hover:text-white transition">Media</button>
       <button type="button" data-dock-target="style" class="dock-nav-btn flex-1 py-1.5 rounded-lg text-xs font-medium text-zinc-400 hover:text-white transition">Look</button>
@@ -937,78 +938,164 @@
           </div>
         </div>
 
-        <!-- 3-COLUMN CASCADING BIBLE PICKER (SIDE-BY-SIDE IN ALL DOCK SIZES) -->
-        <div id="pickerCard" class="bg-slate-900/90 border border-slate-800 rounded-xl p-2 sm:p-3 shadow-lg flex-1 flex flex-col min-h-0">
-          <div class="grid grid-cols-12 gap-1.5 sm:gap-2.5 flex-1 min-h-0">
+        <!-- 4-STEP FULL-WIDTH BIBLE NAVIGATOR (BOOKS GRID → CHAPTERS → VERSES → LIVE CHAPTER VERSE FEED) + FAST TAB-JUMP BAR -->
+        <div id="pickerCard" class="bg-[#0f0f12] border border-white/[0.08] rounded-xl p-2.5 flex-1 flex flex-col gap-2 min-h-0">
 
-            <!-- COLUMN 1: 66 BOOKS SELECTOR (5 COLS) -->
-            <div class="col-span-5 flex flex-col border border-slate-800 rounded-lg bg-slate-950/60 overflow-hidden min-h-0">
-              <div class="p-1.5 sm:p-2 bg-slate-900 border-b border-slate-800 flex flex-col gap-1">
-                <div class="flex flex-wrap items-center justify-between gap-1">
-                  <span class="text-[11px] sm:text-xs font-bold text-slate-200 uppercase tracking-wider truncate">1. Book</span>
-                  <div class="flex items-center gap-0.5">
-                    <button id="tabFilterAll" type="button" class="px-1.5 py-0.5 rounded text-[10px] font-bold bg-amber-500 text-slate-950">All</button>
-                    <button id="tabFilterOT" type="button" class="px-1.5 py-0.5 rounded text-[10px] font-semibold bg-slate-800 text-slate-400 hover:text-white">OT <span class="hidden xl:inline">(39)</span></button>
-                    <button id="tabFilterNT" type="button" class="px-1.5 py-0.5 rounded text-[10px] font-semibold bg-slate-800 text-slate-400 hover:text-white">NT <span class="hidden xl:inline">(27)</span></button>
-                  </div>
-                </div>
-                <input
-                  id="bookFilterInput"
-                  type="text"
-                  placeholder="Filter book (yoh, ఆది)..."
-                  class="w-full bg-slate-950 border border-slate-700/80 focus:border-amber-500 rounded px-2 py-1 text-xs text-white placeholder-slate-500 outline-none"
-                />
-              </div>
-
-              <div id="bookListContainer" class="flex-1 overflow-y-auto divide-y divide-slate-800/50 min-h-0">
-                <!-- Populated dynamically with all 66 books -->
-              </div>
+          <!-- FAST 3-BOX TAB-JUMP BAR (Book → Tab → Ch → Tab → Verse → Enter = BOOM LIVE) -->
+          <div class="flex flex-wrap items-center gap-1.5 bg-[#0b0b0e] border border-white/[0.08] rounded-lg p-1.5">
+            <div class="flex-1 min-w-[115px] relative flex items-center">
+              <span class="absolute left-2 text-[10px] font-semibold text-zinc-500 pointer-events-none">B</span>
+              <input
+                id="jumpBookInput"
+                type="text"
+                autocomplete="off"
+                spellcheck="false"
+                placeholder="Book (yoh, mat)..."
+                title="Fast Jump: Type Book → Tab → Chapter → Tab → Verse → Enter (Shortcut: B)"
+                class="w-full bg-[#121216] border border-white/[0.09] focus:border-white/35 rounded-md pl-6 pr-2 py-1 text-xs text-zinc-100 placeholder-zinc-500 outline-none transition"
+              />
             </div>
-
-            <!-- COLUMN 2: CHAPTER GRID (3 COLS) -->
-            <div class="col-span-3 flex flex-col border border-slate-800 rounded-lg bg-slate-950/60 overflow-hidden min-h-0">
-              <div class="p-1.5 sm:p-2 bg-slate-900 border-b border-slate-800 flex items-center justify-between gap-1">
-                <span class="text-[11px] sm:text-xs font-bold text-slate-200 uppercase tracking-wider truncate">2. Ch</span>
-                <span id="chapterCountLabel" class="text-[10px] font-mono text-amber-400 shrink-0">21</span>
-              </div>
-              <div id="chapterGridContainer" class="p-1.5 sm:p-2 adaptive-num-grid flex-1 overflow-y-auto min-h-0">
-                <!-- Populated dynamically -->
-              </div>
+            <span class="text-zinc-600 text-xs select-none">›</span>
+            <div class="w-16 relative flex items-center">
+              <span class="absolute left-1.5 text-[10px] font-semibold text-zinc-500 pointer-events-none">Ch</span>
+              <input
+                id="jumpChInput"
+                type="text"
+                inputmode="numeric"
+                autocomplete="off"
+                placeholder="15"
+                title="Chapter Number → Tab/Space/: to Verse (Same-Book Shortcut: G)"
+                class="w-full bg-[#121216] border border-white/[0.09] focus:border-white/35 rounded-md pl-6 pr-1.5 py-1 text-xs text-zinc-100 text-center tabular-nums placeholder-zinc-600 outline-none transition"
+              />
             </div>
-
-            <!-- COLUMN 3: VERSE & RANGE GRID (4 COLS) -->
-            <div class="col-span-4 flex flex-col border border-slate-800 rounded-lg bg-slate-950/60 overflow-hidden min-h-0">
-              <div class="p-1.5 sm:p-2 bg-slate-900 border-b border-slate-800 flex flex-wrap items-center justify-between gap-1">
-                <div class="truncate">
-                  <span class="text-[11px] sm:text-xs font-bold text-slate-200 uppercase tracking-wider">3. Verse</span>
-                  <span id="verseCountLabel" class="text-[10px] font-mono text-slate-400">(27)</span>
-                </div>
-                <button
-                  id="btnToggleRangeClickMode"
-                  type="button"
-                  class="px-1.5 py-0.5 rounded text-[10px] font-bold border border-slate-700 bg-slate-800 text-slate-300 hover:border-amber-500/50 transition"
-                  title="When enabled, clicking a second verse automatically creates a range like 15:4-15 (Or hold Shift + Click anytime)"
-                >
-                  Range Click: ON
-                </button>
-              </div>
-              <div class="p-1 sm:p-1.5 bg-slate-900/80 border-b border-slate-800 flex items-center justify-between gap-1">
-                <button
-                  id="btnWholeChapterGridTop"
-                  type="button"
-                  class="w-full py-1 px-2 rounded-lg text-[11px] sm:text-xs font-bold flex items-center justify-between gap-1 bg-amber-500/15 hover:bg-amber-500/30 text-amber-300 border border-amber-500/40 transition telugu-font-sans"
-                  title="Present entire chapter without verse numbers (e.g. యోహాను సువార్త 12వ అధ్యాయము)"
-                >
-                  <span class="truncate">📖 పూర్తి అధ్యాయము</span>
-                  <span id="wholeChBadgePreview" class="font-mono text-[10px] px-1.5 py-0.5 rounded bg-slate-950/80 text-amber-400 shrink-0">15వ అధ్యాయము</span>
-                </button>
-              </div>
-              <div id="verseGridContainer" class="p-1.5 sm:p-2 adaptive-num-grid flex-1 overflow-y-auto min-h-0">
-                <!-- Populated dynamically -->
-              </div>
+            <span class="text-zinc-600 text-xs select-none">:</span>
+            <div class="w-20 relative flex items-center">
+              <span class="absolute left-1.5 text-[10px] font-semibold text-zinc-500 pointer-events-none">V</span>
+              <input
+                id="jumpVerseInput"
+                type="text"
+                autocomplete="off"
+                placeholder="4 / 4-7"
+                title="Verse or Range (e.g. 4 or 4-7, leave blank for Whole Ch) → Enter = LIVE"
+                class="w-full bg-[#121216] border border-white/[0.09] focus:border-white/35 rounded-md pl-5 pr-1.5 py-1 text-xs text-zinc-100 text-center tabular-nums placeholder-zinc-600 outline-none transition"
+              />
             </div>
-
+            <button
+              id="btnJumpBarGoLive"
+              type="button"
+              class="px-2.5 py-1 rounded-md text-xs font-semibold bg-white hover:bg-zinc-200 text-zinc-950 transition shrink-0"
+              title="Present this Book : Chapter : Verse LIVE (Enter)"
+            >
+              Go ↵
+            </button>
           </div>
+
+          <!-- 4-STEP BREADCRUMB NAVIGATION TABS -->
+          <div class="flex flex-wrap items-center justify-between gap-1.5 border-b border-white/[0.07] pb-2">
+            <div class="flex items-center gap-1">
+              <button id="navTabBooks" type="button" data-nav-step="books" class="nav-step-btn px-2.5 py-1 rounded-md text-xs font-medium text-zinc-400 hover:text-white transition">
+                Books (66)
+              </button>
+              <button id="navTabChapters" type="button" data-nav-step="chapters" class="nav-step-btn px-2.5 py-1 rounded-md text-xs font-medium text-zinc-400 hover:text-white transition">
+                Ch <span id="chapterCountLabel" class="text-[10px] opacity-75 tabular-nums">15</span>
+              </button>
+              <button id="navTabVerses" type="button" data-nav-step="verses" class="nav-step-btn px-2.5 py-1 rounded-md text-xs font-medium text-zinc-400 hover:text-white transition">
+                Verses <span id="verseCountLabel" class="text-[10px] opacity-75 tabular-nums">(27)</span>
+              </button>
+              <button id="navTabRead" type="button" data-nav-step="read" class="nav-step-btn px-2.5 py-1 rounded-md text-xs font-semibold bg-white text-zinc-950 transition">
+                Read Chapter
+              </button>
+            </div>
+            <div class="flex items-center gap-1">
+              <button
+                id="btnToggleFeedEnglish"
+                type="button"
+                class="px-2 py-1 rounded-md text-[11px] font-medium bg-white/[0.04] hover:bg-white/[0.08] text-zinc-400 hover:text-white border border-white/[0.08] transition"
+                title="Show English KJV line underneath each Telugu verse in the Chapter Feed"
+              >
+                + EN
+              </button>
+              <button
+                id="btnToggleRangeClickMode"
+                type="button"
+                class="px-2 py-1 rounded-md text-[11px] font-medium border border-white/[0.08] bg-white/[0.04] text-zinc-400 hover:text-white transition"
+                title="Range Click Mode (or hold Shift + Click any second verse)"
+              >
+                Range: ON
+              </button>
+            </div>
+          </div>
+
+          <!-- PANE 1: ALL 66 BOOKS COLOR-GROUPED MATRIX (ZERO SCROLLING) -->
+          <div id="navPaneBooks" class="hidden flex-1 flex flex-col gap-2 min-h-0">
+            <div class="flex flex-wrap items-center justify-between gap-1.5">
+              <div class="flex items-center gap-1">
+                <button id="tabFilterAll" type="button" class="px-2 py-0.5 rounded-md text-[11px] font-semibold bg-white text-zinc-950">All (66)</button>
+                <button id="tabFilterOT" type="button" class="px-2 py-0.5 rounded-md text-[11px] font-medium bg-white/[0.04] text-zinc-400 hover:text-white">OT (39)</button>
+                <button id="tabFilterNT" type="button" class="px-2 py-0.5 rounded-md text-[11px] font-medium bg-white/[0.04] text-zinc-400 hover:text-white">NT (27)</button>
+              </div>
+              <input
+                id="bookFilterInput"
+                type="text"
+                placeholder="Filter book (yoh, ఆది)..."
+                class="w-44 bg-[#111114] border border-white/[0.09] focus:border-white/30 rounded-md px-2 py-1 text-xs text-white placeholder-zinc-500 outline-none"
+              />
+            </div>
+            <div id="bookListContainer" class="flex-1 overflow-y-auto grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-1 content-start pr-0.5 min-h-[260px]">
+              <!-- Populated dynamically with all 66 color-grouped book tiles -->
+            </div>
+          </div>
+
+          <!-- PANE 2: CHAPTERS NUMBER GRID -->
+          <div id="navPaneChapters" class="hidden flex-1 flex flex-col gap-2 min-h-0">
+            <div id="chapterGridContainer" class="adaptive-num-grid flex-1 overflow-y-auto pr-0.5 min-h-[260px]">
+              <!-- Populated dynamically -->
+            </div>
+          </div>
+
+          <!-- PANE 3: VERSES NUMBER GRID + WHOLE CHAPTER -->
+          <div id="navPaneVerses" class="hidden flex-1 flex flex-col gap-2 min-h-0">
+            <div class="flex items-center gap-1.5">
+              <button
+                id="btnWholeChapterGridTop"
+                type="button"
+                class="flex-1 py-1.5 px-3 rounded-lg text-xs font-semibold flex items-center justify-between gap-2 bg-white/[0.06] hover:bg-white/[0.11] text-zinc-100 border border-white/10 transition telugu-font-sans"
+                title="Present entire chapter without verse numbers"
+              >
+                <span>పూర్తి అధ్యాయము (Whole Chapter)</span>
+                <span id="wholeChBadgePreview" class="text-[11px] px-2 py-0.5 rounded bg-black/40 text-amber-300 shrink-0 tabular-nums">15వ అధ్యాయము</span>
+              </button>
+              <button
+                id="btnOpenChapterFeedFromVerses"
+                type="button"
+                class="px-3 py-1.5 rounded-lg text-xs font-medium bg-white/[0.04] hover:bg-white/[0.10] text-zinc-300 border border-white/[0.08] transition shrink-0"
+              >
+                Read All →
+              </button>
+            </div>
+            <div id="verseGridContainer" class="adaptive-num-grid flex-1 overflow-y-auto pr-0.5 min-h-[240px]">
+              <!-- Populated dynamically -->
+            </div>
+          </div>
+
+          <!-- PANE 4: LIVE FULL-TEXT CHAPTER VERSE FEED (DEFAULT — READ ABOVE & BELOW) -->
+          <div id="navPaneRead" class="flex-1 flex flex-col gap-1.5 min-h-0">
+            <div class="flex items-center justify-between gap-2">
+              <span id="chapterFeedTitleLabel" class="text-xs font-semibold text-zinc-200 telugu-font-sans">యోహాను 15</span>
+              <input
+                id="chapterFeedFilterInput"
+                type="text"
+                autocomplete="off"
+                spellcheck="false"
+                placeholder="Filter inside chapter..."
+                class="w-44 sm:w-52 bg-[#111114] border border-white/[0.08] focus:border-white/30 rounded-md px-2 py-1 text-[11px] text-zinc-100 placeholder-zinc-500 outline-none"
+              />
+            </div>
+            <div id="chapterVerseFeedContainer" class="flex-1 overflow-y-auto flex flex-col gap-1 pr-0.5 min-h-[260px] max-h-[430px]">
+              <!-- Populated dynamically with every verse in the chapter (auto-centered on active verse) -->
+            </div>
+          </div>
+
         </div>
       </section>
 
@@ -1050,10 +1137,13 @@
           </div>
         </div>
 
-        <!-- TABS FOR: 1) SERVICE QUEUE  2) STYLE & MOTION  3) MEDIA  4) BOOK NAMES -->
+        <!-- TABS FOR: 1) HISTORY (PRIORITY DEFAULT)  2) QUEUE (Alt+1..9)  3) LOOK & MOTION  4) MEDIA  5) BOOK NAMES -->
         <div class="bg-[#0f0f12] border border-white/[0.08] rounded-xl p-3 flex-1 flex flex-col">
           <div id="rightTabsStrip" class="flex flex-wrap items-center gap-1 border-b border-white/[0.07] pb-2 mb-3">
-            <button id="rightTabQueue" type="button" class="px-2.5 py-1.5 rounded-lg text-xs font-semibold bg-white text-zinc-950 transition">
+            <button id="rightTabHistory" type="button" class="px-2.5 py-1.5 rounded-lg text-xs font-semibold bg-white text-zinc-950 transition">
+              History
+            </button>
+            <button id="rightTabQueue" type="button" class="px-2.5 py-1.5 rounded-lg text-xs font-medium bg-white/[0.04] text-zinc-400 hover:text-white transition">
               Queue (Alt+1..9)
             </button>
             <button id="rightTabStyle" type="button" class="px-2.5 py-1.5 rounded-lg text-xs font-medium bg-white/[0.04] text-zinc-400 hover:text-white transition">
@@ -1063,30 +1153,30 @@
               Media
             </button>
             <button id="rightTabCustomLang" type="button" class="px-2.5 py-1.5 rounded-lg text-xs font-medium bg-white/[0.04] text-zinc-400 hover:text-white transition">
-              Book Names
+              Books
             </button>
           </div>
 
-          <!-- TAB PANEL 1: SERVICE QUEUE / PINNED VERSES & RECENT HISTORY -->
-          <div id="panelQueue" class="flex-1 flex flex-col gap-3">
+          <!-- TAB PANEL 1A: DEDICATED SERMON HISTORY (CLICK = LOAD TO PREVIEW, ▶ / ENTER = GO LIVE) -->
+          <div id="panelHistory" class="flex-1 flex flex-col gap-2">
+            <div class="flex items-center justify-between gap-2">
+              <span class="text-xs font-medium text-zinc-400">Click to preview • <span class="text-zinc-200 font-semibold">▶</span> or <span class="text-zinc-200 font-semibold">Enter</span> to air • <span class="text-zinc-200 font-semibold">Alt+Z</span> back</span>
+              <button id="btnClearHistory" type="button" class="text-[11px] text-zinc-500 hover:text-rose-400 transition shrink-0">Clear</button>
+            </div>
+            <div id="historyChipsContainer" class="flex-1 flex flex-col gap-1.5 max-h-[300px] overflow-y-auto pr-0.5">
+              <!-- Populated dynamically with up to 40 persistent History rows -->
+            </div>
+          </div>
+
+          <!-- TAB PANEL 1B: SERVICE QUEUE / PINNED PROGRAM LIST (Alt+1..9) -->
+          <div id="panelQueue" class="hidden flex-1 flex flex-col gap-2.5">
             <div class="flex items-center justify-between">
-              <span class="text-xs font-semibold text-slate-300">Sermon Verse Queue (Click or Press <kbd class="px-1 py-0.5 bg-slate-800 rounded font-mono text-[10px]">Alt+1..9</kbd> to Present)</span>
-              <button id="btnResetDefaultPresets" type="button" class="text-[11px] text-slate-400 hover:text-amber-300">Reset Sample Verses</button>
+              <span class="text-xs font-medium text-zinc-400">Click to preview • <span class="text-zinc-200 font-semibold">▶</span> or <span class="text-zinc-200 font-semibold">Alt+1..9</span> to air</span>
+              <button id="btnResetDefaultPresets" type="button" class="text-[11px] text-zinc-500 hover:text-zinc-200 transition">Reset Samples</button>
             </div>
 
-            <div id="queueListContainer" class="grid grid-cols-1 sm:grid-cols-2 gap-2 max-h-[210px] overflow-y-auto pr-1">
+            <div id="queueListContainer" class="grid grid-cols-1 sm:grid-cols-2 gap-1.5 max-h-[300px] overflow-y-auto pr-0.5">
               <!-- Populated dynamically -->
-            </div>
-
-            <!-- Recent History -->
-            <div class="mt-auto pt-2 border-t border-slate-800">
-              <div class="flex items-center justify-between mb-1.5">
-                <span class="text-[11px] font-semibold uppercase tracking-wider text-slate-400">Recently Presented History</span>
-                <button id="btnClearHistory" type="button" class="text-[10px] text-slate-400 hover:text-rose-400">Clear</button>
-              </div>
-              <div id="historyChipsContainer" class="flex flex-wrap gap-1.5 max-h-[68px] overflow-y-auto">
-                <!-- Populated dynamically -->
-              </div>
             </div>
           </div>
 
@@ -2046,6 +2136,10 @@
       wholeChapter: false, // When true, formats as "యోహాను సువార్త 12వ అధ్యాయము" without verse numbers
       customOverride: '',  // Optional manual override
       isLive: true,        // Default visible in Studio preview; ?mode=overlay starts hidden until triggered
+      liveProgram: null,   // Active ON-AIR snapshot { bookId, chapter, verseStart, verseEnd, wholeChapter, customOverride, selectedTeWordIndices, selectedEnWordIndices, activeClauseIndex }
+      navStep: 'read',     // 4-Step Navigator: 'books' | 'chapters' | 'verses' | 'read'
+      feedShowEnglish: false,
+      feedFilterQuery: '',
       lang: 'te',          // 'te' | 'te_full' | 'en' | 'hi' | 'ta' | 'custom'
       showBilingual: false,
       testamentFilter: 'ALL',
@@ -3633,6 +3727,53 @@
     // ============================================================================
     // 5. SYNCHRONIZATION ENGINE (BROADCASTCHANNEL + LOCALSTORAGE + POPOUT)
     // ============================================================================
+    const STORAGE_KEY_HISTORY = 'vakyacast_lt_history_v1';
+
+    function snapshotStagedProgram() {
+      return {
+        bookId: state.bookId,
+        chapter: state.chapter,
+        verseStart: state.verseStart,
+        verseEnd: state.verseEnd,
+        wholeChapter: Boolean(state.wholeChapter),
+        customOverride: state.customOverride || '',
+        selectedTeWordIndices: Array.isArray(state.selectedTeWordIndices) ? state.selectedTeWordIndices.slice() : [],
+        selectedEnWordIndices: Array.isArray(state.selectedEnWordIndices) ? state.selectedEnWordIndices.slice() : [],
+        activeClauseIndex: typeof state.activeClauseIndex === 'number' ? state.activeClauseIndex : -1
+      };
+    }
+
+    function isStagedMatchingLive() {
+      if (!state.liveProgram) return true;
+      const lp = state.liveProgram;
+      return lp.bookId === state.bookId &&
+        lp.chapter === state.chapter &&
+        Boolean(lp.wholeChapter) === Boolean(state.wholeChapter) &&
+        (Boolean(state.wholeChapter) || (lp.verseStart === state.verseStart && lp.verseEnd === state.verseEnd)) &&
+        (lp.customOverride || '') === (state.customOverride || '');
+    }
+
+    function getLiveRenderState() {
+      const params = new URLSearchParams(window.location.search);
+      const isPureOverlay = (params.get('mode') || '').toLowerCase() === 'overlay';
+      if (isPureOverlay || !state.isLive || !state.liveProgram) {
+        return state;
+      }
+      // Merge active ON-AIR verse snapshot with live style/theme/layout/media controls
+      return Object.assign({}, state, state.liveProgram);
+    }
+
+    function loadPersistedHistory() {
+      const saved = safeGetStorage(STORAGE_KEY_HISTORY, null);
+      if (Array.isArray(saved) && saved.length) {
+        state.history = saved.slice(0, 40);
+      }
+    }
+
+    function savePersistedHistory() {
+      safeSetStorage(STORAGE_KEY_HISTORY, (state.history || []).slice(0, 40));
+    }
+
     function broadcastStateToOverlays() {
       // Never allow a read-only ?mode=overlay instance to overwrite live state
       const params = new URLSearchParams(window.location.search);
@@ -3643,13 +3784,14 @@
       // Persist all operator settings safely across OBS restarts
       scheduleSavePreferences();
 
+      const liveSrc = getLiveRenderState();
       const payload = {
-        bookId: state.bookId,
-        chapter: state.chapter,
-        verseStart: state.verseStart,
-        verseEnd: state.verseEnd,
-        wholeChapter: Boolean(state.wholeChapter),
-        customOverride: state.customOverride,
+        bookId: liveSrc.bookId,
+        chapter: liveSrc.chapter,
+        verseStart: liveSrc.verseStart,
+        verseEnd: liveSrc.verseEnd,
+        wholeChapter: Boolean(liveSrc.wholeChapter),
+        customOverride: liveSrc.customOverride,
         isLive: state.isLive,
         lang: state.lang,
         showBilingual: state.showBilingual,
@@ -3668,9 +3810,9 @@
         fsScalePercent: state.fsScalePercent,
         workbenchActionMode: state.workbenchActionMode,
         highlightColor: state.highlightColor,
-        selectedTeWordIndices: state.selectedTeWordIndices,
-        selectedEnWordIndices: state.selectedEnWordIndices,
-        activeClauseIndex: state.activeClauseIndex,
+        selectedTeWordIndices: liveSrc.selectedTeWordIndices,
+        selectedEnWordIndices: liveSrc.selectedEnWordIndices,
+        activeClauseIndex: liveSrc.activeClauseIndex,
         appendClauseLetter: state.appendClauseLetter,
         mediaIsLive: state.mediaIsLive,
         mediaTitle: state.mediaTitle,
@@ -3776,11 +3918,20 @@
       const liveStatusPill = document.getElementById('liveStatusPill');
 
       if (state.isLive) {
+        const syncedLive = isStagedMatchingLive();
+        const liveRefText = state.liveProgram
+          ? (state.liveProgram.customOverride || getFormattedCitation(state.liveProgram.bookId, state.liveProgram.chapter, state.liveProgram.verseStart, state.liveProgram.verseEnd, state.lang, state.liveProgram.wholeChapter))
+          : getFormattedCitation();
         btnLiveHeader.className = 'px-3 py-1.5 rounded-lg text-xs font-semibold tracking-wide flex items-center gap-1.5 transition border border-rose-400/50 bg-rose-600 hover:bg-rose-500 text-white on-air-glow';
         headerLiveText.textContent = 'ON AIR';
         headerLiveDot.className = 'w-2 h-2 rounded-full bg-white animate-ping';
-        liveStatusPill.className = 'text-[10px] font-semibold uppercase px-2 py-0.5 rounded-md bg-rose-500/15 text-rose-400 border border-rose-500/30';
-        liveStatusPill.textContent = '● ON AIR';
+        if (syncedLive) {
+          liveStatusPill.className = 'text-[10px] font-semibold px-2 py-0.5 rounded-md bg-rose-500/15 text-rose-400 border border-rose-500/30';
+          liveStatusPill.textContent = '● ON AIR';
+        } else {
+          liveStatusPill.className = 'text-[10px] font-semibold px-2 py-0.5 rounded-md bg-white text-zinc-950';
+          liveStatusPill.textContent = `PREVIEW • TV: ${liveRefText}`;
+        }
       } else {
         btnLiveHeader.className = 'px-3 py-1.5 rounded-lg text-xs font-semibold tracking-wide flex items-center gap-1.5 transition border border-white/15 bg-white hover:bg-zinc-200 text-zinc-950';
         headerLiveText.textContent = 'GO LIVE';
@@ -3883,13 +4034,16 @@
       if (!memoryBibleBooksCache.te[state.bookId] || !memoryBibleBooksCache.en[state.bookId]) {
         ensureBookLoaded(state.bookId).then(() => {
           renderVerseWorkbench();
+          renderChapterVerseFeed(true);
           renderStagePreview();
         });
       }
 
+      syncJumpBarFromState();
       renderBookList();
       renderChapterGrid();
       renderVerseGrid();
+      renderChapterVerseFeed(true);
       renderVerseWorkbench();
       renderStagePreview();
       renderQueueAndHistory();
@@ -4233,6 +4387,56 @@
       });
     }
 
+    function getBookDivisionDotColor(id) {
+      if (id <= 5) return '#f59e0b';      // Law (Pentateuch)
+      if (id <= 17) return '#10b981';     // OT History
+      if (id <= 22) return '#38bdf8';     // Poetry & Wisdom
+      if (id <= 39) return '#a78bfa';     // Prophets
+      if (id <= 43) return '#f43f5e';     // Gospels
+      if (id === 44) return '#fb923c';    // Acts
+      if (id <= 65) return '#60a5fa';     // Epistles
+      return '#facc15';                   // Revelation
+    }
+
+    function setNavStep(step) {
+      const valid = ['books', 'chapters', 'verses', 'read'];
+      state.navStep = valid.includes(step) ? step : 'read';
+      const panes = {
+        books: document.getElementById('navPaneBooks'),
+        chapters: document.getElementById('navPaneChapters'),
+        verses: document.getElementById('navPaneVerses'),
+        read: document.getElementById('navPaneRead')
+      };
+      Object.entries(panes).forEach(([k, el]) => {
+        if (el) el.classList.toggle('hidden', k !== state.navStep);
+      });
+      document.querySelectorAll('.nav-step-btn').forEach(btn => {
+        const active = btn.getAttribute('data-nav-step') === state.navStep;
+        btn.className = active
+          ? 'nav-step-btn px-2.5 py-1 rounded-md text-xs font-semibold bg-white text-zinc-950 transition'
+          : 'nav-step-btn px-2.5 py-1 rounded-md text-xs font-medium text-zinc-400 hover:text-white transition';
+      });
+      if (state.navStep === 'read') {
+        renderChapterVerseFeed(true);
+      }
+    }
+
+    function syncJumpBarFromState() {
+      const book = getBookById(state.bookId);
+      const jb = document.getElementById('jumpBookInput');
+      const jc = document.getElementById('jumpChInput');
+      const jv = document.getElementById('jumpVerseInput');
+      if (jb && document.activeElement !== jb) {
+        jb.value = getBookDisplayName(book, state.lang);
+      }
+      if (jc && document.activeElement !== jc) {
+        jc.value = String(state.chapter || 1);
+      }
+      if (jv && document.activeElement !== jv) {
+        jv.value = state.wholeChapter ? '' : (state.verseEnd ? `${state.verseStart}-${state.verseEnd}` : String(state.verseStart || 1));
+      }
+    }
+
     function renderBookList() {
       const container = document.getElementById('bookListContainer');
       if (!container) return;
@@ -4255,26 +4459,20 @@
       container.innerHTML = filtered.map(b => {
         const isSelected = b.id === state.bookId;
         const primaryName = getBookDisplayName(b, state.lang);
+        const dotColor = getBookDivisionDotColor(b.id);
         return `
           <button
             type="button"
             data-book-id="${b.id}"
-            class="book-item-btn w-full px-2.5 py-2 text-left flex items-center justify-between gap-2 transition ${
+            title="${escapeHtml(b.te_full)} (${escapeHtml(b.en)})"
+            class="book-item-btn px-2 py-1.5 rounded-md text-left flex items-center gap-1.5 transition border ${
               isSelected
-                ? 'bg-amber-500/20 text-amber-300 border-l-4 border-amber-500 font-bold'
-                : 'hover:bg-slate-800/70 text-slate-200'
+                ? 'bg-white text-zinc-950 border-white font-semibold'
+                : 'bg-[#121216] hover:bg-white/[0.08] text-zinc-200 border-white/[0.07]'
             }"
           >
-            <div class="flex items-center gap-1.5 min-w-0">
-              <span class="text-[10px] font-mono px-1 py-0.5 rounded shrink-0 ${isSelected ? 'bg-amber-500 text-slate-950 font-bold' : 'bg-slate-800 text-slate-400'}">
-                ${String(b.id).padStart(2, '0')}
-              </span>
-              <div class="min-w-0 truncate">
-                <div class="text-xs sm:text-sm truncate telugu-font-sans leading-tight">${escapeHtml(primaryName)}</div>
-                <div class="text-[10px] text-slate-400 truncate sm:hidden">${escapeHtml(b.en)}</div>
-              </div>
-            </div>
-            <span class="text-[11px] text-slate-400 shrink-0 hidden sm:inline">${escapeHtml(b.en)}</span>
+            <span class="w-1.5 h-1.5 rounded-full shrink-0" style="background: ${isSelected ? '#09090b' : dotColor};"></span>
+            <span class="text-xs telugu-font-sans leading-snug break-words min-w-0">${escapeHtml(primaryName)}</span>
           </button>
         `;
       }).join('');
@@ -4283,6 +4481,7 @@
         btn.addEventListener('click', () => {
           const newBookId = parseInt(btn.getAttribute('data-book-id'), 10);
           selectBook(newBookId);
+          setNavStep('chapters');
         });
       });
     }
@@ -4294,7 +4493,7 @@
 
       const book = getBookById(state.bookId);
       const totalChapters = book.verses.length;
-      if (countLabel) countLabel.textContent = `${totalChapters} Chs`;
+      if (countLabel) countLabel.textContent = `${state.chapter}/${totalChapters}`;
 
       let html = '';
       for (let c = 1; c <= totalChapters; c++) {
@@ -4303,10 +4502,10 @@
           <button
             type="button"
             data-chapter="${c}"
-            class="chapter-cell-btn py-1.5 rounded-lg font-mono text-xs font-bold transition border ${
+            class="chapter-cell-btn py-2 rounded-lg text-xs font-semibold tabular-nums transition border ${
               isSelected
-                ? 'bg-amber-500 text-slate-950 border-amber-400 shadow-sm shadow-amber-500/30'
-                : 'bg-slate-900/90 hover:bg-slate-800 text-slate-300 border-slate-800'
+                ? 'bg-white text-zinc-950 border-white'
+                : 'bg-[#121216] hover:bg-white/[0.08] text-zinc-300 border-white/[0.07]'
             }"
           >
             ${c}
@@ -4319,6 +4518,7 @@
         btn.addEventListener('click', () => {
           const ch = parseInt(btn.getAttribute('data-chapter'), 10);
           selectChapter(ch);
+          setNavStep('verses');
         });
       });
     }
@@ -4338,18 +4538,18 @@
         const isEnd = !state.wholeChapter && state.verseEnd && v === state.verseEnd;
         const isInRange = !state.wholeChapter && state.verseEnd && v > state.verseStart && v < state.verseEnd;
 
-        let cellClass = 'bg-slate-900/90 hover:bg-slate-800 text-slate-300 border-slate-800';
+        let cellClass = 'bg-[#121216] hover:bg-white/[0.08] text-zinc-300 border-white/[0.07]';
         if (isStart || isEnd) {
-          cellClass = 'bg-amber-500 text-slate-950 border-amber-400 font-extrabold shadow-sm';
+          cellClass = 'bg-white text-zinc-950 border-white font-bold';
         } else if (isInRange) {
-          cellClass = 'bg-amber-500/25 text-amber-300 border-amber-500/40 font-bold';
+          cellClass = 'bg-white/20 text-white border-white/30 font-semibold';
         }
 
         html += `
           <button
             type="button"
             data-verse="${v}"
-            class="verse-cell-btn py-1.5 rounded-lg font-mono text-xs transition border ${cellClass}"
+            class="verse-cell-btn py-2 rounded-lg text-xs tabular-nums transition border ${cellClass}"
           >
             ${v}
           </button>
@@ -4361,8 +4561,115 @@
         btn.addEventListener('click', (e) => {
           const v = parseInt(btn.getAttribute('data-verse'), 10);
           handleVerseCellClick(v, e.shiftKey);
+          if (!e.shiftKey && !state.awaitingRangeSecondClick) {
+            setNavStep('read');
+          }
         });
       });
+    }
+
+    function renderChapterVerseFeed(autoScroll = false) {
+      const container = document.getElementById('chapterVerseFeedContainer');
+      const titleEl = document.getElementById('chapterFeedTitleLabel');
+      if (!container) return;
+
+      const book = getBookById(state.bookId);
+      const totalVerses = book.verses[state.chapter - 1] || 30;
+      if (titleEl) {
+        titleEl.textContent = `${getBookDisplayName(book, state.lang)} ${state.chapter} (${book.en} ${state.chapter})`;
+      }
+
+      const q = (state.feedFilterQuery || '').trim().toLowerCase();
+      const lp = state.isLive ? state.liveProgram : null;
+      const rows = [];
+
+      for (let v = 1; v <= totalVerses; v++) {
+        const teText = getRawSingleVerseText(state.bookId, state.chapter, v, 'te');
+        const enText = getRawSingleVerseText(state.bookId, state.chapter, v, 'en');
+        if (q && !teText.toLowerCase().includes(q) && !enText.toLowerCase().includes(q) && String(v) !== q) {
+          continue;
+        }
+        const isSelected = !state.wholeChapter && (
+          v === state.verseStart ||
+          (state.verseEnd && v >= state.verseStart && v <= state.verseEnd)
+        );
+        const isLiveVerse = Boolean(
+          lp && lp.bookId === state.bookId && lp.chapter === state.chapter &&
+          !lp.wholeChapter && (v === lp.verseStart || (lp.verseEnd && v >= lp.verseStart && v <= lp.verseEnd))
+        );
+
+        rows.push(`
+          <div
+            data-feed-verse="${v}"
+            class="feed-verse-row group flex items-start gap-2 px-2.5 py-2 rounded-lg border cursor-pointer transition ${
+              isSelected
+                ? 'bg-white/[0.11] border-white/30'
+                : 'bg-[#111114] hover:bg-white/[0.05] border-white/[0.06]'
+            }"
+          >
+            <div class="flex flex-col items-center gap-1 shrink-0 pt-0.5 w-11">
+              <span class="text-[11px] font-semibold tabular-nums px-1.5 py-0.5 rounded ${
+                isSelected ? 'bg-white text-zinc-950' : 'bg-white/[0.06] text-zinc-400'
+              }">${state.chapter}:${v}</span>
+              ${isLiveVerse ? '<span class="text-[9px] font-bold text-rose-400 tracking-wide">● LIVE</span>' : ''}
+            </div>
+            <div class="flex-1 min-w-0 flex flex-col gap-1">
+              <div class="text-[13px] text-zinc-100 telugu-font-sans leading-relaxed">${escapeHtml(teText)}</div>
+              ${state.feedShowEnglish ? `<div class="text-xs text-zinc-400 leading-snug">${escapeHtml(enText)}</div>` : ''}
+            </div>
+            <button
+              type="button"
+              data-feed-play="${v}"
+              class="feed-play-btn shrink-0 px-2 py-1 rounded-md text-[11px] font-semibold bg-white/[0.06] hover:bg-rose-600 text-zinc-300 hover:text-white border border-white/[0.08] transition"
+              title="Present ${state.chapter}:${v} ON AIR immediately"
+            >
+              ▶
+            </button>
+          </div>
+        `);
+      }
+
+      container.innerHTML = rows.length
+        ? rows.join('')
+        : `<div class="text-center py-8 text-xs text-zinc-500">No matching verses in ${escapeHtml(book.en)} ${state.chapter}.</div>`;
+
+      container.querySelectorAll('.feed-verse-row').forEach(row => {
+        row.addEventListener('click', (e) => {
+          if (e.target.closest('.feed-play-btn')) return;
+          const v = parseInt(row.getAttribute('data-feed-verse'), 10);
+          handleVerseCellClick(v, e.shiftKey);
+        });
+        row.addEventListener('dblclick', (e) => {
+          if (e.target.closest('.feed-play-btn')) return;
+          const v = parseInt(row.getAttribute('data-feed-verse'), 10);
+          state.wholeChapter = false;
+          state.verseStart = v;
+          state.verseEnd = null;
+          state.customOverride = '';
+          presentLive();
+        });
+      });
+
+      container.querySelectorAll('.feed-play-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const v = parseInt(btn.getAttribute('data-feed-play'), 10);
+          state.wholeChapter = false;
+          if (!(state.verseEnd && v >= state.verseStart && v <= state.verseEnd)) {
+            state.verseStart = v;
+            state.verseEnd = null;
+          }
+          state.customOverride = '';
+          presentLive();
+        });
+      });
+
+      if (autoScroll && !state.wholeChapter && state.verseStart) {
+        const activeRow = container.querySelector(`[data-feed-verse="${state.verseStart}"]`);
+        if (activeRow) {
+          activeRow.scrollIntoView({ block: 'center', behavior: 'instant' });
+        }
+      }
     }
 
     function playFullScreenGsapMotion(fsRoot, animStyle) {
@@ -4413,7 +4720,8 @@
 
     function updateStageContainer(container, isFullOverlay) {
       if (!container) return;
-      const html = buildLowerThirdMarkup(state, isFullOverlay);
+      const renderSrc = getLiveRenderState();
+      const html = buildLowerThirdMarkup(renderSrc, isFullOverlay);
       const isFullScreen = (state.presentationMode || 'lower_third') === 'full_screen';
       const existingFs = isFullScreen ? container.querySelector('.fs-wrapper[data-fs-root="1"]') : null;
 
@@ -4493,11 +4801,36 @@
       }
     }
 
+    function loadItemIntoPreview(item) {
+      if (!item) return;
+      state.bookId = item.bookId;
+      state.chapter = item.chapter;
+      state.verseStart = item.verseStart;
+      state.verseEnd = item.verseEnd;
+      state.wholeChapter = Boolean(item.wholeChapter || !item.verseStart);
+      state.customOverride = '';
+      state.selectedTeWordIndices = [];
+      state.selectedEnWordIndices = [];
+      state.activeClauseIndex = -1;
+      setNavStep('read');
+      renderAll();
+      showToast(`Loaded in Preview: ${getFormattedCitation()} (Enter to Air)`);
+    }
+
+    function formatHistoryTime(ts) {
+      if (!ts) return '';
+      try {
+        return new Date(ts).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
+      } catch (e) {
+        return '';
+      }
+    }
+
     function renderQueueAndHistory() {
       const qContainer = document.getElementById('queueListContainer');
       if (qContainer) {
         if (!state.queue.length) {
-          qContainer.innerHTML = `<div class="col-span-2 text-center py-6 text-xs text-slate-500">Queue is empty. Click "+ Queue" or press Shift+Enter to pin verses for the service.</div>`;
+          qContainer.innerHTML = `<div class="col-span-2 text-center py-6 text-xs text-zinc-500">Queue is empty. Click "+ Queue" or press Shift+Enter to pin verses for the service.</div>`;
         } else {
           qContainer.innerHTML = state.queue.map((item, idx) => {
             const isItemWhole = Boolean(item.wholeChapter || !item.verseStart);
@@ -4507,35 +4840,52 @@
 
             return `
               <div class="flex items-center justify-between gap-1.5 p-2 rounded-lg border transition ${
-                isCurrent ? 'bg-amber-500/15 border-amber-500/50' : 'bg-slate-950/80 border-slate-800 hover:border-slate-700'
+                isCurrent ? 'bg-white/[0.11] border-white/30' : 'bg-[#111114] border-white/[0.07] hover:border-white/20'
               }">
                 <button
                   type="button"
-                  data-queue-idx="${idx}"
-                  class="queue-fire-btn flex-1 text-left min-w-0"
-                  title="Click to Present on Lower-Third (Hotkey: Alt+${idx + 1})"
+                  data-queue-preview="${idx}"
+                  class="queue-preview-btn flex-1 text-left min-w-0"
+                  title="Click to Preview • ▶ or Alt+${idx + 1} to Present Live"
                 >
                   <div class="flex items-center gap-1.5">
-                    ${idx < 9 ? `<span class="text-[10px] font-mono px-1 py-0.2 rounded bg-slate-800 text-amber-400">Alt+${idx + 1}</span>` : ''}
-                    <span class="text-sm font-bold text-white truncate telugu-font-sans">${escapeHtml(label)}</span>
+                    ${idx < 9 ? `<span class="text-[10px] tabular-nums px-1.5 py-0.5 rounded bg-white/[0.07] text-zinc-300 shrink-0">Alt+${idx + 1}</span>` : ''}
+                    <span class="text-xs font-semibold text-zinc-100 telugu-font-sans leading-snug break-words">${escapeHtml(label)}</span>
                   </div>
-                  <div class="text-[10px] text-slate-400 truncate">${escapeHtml(enLabel)}</div>
+                  <div class="text-[10px] text-zinc-500 mt-0.5">${escapeHtml(enLabel)}</div>
                 </button>
-                <button
-                  type="button"
-                  data-queue-remove="${idx}"
-                  class="queue-remove-btn text-slate-500 hover:text-rose-400 px-1.5 py-1 text-xs"
-                  title="Remove from Queue"
-                >
-                  ✕
-                </button>
+                <div class="flex items-center gap-1 shrink-0">
+                  <button
+                    type="button"
+                    data-queue-play="${idx}"
+                    class="queue-play-btn px-2 py-1 rounded-md text-[10px] font-semibold bg-white/[0.06] hover:bg-rose-600 text-zinc-300 hover:text-white border border-white/[0.08] transition"
+                    title="Present ON AIR (Alt+${idx + 1})"
+                  >
+                    ▶
+                  </button>
+                  <button
+                    type="button"
+                    data-queue-remove="${idx}"
+                    class="queue-remove-btn text-zinc-500 hover:text-rose-400 px-1 py-1 text-xs"
+                    title="Remove from Queue"
+                  >
+                    ✕
+                  </button>
+                </div>
               </div>
             `;
           }).join('');
 
-          qContainer.querySelectorAll('.queue-fire-btn').forEach(btn => {
+          qContainer.querySelectorAll('.queue-preview-btn').forEach(btn => {
             btn.addEventListener('click', () => {
-              const idx = parseInt(btn.getAttribute('data-queue-idx'), 10);
+              const idx = parseInt(btn.getAttribute('data-queue-preview'), 10);
+              loadItemIntoPreview(state.queue[idx]);
+            });
+          });
+          qContainer.querySelectorAll('.queue-play-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+              e.stopPropagation();
+              const idx = parseInt(btn.getAttribute('data-queue-play'), 10);
               fireQueueSlot(idx);
             });
           });
@@ -4553,33 +4903,74 @@
       const hContainer = document.getElementById('historyChipsContainer');
       if (hContainer) {
         if (!state.history.length) {
-          hContainer.innerHTML = `<span class="text-[11px] text-slate-500">No verses presented yet in this session.</span>`;
+          hContainer.innerHTML = `<div class="text-center py-8 text-xs text-zinc-500">No verses presented yet. Verses you air appear here automatically.</div>`;
         } else {
+          const lp = state.isLive ? state.liveProgram : null;
           hContainer.innerHTML = state.history.map((item, idx) => {
             const isItemWhole = Boolean(item.wholeChapter || !item.verseStart);
             const label = getFormattedCitation(item.bookId, item.chapter, item.verseStart, item.verseEnd, state.lang, isItemWhole);
+            const enLabel = getEnglishParallelCitation(item.bookId, item.chapter, item.verseStart, item.verseEnd, isItemWhole);
+            const snippetRaw = isItemWhole
+              ? ''
+              : getRawSingleVerseText(item.bookId, item.chapter, item.verseStart, 'te');
+            const snippet = snippetRaw.length > 78 ? snippetRaw.slice(0, 78) + '…' : snippetRaw;
+            const timeStr = formatHistoryTime(item.presentedAt);
+            const isStaged = item.bookId === state.bookId && item.chapter === state.chapter && Boolean(state.wholeChapter) === isItemWhole && (isItemWhole || (item.verseStart === state.verseStart && item.verseEnd === state.verseEnd));
+            const isLiveRow = Boolean(lp && lp.bookId === item.bookId && lp.chapter === item.chapter && Boolean(lp.wholeChapter) === isItemWhole && (isItemWhole || (lp.verseStart === item.verseStart && lp.verseEnd === item.verseEnd)));
+
             return `
-              <button
-                type="button"
+              <div
                 data-hist-idx="${idx}"
-                class="hist-chip-btn px-2.5 py-1 rounded-full text-xs font-semibold bg-slate-800 hover:bg-amber-500 hover:text-slate-950 text-slate-200 border border-slate-700 transition telugu-font-sans"
+                class="hist-row-item flex items-start justify-between gap-2 px-2.5 py-2 rounded-lg border cursor-pointer transition ${
+                  isStaged ? 'bg-white/[0.10] border-white/30' : 'bg-[#111114] hover:bg-white/[0.05] border-white/[0.07]'
+                }"
+                title="Click to load in Preview • Double-click or ▶ to Present ON AIR"
               >
-                ${escapeHtml(label)}
-              </button>
+                <div class="flex-1 min-w-0">
+                  <div class="flex items-center gap-2 flex-wrap">
+                    <span class="text-xs font-semibold text-zinc-100 telugu-font-sans">${escapeHtml(label)}</span>
+                    <span class="text-[10px] text-zinc-500">${escapeHtml(enLabel)}</span>
+                    ${isLiveRow ? '<span class="text-[9px] font-bold text-rose-400">● ON AIR</span>' : ''}
+                    ${timeStr ? `<span class="text-[10px] text-zinc-600 ml-auto tabular-nums">${escapeHtml(timeStr)}</span>` : ''}
+                  </div>
+                  ${snippet ? `<div class="text-[11px] text-zinc-400 telugu-font-sans mt-0.5 leading-snug">${escapeHtml(snippet)}</div>` : ''}
+                </div>
+                <button
+                  type="button"
+                  data-hist-play="${idx}"
+                  class="hist-play-btn shrink-0 px-2 py-1 rounded-md text-[10px] font-semibold bg-white/[0.06] hover:bg-rose-600 text-zinc-300 hover:text-white border border-white/[0.08] transition mt-0.5"
+                  title="Present ON AIR immediately"
+                >
+                  ▶
+                </button>
+              </div>
             `;
           }).join('');
 
-          hContainer.querySelectorAll('.hist-chip-btn').forEach(btn => {
-            btn.addEventListener('click', () => {
-              const idx = parseInt(btn.getAttribute('data-hist-idx'), 10);
+          hContainer.querySelectorAll('.hist-row-item').forEach(row => {
+            row.addEventListener('click', (e) => {
+              if (e.target.closest('.hist-play-btn')) return;
+              const idx = parseInt(row.getAttribute('data-hist-idx'), 10);
+              loadItemIntoPreview(state.history[idx]);
+            });
+            row.addEventListener('dblclick', (e) => {
+              if (e.target.closest('.hist-play-btn')) return;
+              const idx = parseInt(row.getAttribute('data-hist-idx'), 10);
               const item = state.history[idx];
               if (item) {
-                state.bookId = item.bookId;
-                state.chapter = item.chapter;
-                state.verseStart = item.verseStart;
-                state.verseEnd = item.verseEnd;
-                state.wholeChapter = Boolean(item.wholeChapter || !item.verseStart);
-                state.customOverride = '';
+                loadItemIntoPreview(item);
+                presentLive();
+              }
+            });
+          });
+
+          hContainer.querySelectorAll('.hist-play-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+              e.stopPropagation();
+              const idx = parseInt(btn.getAttribute('data-hist-play'), 10);
+              const item = state.history[idx];
+              if (item) {
+                loadItemIntoPreview(item);
                 presentLive();
               }
             });
@@ -4704,11 +5095,13 @@
     }
 
     function stepVerse(delta) {
+      const wasSyncedLive = state.isLive && isStagedMatchingLive();
       const book = getBookById(state.bookId);
       if (state.wholeChapter) {
         const maxCh = book.verses.length;
         state.chapter = Math.min(Math.max(1, state.chapter + delta), maxCh);
         state.customOverride = '';
+        if (wasSyncedLive) state.liveProgram = snapshotStagedProgram();
         renderAll();
         return;
       }
@@ -4718,10 +5111,12 @@
       state.verseStart = nextV;
       state.verseEnd = null;
       state.customOverride = '';
+      if (wasSyncedLive) state.liveProgram = snapshotStagedProgram();
       renderAll();
     }
 
     function stepRangeEnd(delta) {
+      const wasSyncedLive = state.isLive && isStagedMatchingLive();
       const book = getBookById(state.bookId);
       const maxV = book.verses[state.chapter - 1] || 50;
       if (state.wholeChapter || !state.verseStart) {
@@ -4732,6 +5127,7 @@
       const nextEnd = Math.min(Math.max(state.verseStart, currentEnd + delta), maxV);
       state.verseEnd = nextEnd > state.verseStart ? nextEnd : null;
       state.customOverride = '';
+      if (wasSyncedLive) state.liveProgram = snapshotStagedProgram();
       renderAll();
     }
 
@@ -4773,6 +5169,7 @@
 
     function presentLive() {
       state.isLive = true;
+      state.liveProgram = snapshotStagedProgram();
       const top = state.history[0];
       if (!top || top.bookId !== state.bookId || top.chapter !== state.chapter || Boolean(top.wholeChapter) !== Boolean(state.wholeChapter) || top.verseStart !== state.verseStart || top.verseEnd !== state.verseEnd) {
         state.history.unshift({
@@ -4780,9 +5177,11 @@
           chapter: state.chapter,
           verseStart: state.verseStart,
           verseEnd: state.verseEnd,
-          wholeChapter: Boolean(state.wholeChapter)
+          wholeChapter: Boolean(state.wholeChapter),
+          presentedAt: Date.now()
         });
-        if (state.history.length > 15) state.history.pop();
+        if (state.history.length > 40) state.history.pop();
+        savePersistedHistory();
       }
       startAutoHideIfConfigured();
       renderAll();
@@ -5090,7 +5489,180 @@
         }
       });
 
-      // OBS Dock Focused View Switcher (Live | Queue | Media | Look)
+      // Load persisted 40-item History from localStorage on boot
+      loadPersistedHistory();
+
+      // 4-Step Navigator Tab Buttons & Live Chapter Feed Controls
+      document.querySelectorAll('.nav-step-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          setNavStep(btn.getAttribute('data-nav-step') || 'read');
+        });
+      });
+      document.getElementById('btnOpenChapterFeedFromVerses')?.addEventListener('click', () => {
+        setNavStep('read');
+      });
+      const btnFeedEn = document.getElementById('btnToggleFeedEnglish');
+      if (btnFeedEn) {
+        btnFeedEn.addEventListener('click', () => {
+          state.feedShowEnglish = !state.feedShowEnglish;
+          btnFeedEn.className = state.feedShowEnglish
+            ? 'px-2 py-1 rounded-md text-[11px] font-semibold bg-white text-zinc-950 border border-white transition'
+            : 'px-2 py-1 rounded-md text-[11px] font-medium bg-white/[0.04] hover:bg-white/[0.08] text-zinc-400 hover:text-white border border-white/[0.08] transition';
+          renderChapterVerseFeed(false);
+        });
+      }
+      const feedFilterInput = document.getElementById('chapterFeedFilterInput');
+      if (feedFilterInput) {
+        feedFilterInput.addEventListener('input', (e) => {
+          state.feedFilterQuery = e.target.value || '';
+          renderChapterVerseFeed(false);
+        });
+      }
+
+      // Fast 3-Box Tab-Jump Bar: Book → Tab → Chapter → Tab → Verse → Enter = BOOM LIVE
+      const jbInput = document.getElementById('jumpBookInput');
+      const jcInput = document.getElementById('jumpChInput');
+      const jvInput = document.getElementById('jumpVerseInput');
+
+      function resolveJumpBookQuery(raw) {
+        const q = String(raw || '').trim().toLowerCase();
+        if (!q) return getBookById(state.bookId);
+        const exact = BIBLE_BOOKS.find(b =>
+          b.te.toLowerCase() === q ||
+          b.te_full.toLowerCase() === q ||
+          b.en.toLowerCase() === q ||
+          b.aliases.some(a => a.toLowerCase() === q)
+        );
+        if (exact) return exact;
+        return BIBLE_BOOKS.find(b =>
+          b.te.toLowerCase().startsWith(q) ||
+          b.en.toLowerCase().startsWith(q) ||
+          b.aliases.some(a => a.toLowerCase().startsWith(q))
+        ) || BIBLE_BOOKS.find(b =>
+          b.te.toLowerCase().includes(q) ||
+          b.en.toLowerCase().includes(q) ||
+          b.aliases.some(a => a.toLowerCase().includes(q))
+        ) || getBookById(state.bookId);
+      }
+
+      function executeJumpBar(goLiveNow) {
+        const book = resolveJumpBookQuery(jbInput ? jbInput.value : '');
+        const maxCh = book.verses.length;
+        const chNum = Math.min(Math.max(1, parseInt((jcInput ? jcInput.value : ''), 10) || 1), maxCh);
+        const maxV = book.verses[chNum - 1] || 50;
+        const vRaw = String(jvInput ? jvInput.value : '').trim();
+
+        state.bookId = book.id;
+        state.chapter = chNum;
+        state.customOverride = '';
+        state.selectedTeWordIndices = [];
+        state.selectedEnWordIndices = [];
+        state.activeClauseIndex = -1;
+
+        if (!vRaw) {
+          state.wholeChapter = true;
+          state.verseStart = null;
+          state.verseEnd = null;
+        } else {
+          const rangeMatch = vRaw.match(/^(\d+)\s*[-–to:]+\s*(\d+)$/i);
+          state.wholeChapter = false;
+          if (rangeMatch) {
+            const v1 = Math.min(Math.max(1, parseInt(rangeMatch[1], 10)), maxV);
+            const v2 = Math.min(Math.max(v1, parseInt(rangeMatch[2], 10)), maxV);
+            state.verseStart = v1;
+            state.verseEnd = v2 > v1 ? v2 : null;
+          } else {
+            const v1 = Math.min(Math.max(1, parseInt(vRaw, 10) || 1), maxV);
+            state.verseStart = v1;
+            state.verseEnd = null;
+          }
+        }
+
+        state.feedFilterQuery = '';
+        if (feedFilterInput) feedFilterInput.value = '';
+        setNavStep('read');
+        if (goLiveNow) {
+          presentLive();
+        } else {
+          renderAll();
+        }
+      }
+
+      if (jbInput && jcInput && jvInput) {
+        jbInput.addEventListener('focus', () => jbInput.select());
+        jcInput.addEventListener('focus', () => jcInput.select());
+        jvInput.addEventListener('focus', () => jvInput.select());
+
+        jbInput.addEventListener('keydown', (e) => {
+          if (e.key === 'Tab' && !e.shiftKey) {
+            e.preventDefault();
+            const matched = resolveJumpBookQuery(jbInput.value);
+            state.bookId = matched.id;
+            jbInput.value = getBookDisplayName(matched, state.lang);
+            jcInput.focus();
+            jcInput.select();
+          } else if (e.key === 'Enter') {
+            e.preventDefault();
+            const matched = resolveJumpBookQuery(jbInput.value);
+            state.bookId = matched.id;
+            jbInput.value = getBookDisplayName(matched, state.lang);
+            jcInput.focus();
+            jcInput.select();
+          }
+        });
+
+        jcInput.addEventListener('keydown', (e) => {
+          if ((e.key === 'Tab' && !e.shiftKey) || e.key === ' ' || e.key === ':') {
+            e.preventDefault();
+            jvInput.focus();
+            jvInput.select();
+          } else if (e.key === 'Enter') {
+            e.preventDefault();
+            executeJumpBar(true);
+            jcInput.blur();
+          }
+        });
+
+        jvInput.addEventListener('keydown', (e) => {
+          if (e.key === 'Enter') {
+            e.preventDefault();
+            executeJumpBar(true);
+            jvInput.blur();
+          }
+        });
+      }
+      document.getElementById('btnJumpBarGoLive')?.addEventListener('click', () => executeJumpBar(true));
+
+      // Same-book fast jump (G → Chapter) & Quick-Back History (Alt+Z)
+      document.addEventListener('keydown', (e) => {
+        const tag = (document.activeElement && document.activeElement.tagName) || '';
+        if (e.altKey && (e.key === 'z' || e.key === 'Z')) {
+          e.preventDefault();
+          if (state.history.length > 1) {
+            const prev = state.history[1];
+            state.bookId = prev.bookId;
+            state.chapter = prev.chapter;
+            state.verseStart = prev.verseStart;
+            state.verseEnd = prev.verseEnd;
+            state.wholeChapter = Boolean(prev.wholeChapter || !prev.verseStart);
+            state.customOverride = '';
+            setNavStep('read');
+            renderAll();
+            showToast(`Loaded previous: ${getFormattedCitation()} (Press Enter to Air)`);
+          }
+          return;
+        }
+        if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
+        if (!e.ctrlKey && !e.metaKey && !e.altKey && (e.key === 'g' || e.key === 'G')) {
+          e.preventDefault();
+          if (jcInput) { jcInput.focus(); jcInput.select(); }
+        }
+      });
+
+      // Set initial 4-Step Navigator view to Live Chapter Feed
+      setNavStep(state.navStep || 'read');
+
+      // OBS Dock Focused View Switcher (Live | History | Queue | Media | Look)
       document.querySelectorAll('.dock-nav-btn').forEach(btn => {
         btn.addEventListener('click', () => {
           const target = btn.getAttribute('data-dock-target') || 'live';
@@ -5101,6 +5673,7 @@
               ? 'dock-nav-btn flex-1 py-1.5 rounded-lg text-xs font-semibold bg-white text-zinc-950 transition'
               : 'dock-nav-btn flex-1 py-1.5 rounded-lg text-xs font-medium text-zinc-400 hover:text-white transition';
           });
+          if (target === 'history') document.getElementById('rightTabHistory')?.click();
           if (target === 'queue') document.getElementById('rightTabQueue')?.click();
           if (target === 'media') document.getElementById('rightTabMedia')?.click();
           if (target === 'style') document.getElementById('rightTabStyle')?.click();
@@ -5381,11 +5954,13 @@
         decor.classList.add('hidden');
       });
 
-      // Right Panel Tabs (Queue vs Style vs Picture Slide-Over vs Custom Book Names)
+      // Right Panel Tabs (History [Priority Default] | Queue | Look & Motion | Media | Books)
+      const tabHistory = document.getElementById('rightTabHistory');
       const tabQueue = document.getElementById('rightTabQueue');
       const tabStyle = document.getElementById('rightTabStyle');
       const tabMedia = document.getElementById('rightTabMedia');
       const tabCustom = document.getElementById('rightTabCustomLang');
+      const panelHistory = document.getElementById('panelHistory');
       const panelQueue = document.getElementById('panelQueue');
       const panelStyle = document.getElementById('panelStyle');
       const panelMedia = document.getElementById('panelMedia');
@@ -5393,29 +5968,33 @@
 
       function activateRightTab(which) {
         activeRightTabName = which;
-        [tabQueue, tabStyle, tabMedia, tabCustom].forEach(t => {
-          if (t) t.className = 'px-2.5 py-1.5 rounded-lg text-xs font-semibold bg-slate-800 text-slate-300 hover:text-white transition';
+        [tabHistory, tabQueue, tabStyle, tabMedia, tabCustom].forEach(t => {
+          if (t) t.className = 'px-2.5 py-1.5 rounded-lg text-xs font-medium bg-white/[0.04] text-zinc-400 hover:text-white transition';
         });
-        [panelQueue, panelStyle, panelMedia, panelCustom].forEach(p => {
+        [panelHistory, panelQueue, panelStyle, panelMedia, panelCustom].forEach(p => {
           if (p) p.classList.add('hidden');
         });
 
-        if (which === 'queue') {
-          tabQueue.className = 'px-2.5 py-1.5 rounded-lg text-xs font-bold bg-amber-500 text-slate-950 transition';
-          panelQueue.classList.remove('hidden');
+        if (which === 'history') {
+          if (tabHistory) tabHistory.className = 'px-2.5 py-1.5 rounded-lg text-xs font-semibold bg-white text-zinc-950 transition';
+          if (panelHistory) panelHistory.classList.remove('hidden');
+        } else if (which === 'queue') {
+          if (tabQueue) tabQueue.className = 'px-2.5 py-1.5 rounded-lg text-xs font-semibold bg-white text-zinc-950 transition';
+          if (panelQueue) panelQueue.classList.remove('hidden');
         } else if (which === 'style') {
-          tabStyle.className = 'px-2.5 py-1.5 rounded-lg text-xs font-bold bg-amber-500 text-slate-950 transition';
-          panelStyle.classList.remove('hidden');
+          if (tabStyle) tabStyle.className = 'px-2.5 py-1.5 rounded-lg text-xs font-semibold bg-white text-zinc-950 transition';
+          if (panelStyle) panelStyle.classList.remove('hidden');
         } else if (which === 'media') {
-          tabMedia.className = 'px-2.5 py-1.5 rounded-lg text-xs font-bold bg-amber-500 text-slate-950 transition';
-          panelMedia.classList.remove('hidden');
+          if (tabMedia) tabMedia.className = 'px-2.5 py-1.5 rounded-lg text-xs font-semibold bg-white text-zinc-950 transition';
+          if (panelMedia) panelMedia.classList.remove('hidden');
         } else {
-          tabCustom.className = 'px-2.5 py-1.5 rounded-lg text-xs font-bold bg-amber-500 text-slate-950 transition';
-          panelCustom.classList.remove('hidden');
+          if (tabCustom) tabCustom.className = 'px-2.5 py-1.5 rounded-lg text-xs font-semibold bg-white text-zinc-950 transition';
+          if (panelCustom) panelCustom.classList.remove('hidden');
           renderCustomBookNamesEditor();
         }
         renderStagePreview();
       }
+      if (tabHistory) tabHistory.addEventListener('click', () => activateRightTab('history'));
       tabQueue.addEventListener('click', () => activateRightTab('queue'));
       tabStyle.addEventListener('click', () => activateRightTab('style'));
       tabMedia.addEventListener('click', () => activateRightTab('media'));
@@ -6011,6 +6590,7 @@
       });
       document.getElementById('btnClearHistory').addEventListener('click', () => {
         state.history = [];
+        savePersistedHistory();
         renderQueueAndHistory();
       });
 
