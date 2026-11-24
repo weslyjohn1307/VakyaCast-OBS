@@ -29,9 +29,40 @@ def extract_title(raw_text: str, num) -> str:
     return f"Song #{num}"
 
 
+def soft_split_long_line(ln: str, max_chars: int = 68):
+    """Split ultra-long single lines (>68 chars) at natural punctuation/clause boundaries without altering a single word."""
+    s = ln.strip()
+    if len(s) <= max_chars:
+        return [s] if s else []
+    out = []
+    while len(s) > max_chars:
+        # Look for punctuation boundary near the middle/end (between 35% and 95% of max_chars)
+        window = s[:max_chars + 12]
+        cut = -1
+        for m in re.finditer(r"([.!?।;:,–—])\s+", window):
+            if m.end() >= int(max_chars * 0.38):
+                cut = m.end()
+        if cut == -1:
+            # Fallback to nearest space before max_chars
+            sp = s.rfind(" ", int(max_chars * 0.45), max_chars + 1)
+            if sp == -1:
+                sp = s.find(" ", max_chars)
+            cut = sp + 1 if sp != -1 else -1
+        if cut <= 0 or cut >= len(s):
+            break
+        out.append(s[:cut].strip())
+        s = s[cut:].strip()
+    if s:
+        out.append(s)
+    return out
+
+
 def split_stanza_phrase_safe(lines):
     """Conservative musical-phrase splitter: prefers 2-4 lines, cuts at sentence/clause boundaries."""
-    clean = [ln for ln in lines if ln.strip()]
+    clean = []
+    for ln in lines:
+        if ln.strip():
+            clean.extend(soft_split_long_line(ln, 68))
     n = len(clean)
     if n <= 4:
         return [clean] if clean else []
