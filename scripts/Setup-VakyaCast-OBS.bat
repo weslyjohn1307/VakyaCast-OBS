@@ -31,6 +31,11 @@ if exist "%SRC_DIR%\bibles" (
   if not exist "%TARGET_DIR%\bibles" mkdir "%TARGET_DIR%\bibles"
   xcopy /E /I /Y /Q "%SRC_DIR%\bibles" "%TARGET_DIR%\bibles" >nul
 )
+if exist "%SRC_DIR%\songs" (
+  echo [*] Synchronizing offline Church Songbooks (1,001 Songs) ...
+  if not exist "%TARGET_DIR%\songs" mkdir "%TARGET_DIR%\songs"
+  xcopy /E /I /Y /Q "%SRC_DIR%\songs" "%TARGET_DIR%\songs" >nul
+)
 
 echo [*] Checking and configuring OBS Studio integration ...
 if exist "%TARGET_DIR%\Configure-OBS-Integration.ps1" (
