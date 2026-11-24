@@ -1821,32 +1821,36 @@
               </div>
             </div>
 
-            <!-- TIER 2: FAST SONG FINDER + BOOK FILTERS + SUNDAY AGENDA -->
+            <!-- TIER 2: FAST SONG FINDER + DYNAMIC SONGBOOKS + SUNDAY AGENDA -->
             <div class="flex flex-col gap-1.5">
               <div class="flex flex-wrap items-center justify-between gap-1.5">
-                <div class="inline-flex flex-wrap rounded-lg bg-[#09090b] p-0.5 border border-white/[0.08] gap-0.5">
-                  <button type="button" data-book-filter="all" class="lyrics-book-btn px-2 py-0.5 rounded text-[10px] font-semibold bg-white text-zinc-950 transition">All (1001)</button>
-                  <button type="button" data-book-filter="teluguSongs" class="lyrics-book-btn px-2 py-0.5 rounded text-[10px] font-medium text-zinc-400 hover:text-white transition">Telugu (329)</button>
-                  <button type="button" data-book-filter="englishHymns" class="lyrics-book-btn px-2 py-0.5 rounded text-[10px] font-medium text-zinc-400 hover:text-white transition">Eng Hymns (291)</button>
-                  <button type="button" data-book-filter="englishChoruses" class="lyrics-book-btn px-2 py-0.5 rounded text-[10px] font-medium text-zinc-400 hover:text-white transition">Choruses (381)</button>
-                  <button type="button" data-book-filter="verified" class="lyrics-book-btn px-2 py-0.5 rounded text-[10px] font-medium text-emerald-400 hover:text-emerald-300 transition">✓ Verified</button>
+                <div id="lyricsBookFilterBar" class="inline-flex flex-wrap rounded-lg bg-[#09090b] p-0.5 border border-white/[0.08] gap-0.5">
+                  <!-- Populated dynamically with Built-in + Custom SongBooks -->
                 </div>
-                <button id="btnLyricsPinAgenda" type="button" class="px-2 py-0.5 rounded-md bg-white/[0.06] hover:bg-white/[0.12] text-zinc-200 border border-white/[0.09] text-[10px] font-medium transition">
-                  + Sunday Agenda
-                </button>
+                <div class="flex items-center gap-1">
+                  <button id="btnLyricsNewBook" type="button" class="px-2 py-0.5 rounded-md bg-white/[0.05] hover:bg-white/[0.12] text-zinc-300 border border-white/[0.08] text-[10px] font-medium transition" title="Create a Custom SongBook (e.g. Carols 2025, Youth)">
+                    + SongBook
+                  </button>
+                  <button id="btnLyricsPinAgenda" type="button" class="px-2 py-0.5 rounded-md bg-white/[0.06] hover:bg-white/[0.12] text-zinc-200 border border-white/[0.09] text-[10px] font-medium transition">
+                    + Agenda
+                  </button>
+                </div>
               </div>
 
               <div class="grid grid-cols-12 gap-1.5">
-                <input id="lyricsSearchInput" type="text" placeholder="Search song #, title, or any Telugu/English line (e.g. 4, Amazing, దేవుని)..." class="col-span-9 bg-[#09090b] border border-white/10 focus:border-white/30 rounded-lg px-2.5 py-1.5 text-xs text-zinc-100 outline-none telugu-font-sans" />
-                <button id="btnLyricsNewSong" type="button" class="col-span-3 px-2 py-1.5 rounded-lg bg-white/[0.06] hover:bg-white/[0.12] text-zinc-200 border border-white/[0.09] text-[11px] font-medium transition">
+                <input id="lyricsSearchInput" type="text" placeholder="Search song #, title, or any Telugu/English line (e.g. 4, Amazing, దేవుని)..." class="col-span-7 bg-[#09090b] border border-white/10 focus:border-white/30 rounded-lg px-2.5 py-1.5 text-xs text-zinc-100 outline-none telugu-font-sans" />
+                <button id="btnLyricsNewSong" type="button" class="col-span-3 px-2 py-1.5 rounded-lg bg-white hover:bg-zinc-200 text-zinc-950 font-semibold text-[11px] transition">
                   + New Song
+                </button>
+                <button id="btnLyricsOpenEditModal" type="button" class="col-span-2 px-2 py-1.5 rounded-lg bg-white/[0.06] hover:bg-white/[0.12] text-zinc-200 border border-white/[0.09] text-[11px] font-medium transition" title="Edit active song in VideoPsalm Studio">
+                  Edit
                 </button>
               </div>
 
               <!-- Compact Song Results + Sunday Agenda Row -->
               <div class="grid grid-cols-12 gap-2">
                 <div class="col-span-8 flex flex-col gap-1">
-                  <div id="lyricsSongList" class="max-h-[116px] overflow-y-auto flex flex-col gap-1 pr-0.5 bg-[#09090b]/70 border border-white/[0.06] rounded-lg p-1">
+                  <div id="lyricsSongList" class="max-h-[112px] overflow-y-auto flex flex-col gap-1 pr-0.5 bg-[#09090b]/70 border border-white/[0.06] rounded-lg p-1">
                     <!-- Populated dynamically -->
                   </div>
                 </div>
@@ -1855,7 +1859,7 @@
                     <span>Sunday Agenda</span>
                     <button id="btnLyricsClearAgenda" type="button" class="text-zinc-500 hover:text-rose-400 transition">Clear</button>
                   </div>
-                  <div id="lyricsAgendaList" class="max-h-[98px] overflow-y-auto flex flex-col gap-1 pr-0.5 bg-[#09090b]/70 border border-white/[0.06] rounded-lg p-1">
+                  <div id="lyricsAgendaList" class="max-h-[94px] overflow-y-auto flex flex-col gap-1 pr-0.5 bg-[#09090b]/70 border border-white/[0.06] rounded-lg p-1">
                     <span class="text-[10px] text-zinc-500 p-1">Pin worship songs here</span>
                   </div>
                 </div>
@@ -1868,77 +1872,213 @@
                 <div class="flex items-center gap-1.5 min-w-0">
                   <span id="lyricsActiveSongTitle" class="text-xs font-semibold text-zinc-100 truncate telugu-font-sans">Select a song</span>
                   <span id="lyricsVerifiedBadge" class="hidden px-1.5 py-0.5 rounded text-[9px] font-semibold bg-emerald-500/15 text-emerald-300 border border-emerald-500/30">✓ Verified</span>
+                  <span id="lyricsLtSubStepBadge" class="hidden px-1.5 py-0.5 rounded text-[9px] tabular-nums font-semibold bg-sky-500/15 text-sky-300 border border-sky-500/30">LT 1/2</span>
                 </div>
                 <!-- Instant Musical Section Jump Pills (C1 V1 V2 V3 B1) -->
                 <div id="lyricsSectionJumpBar" class="flex flex-wrap items-center gap-1">
                   <!-- Populated dynamically -->
                 </div>
               </div>
-              <div id="lyricsSlideGrid" class="grid grid-cols-2 sm:grid-cols-3 gap-1.5 max-h-[175px] overflow-y-auto pr-0.5">
+              <div id="lyricsSlideGrid" class="grid grid-cols-2 sm:grid-cols-3 gap-1.5 max-h-[160px] overflow-y-auto pr-0.5">
                 <!-- Color-coded musical slide cards -->
               </div>
             </div>
 
-            <!-- TIER 4: COLLAPSIBLE VIDEOPSALM EDITOR, IMPORTER & DISPLAY OPTIONS DRAWER -->
+            <!-- TIER 4: DIRECT CONTEXTUAL LOOK, BACKDROP, ANIMATION & LOWER-THIRD STUDIO DRAWER -->
             <div class="rounded-lg bg-[#09090b] border border-white/[0.07]">
-              <button id="btnToggleLyricsToolsDrawer" type="button" class="w-full px-2.5 py-1.5 flex items-center justify-between text-left hover:bg-white/[0.03] transition rounded-lg">
-                <span class="text-[11px] font-medium text-zinc-300 flex items-center gap-1.5">
-                  <span id="lyricsToolsChevron" class="inline-block transition-transform duration-150">▸</span>
-                  Edit Song (VideoPsalm Syntax), Import &amp; Display
+              <button id="btnToggleLyricsLookDrawer" type="button" class="w-full px-2.5 py-1.5 flex items-center justify-between text-left hover:bg-white/[0.03] transition rounded-lg">
+                <span class="text-[11px] font-medium text-zinc-200 flex items-center gap-1.5">
+                  <span id="lyricsLookChevron" class="inline-block transition-transform duration-150">▸</span>
+                  Look, Background, Motion &amp; Animation
                 </span>
-                <span class="text-[10px] text-zinc-500">V1 / C1 / B1 • .json / .vpc</span>
+                <span id="lyricsLookSummaryBadge" class="text-[10px] text-zinc-400">Deep Navy • Silk Waves • Broadcast Mask</span>
               </button>
-              <div id="lyricsToolsDrawerBody" class="hidden px-2.5 pb-2.5 pt-1.5 border-t border-white/[0.06] flex flex-col gap-2">
-                <!-- Display Controls -->
-                <div class="flex flex-wrap items-center gap-3 text-[11px] text-zinc-300">
-                  <label class="inline-flex items-center gap-1 cursor-pointer">
-                    <input id="chkLyricsShowHeader" type="checkbox" class="accent-white" />
-                    <span>Song Title Pill</span>
-                  </label>
-                  <label class="inline-flex items-center gap-1 cursor-pointer">
-                    <input id="chkLyricsShowNextCue" type="checkbox" class="accent-white" />
-                    <span>Next-Line Cue</span>
-                  </label>
-                  <label class="inline-flex items-center gap-1 cursor-pointer">
-                    <input id="chkLyricsStripChords" type="checkbox" checked class="accent-white" />
-                    <span>Hide [Chords]</span>
-                  </label>
-                  <div class="flex items-center gap-1.5 ml-auto">
-                    <label for="rangeLyricsScale" class="text-[10px] text-zinc-400">Size:</label>
-                    <input id="rangeLyricsScale" type="range" min="75" max="135" value="100" class="w-20 accent-white" />
-                    <span id="lyricsScaleLabel" class="text-[10px] tabular-nums text-zinc-200 w-8">100%</span>
+              <div id="lyricsLookDrawerBody" class="hidden px-2.5 pb-2.5 pt-2 border-t border-white/[0.06] flex flex-col gap-2">
+                <!-- CONTEXTUAL GROUP 1: FULL-SCREEN BACKDROP LAB (Hidden in Lower-Third / Scene Overlay) -->
+                <div id="lyricsLookFullScreenGroup" class="flex flex-col gap-1.5">
+                  <div class="flex flex-wrap items-center justify-between gap-1.5">
+                    <div class="inline-flex rounded-lg bg-[#121216] p-0.5 border border-white/[0.08]">
+                      <button type="button" data-lyr-bgsrc="shader" class="lyr-bgsrc-btn px-2 py-0.5 rounded text-[10px] font-semibold bg-white text-zinc-950 transition">Shader Lab</button>
+                      <button type="button" data-lyr-bgsrc="media" class="lyr-bgsrc-btn px-2 py-0.5 rounded text-[10px] font-medium text-zinc-400 hover:text-white transition">Image / Video</button>
+                      <button type="button" data-lyr-bgsrc="solid" class="lyr-bgsrc-btn px-2 py-0.5 rounded text-[10px] font-medium text-zinc-400 hover:text-white transition">Solid / Key</button>
+                    </div>
+                    <span id="lyricsContrastBadge" class="text-[10px] tabular-nums font-semibold px-1.5 py-0.5 rounded bg-emerald-500/15 text-emerald-300 border border-emerald-500/30">AAA 16.4:1 ✓</span>
+                  </div>
+
+                  <!-- Shader Presets + 4 Motion Engines -->
+                  <div id="lyricsBgSubShader" class="flex flex-col gap-1.5">
+                    <div class="grid grid-cols-6 gap-1">
+                      <button type="button" data-lyr-shader="deep_navy_waves" class="lyr-shader-btn py-1 rounded border border-white bg-[#0f2142] text-[9px] font-medium text-white truncate">Navy</button>
+                      <button type="button" data-lyr-shader="midnight_aurora" class="lyr-shader-btn py-1 rounded border border-white/10 bg-[#102030] text-[9px] font-medium text-zinc-200 truncate">Aurora</button>
+                      <button type="button" data-lyr-shader="warm_sanctuary_gold" class="lyr-shader-btn py-1 rounded border border-white/10 bg-[#24180c] text-[9px] font-medium text-amber-100 truncate">Gold</button>
+                      <button type="button" data-lyr-shader="quiet_charcoal_mist" class="lyr-shader-btn py-1 rounded border border-white/10 bg-[#181a20] text-[9px] font-medium text-zinc-200 truncate">Charcoal</button>
+                      <button type="button" data-lyr-shader="still_waters" class="lyr-shader-btn py-1 rounded border border-white/10 bg-[#0f2730] text-[9px] font-medium text-cyan-100 truncate">Waters</button>
+                      <button type="button" data-lyr-shader="soft_linen_light" class="lyr-shader-btn py-1 rounded border border-white/10 bg-[#ece8df] text-[9px] font-semibold text-zinc-900 truncate">Linen</button>
+                    </div>
+                    <div class="grid grid-cols-4 gap-1">
+                      <button type="button" data-lyr-motion="silk_waves" class="lyr-motion-btn py-0.5 rounded text-[10px] font-semibold bg-white text-zinc-950 transition">Silk Waves</button>
+                      <button type="button" data-lyr-motion="aurora_drift" class="lyr-motion-btn py-0.5 rounded text-[10px] font-medium bg-white/[0.05] text-zinc-400 hover:text-white transition">Aurora</button>
+                      <button type="button" data-lyr-motion="mesh_orbs" class="lyr-motion-btn py-0.5 rounded text-[10px] font-medium bg-white/[0.05] text-zinc-400 hover:text-white transition">Mesh Orbs</button>
+                      <button type="button" data-lyr-motion="light_beams" class="lyr-motion-btn py-0.5 rounded text-[10px] font-medium bg-white/[0.05] text-zinc-400 hover:text-white transition">Beams</button>
+                    </div>
+                  </div>
+
+                  <!-- Custom Image / Video Upload -->
+                  <div id="lyricsBgSubMedia" class="hidden flex items-center gap-1.5">
+                    <label class="flex-1 text-center px-2 py-1 rounded-lg bg-white text-zinc-950 hover:bg-zinc-200 text-[10px] font-semibold cursor-pointer transition">
+                      <span>Upload Image / MP4 / WebM</span>
+                      <input id="inputLyricsCustomBgFile" type="file" accept="image/*,video/mp4,video/webm" class="hidden" />
+                    </label>
+                    <button id="btnLyricsScanBgFolder" type="button" class="px-2 py-1 rounded-lg bg-white/[0.06] hover:bg-white/[0.12] text-zinc-300 border border-white/10 text-[10px] transition">Scan ./backgrounds/</button>
+                  </div>
+
+                  <!-- Texture, Dimmer, Speed -->
+                  <div class="grid grid-cols-3 gap-1.5">
+                    <select id="selectLyricsTexture" class="bg-[#121216] border border-white/10 rounded-lg px-2 py-1 text-[10px] text-zinc-100 outline-none">
+                      <option value="none">Tex: None</option>
+                      <option value="fine_grain">Tex: Grain</option>
+                      <option value="world_map">Tex: World Map</option>
+                      <option value="soft_linen">Tex: Linen</option>
+                    </select>
+                    <div class="flex items-center gap-1">
+                      <span class="text-[10px] text-zinc-400">Dim</span>
+                      <input id="rangeLyricsDimmer" type="range" min="0" max="85" value="24" class="w-full accent-white" />
+                    </div>
+                    <div class="flex items-center gap-1">
+                      <span class="text-[10px] text-zinc-400">Spd</span>
+                      <input id="rangeLyricsSpeed" type="range" min="0" max="100" value="32" class="w-full accent-white" />
+                    </div>
                   </div>
                 </div>
 
-                <!-- VideoPsalm Syntax Editor (V1, C1, P1, B1, T1 — no periods, blank line between slides) -->
-                <div class="grid grid-cols-12 gap-1.5">
-                  <input id="lyricsEditTitleInput" type="text" placeholder="Song Title..." class="col-span-6 bg-[#121216] border border-white/10 rounded-lg px-2 py-1 text-[11px] text-zinc-100 outline-none telugu-font-sans" />
-                  <input id="lyricsEditNumInput" type="text" placeholder="#Num" class="col-span-2 bg-[#121216] border border-white/10 rounded-lg px-2 py-1 text-[11px] text-zinc-100 outline-none tabular-nums" />
-                  <select id="lyricsEditBookSelect" class="col-span-4 bg-[#121216] border border-white/10 rounded-lg px-2 py-1 text-[11px] text-zinc-100 outline-none">
-                    <option value="teluguSongs">Telugu Songs</option>
-                    <option value="englishHymns">English Hymns</option>
-                    <option value="englishChoruses">English Choruses</option>
-                  </select>
+                <!-- CONTEXTUAL GROUP 2: TRUE LOWER-THIRD STYLE & MAX LINES (Shown ONLY in Lower-Third mode) -->
+                <div id="lyricsLookLowerThirdGroup" class="hidden grid grid-cols-2 gap-2">
+                  <div>
+                    <label for="selectLyricsLtStyle" class="block text-[10px] text-zinc-400 mb-0.5">Lower-Third Style</label>
+                    <select id="selectLyricsLtStyle" class="w-full bg-[#121216] border border-white/10 rounded-lg px-2 py-1 text-[11px] text-zinc-100 outline-none">
+                      <option value="cinema_band">Cinema Gradient Band (Recommended)</option>
+                      <option value="frosted_bar">Frosted Glass Bar</option>
+                      <option value="solid_strip">Clean Solid Strip</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label for="selectLyricsLtMaxLines" class="block text-[10px] text-zinc-400 mb-0.5">Max Lines per Step</label>
+                    <select id="selectLyricsLtMaxLines" class="w-full bg-[#121216] border border-white/10 rounded-lg px-2 py-1 text-[11px] text-zinc-100 outline-none">
+                      <option value="2">2 Lines (Broadcast Standard)</option>
+                      <option value="3">3 Lines (Compact Phrase)</option>
+                    </select>
+                  </div>
                 </div>
-                <textarea id="lyricsVideoPsalmTextarea" rows="6" placeholder="C1&#10;First musical phrase&#10;Second musical phrase&#10;&#10;V1&#10;Verse line 1&#10;Verse line 2" class="w-full bg-[#121216] border border-white/10 rounded-lg px-2.5 py-1.5 text-[11px] text-zinc-100 outline-none leading-relaxed telugu-font-sans"></textarea>
-                <div class="flex flex-wrap items-center justify-between gap-1.5">
-                  <div class="flex items-center gap-1.5">
-                    <button id="btnLyricsSaveVerified" type="button" class="px-2.5 py-1 rounded-lg bg-white hover:bg-zinc-200 text-zinc-950 font-semibold text-[11px] transition">
-                      Save ✓ Verified
-                    </button>
-                    <button id="btnLyricsCopyVp" type="button" class="px-2 py-1 rounded-lg bg-white/[0.06] hover:bg-white/[0.12] text-zinc-300 border border-white/10 text-[10px] transition">
-                      Copy VideoPsalm Text
-                    </button>
+
+                <!-- SHARED ANIMATION, SIZE & DISPLAY TOGGLES -->
+                <div class="grid grid-cols-12 gap-1.5 items-center pt-1 border-t border-white/[0.06]">
+                  <select id="selectLyricsAnimStyle" class="col-span-4 bg-[#121216] border border-white/10 rounded-lg px-2 py-1 text-[10px] text-zinc-100 outline-none">
+                    <option value="broadcast_mask">Anim: Broadcast Mask</option>
+                    <option value="sanctuary_dissolve">Anim: Sanctuary Dissolve</option>
+                    <option value="editorial_wipe">Anim: Editorial Wipe</option>
+                  </select>
+                  <div class="col-span-4 flex items-center gap-1">
+                    <span class="text-[10px] text-zinc-400">Size</span>
+                    <input id="rangeLyricsScale" type="range" min="75" max="135" value="100" class="w-full accent-white" />
+                    <span id="lyricsScaleLabel" class="text-[10px] tabular-nums text-zinc-200 w-8 text-right">100%</span>
                   </div>
-                  <div class="flex items-center gap-1.5">
-                    <label class="px-2 py-1 rounded-lg bg-white/[0.06] hover:bg-white/[0.12] text-zinc-200 border border-white/10 text-[10px] cursor-pointer transition">
-                      <span>Import .json/.vpc</span>
-                      <input id="inputImportVideoPsalmFile" type="file" accept=".json,.vpc,.txt" class="hidden" />
+                  <div class="col-span-4 flex items-center justify-end gap-2 text-[10px] text-zinc-300">
+                    <label class="inline-flex items-center gap-1 cursor-pointer" title="Show quiet Song Title pill on TV">
+                      <input id="chkLyricsShowHeader" type="checkbox" class="accent-white" />
+                      <span>Title</span>
                     </label>
-                    <button id="btnExportVerifiedSongs" type="button" class="px-2 py-1 rounded-lg bg-white/[0.06] hover:bg-white/[0.12] text-zinc-300 border border-white/10 text-[10px] transition">
-                      Export Verified
+                    <label class="inline-flex items-center gap-1 cursor-pointer" title="Show dimmed next line cue">
+                      <input id="chkLyricsShowNextCue" type="checkbox" class="accent-white" />
+                      <span>Cue</span>
+                    </label>
+                    <label class="inline-flex items-center gap-1 cursor-pointer" title="Hide [G], [Am] chords on TV">
+                      <input id="chkLyricsStripChords" type="checkbox" checked class="accent-white" />
+                      <span>No Chords</span>
+                    </label>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- DEDICATED 2-PANE SONG & CUSTOM SONGBOOK STUDIO MODAL -->
+          <div id="lyricsSongStudioModal" class="hidden fixed inset-0 z-50 bg-black/75 backdrop-blur-sm flex items-center justify-center p-4">
+            <div class="w-full max-w-4xl bg-[#0f0f12] border border-white/15 rounded-xl shadow-2xl flex flex-col max-h-[88vh] overflow-hidden">
+              <div class="px-4 py-3 border-b border-white/10 flex items-center justify-between">
+                <div>
+                  <h3 class="text-sm font-semibold text-zinc-100">Song &amp; SongBook Studio (VideoPsalm Syntax)</h3>
+                  <p class="text-[11px] text-zinc-400">English uses Inter Bold • Telugu zero-clip safe • Saved offline in IndexedDB</p>
+                </div>
+                <button id="btnCloseLyricsModal" type="button" class="px-2.5 py-1 rounded-lg bg-white/[0.06] hover:bg-white/[0.14] text-zinc-300 text-xs">✕ Close</button>
+              </div>
+              <div class="p-4 grid grid-cols-1 md:grid-cols-12 gap-4 overflow-y-auto flex-1">
+                <!-- LEFT PANE: SONG AUTHORING & SONGBOOK CREATOR -->
+                <div class="md:col-span-7 flex flex-col gap-2.5">
+                  <div class="grid grid-cols-12 gap-2">
+                    <input id="lyricsEditTitleInput" type="text" placeholder="Song Title (English or Telugu)..." class="col-span-6 bg-[#141418] border border-white/10 rounded-lg px-2.5 py-1.5 text-xs text-zinc-100 outline-none telugu-font-sans" />
+                    <input id="lyricsEditNumInput" type="text" placeholder="#Num" class="col-span-2 bg-[#141418] border border-white/10 rounded-lg px-2 py-1.5 text-xs text-zinc-100 outline-none tabular-nums" />
+                    <select id="lyricsEditBookSelect" class="col-span-4 bg-[#141418] border border-white/10 rounded-lg px-2 py-1.5 text-xs text-zinc-100 outline-none">
+                      <!-- Built-in + Custom SongBooks -->
+                    </select>
+                  </div>
+
+                  <!-- Quick Inline Custom SongBook Creator -->
+                  <div id="lyricsNewBookInlineBar" class="hidden flex items-center gap-1.5 p-2 rounded-lg bg-white/[0.04] border border-white/10">
+                    <input id="inputNewSongBookName" type="text" placeholder="New SongBook Name (e.g. Carols 2025, Youth)..." class="flex-1 bg-[#09090b] border border-white/10 rounded px-2 py-1 text-xs text-zinc-100 outline-none" />
+                    <select id="selectNewSongBookLang" class="bg-[#09090b] border border-white/10 rounded px-2 py-1 text-xs text-zinc-100 outline-none">
+                      <option value="te">Telugu</option>
+                      <option value="en">English</option>
+                    </select>
+                    <button id="btnConfirmCreateSongBook" type="button" class="px-2.5 py-1 rounded bg-white text-zinc-950 font-semibold text-xs">Create</button>
+                  </div>
+
+                  <!-- 1-Click Section Insert Chips + Auto-Format 2-Line Helper -->
+                  <div class="flex flex-wrap items-center justify-between gap-1.5">
+                    <div class="flex flex-wrap items-center gap-1">
+                      <button type="button" data-ins-sec="C1" class="lyr-ins-sec px-2 py-0.5 rounded bg-amber-500/20 text-amber-300 border border-amber-500/35 text-[10px] font-semibold">+ C1</button>
+                      <button type="button" data-ins-sec="V1" class="lyr-ins-sec px-2 py-0.5 rounded bg-white/[0.07] text-zinc-200 border border-white/15 text-[10px] font-semibold">+ V1</button>
+                      <button type="button" data-ins-sec="V2" class="lyr-ins-sec px-2 py-0.5 rounded bg-white/[0.07] text-zinc-200 border border-white/15 text-[10px] font-semibold">+ V2</button>
+                      <button type="button" data-ins-sec="V3" class="lyr-ins-sec px-2 py-0.5 rounded bg-white/[0.07] text-zinc-200 border border-white/15 text-[10px] font-semibold">+ V3</button>
+                      <button type="button" data-ins-sec="P1" class="lyr-ins-sec px-2 py-0.5 rounded bg-sky-500/20 text-sky-300 border border-sky-500/35 text-[10px] font-semibold">+ P1</button>
+                      <button type="button" data-ins-sec="B1" class="lyr-ins-sec px-2 py-0.5 rounded bg-violet-500/20 text-violet-300 border border-violet-500/35 text-[10px] font-semibold">+ B1</button>
+                      <button type="button" data-ins-sec="T1" class="lyr-ins-sec px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/35 text-[10px] font-semibold">+ T1</button>
+                    </div>
+                    <button id="btnLyricsAutoFormat2Line" type="button" class="px-2 py-0.5 rounded bg-white/[0.07] hover:bg-white/[0.14] text-zinc-200 border border-white/15 text-[10px] font-medium transition" title="Split pasted text cleanly into 2-line musical phrases">
+                      Auto-Split 2-Line
                     </button>
                   </div>
+
+                  <textarea id="lyricsVideoPsalmTextarea" rows="12" placeholder="C1&#10;First musical phrase&#10;Second musical phrase&#10;&#10;V1&#10;Verse line 1&#10;Verse line 2" class="w-full flex-1 bg-[#141418] border border-white/10 rounded-lg p-3 text-xs text-zinc-100 outline-none leading-relaxed telugu-font-sans"></textarea>
+                </div>
+
+                <!-- RIGHT PANE: LIVE SLIDE BREAKDOWN & LOWER-THIRD LINE CHECK -->
+                <div class="md:col-span-5 flex flex-col gap-2">
+                  <div class="flex items-center justify-between text-[11px] text-zinc-400">
+                    <span class="font-medium text-zinc-200">Live Slide Preview</span>
+                    <span id="lyricsModalSlideCount" class="tabular-nums">0 slides</span>
+                  </div>
+                  <div id="lyricsModalLivePreview" class="flex-1 max-h-[340px] overflow-y-auto flex flex-col gap-1.5 pr-1">
+                    <!-- Populated live as you type -->
+                  </div>
+                </div>
+              </div>
+              <div class="px-4 py-3 border-t border-white/10 flex flex-wrap items-center justify-between gap-2 bg-[#0b0b0e]">
+                <div class="flex items-center gap-2">
+                  <button id="btnLyricsSaveVerified" type="button" class="px-3.5 py-1.5 rounded-lg bg-white hover:bg-zinc-200 text-zinc-950 font-semibold text-xs transition">
+                    Save ✓ Verified
+                  </button>
+                  <button id="btnLyricsCopyVp" type="button" class="px-2.5 py-1.5 rounded-lg bg-white/[0.06] hover:bg-white/[0.12] text-zinc-300 border border-white/10 text-xs transition">
+                    Copy VideoPsalm Text
+                  </button>
+                </div>
+                <div class="flex items-center gap-2">
+                  <label class="px-2.5 py-1.5 rounded-lg bg-white/[0.06] hover:bg-white/[0.12] text-zinc-200 border border-white/10 text-xs cursor-pointer transition">
+                    <span>Import .json / .vpc / .txt</span>
+                    <input id="inputImportVideoPsalmFile" type="file" accept=".json,.vpc,.txt" class="hidden" />
+                  </label>
+                  <button id="btnExportVerifiedSongs" type="button" class="px-2.5 py-1.5 rounded-lg bg-white/[0.06] hover:bg-white/[0.12] text-zinc-300 border border-white/10 text-xs transition">
+                    Export SongBooks
+                  </button>
                 </div>
               </div>
             </div>
@@ -2700,7 +2840,10 @@
       lyricsStripChords: true,          // Strips [G], [Am7] ChordPro notation on TV
       lyricsAlign: 'center',            // 'center' | 'left'
       lyricsScalePercent: 100,          // 75..135
-      lyricsBookFilter: 'all',          // 'all' | 'englishHymns' | 'englishChoruses' | 'teluguSongs' | 'verified'
+      lyricsLtStyle: 'cinema_band',     // 'cinema_band' | 'frosted_bar' | 'solid_strip'
+      lyricsLtMaxLines: 2,              // 2 | 3 (max lines per Lower-Third sub-step)
+      lyricsSubStepIdx: 0,              // Sub-step index when a 3-4 line slide auto-splits in Lower-Third mode
+      lyricsBookFilter: 'all',          // 'all' | 'englishHymns' | 'englishChoruses' | 'teluguSongs' | 'verified' | custom book id
       lyricsAgenda: [],                 // Song IDs pinned for Sunday worship setlist
       // Native OBS WebSocket 5.x Auto-Scene Switcher (Center Stage ↔ Book Overlay)
       obsAutoSwitchScene: true,
@@ -2852,6 +2995,8 @@
         lyricsStripChords: Boolean(state.lyricsStripChords),
         lyricsAlign: state.lyricsAlign,
         lyricsScalePercent: state.lyricsScalePercent,
+        lyricsLtStyle: state.lyricsLtStyle,
+        lyricsLtMaxLines: state.lyricsLtMaxLines,
         lyricsAgenda: Array.isArray(state.lyricsAgenda) ? state.lyricsAgenda : [],
         obsAutoSwitchScene: Boolean(state.obsAutoSwitchScene),
         obsCameraScene: state.obsCameraScene,
@@ -2886,7 +3031,7 @@
         'mediaType', 'mediaSubMode', 'mediaZoom', 'mediaSearchSource',
         'mediaLayout', 'mediaFitMode', 'mediaFocalPos', 'mediaSplitWidth',
         'mediaShowCaption', 'mediaStagedPreview', 'lyricsMode', 'lyricsShowHeader',
-        'lyricsShowNextCue', 'lyricsStripChords', 'lyricsAlign', 'lyricsScalePercent', 'lyricsAgenda',
+        'lyricsShowNextCue', 'lyricsStripChords', 'lyricsAlign', 'lyricsScalePercent', 'lyricsLtStyle', 'lyricsLtMaxLines', 'lyricsAgenda',
         'obsAutoSwitchScene',
         'obsCameraScene', 'obsPictureScene', 'obsWsUrl', 'obsWsPassword'
       ];
@@ -4783,6 +4928,19 @@
       return (slides || []).map(s => `${(s.label || 'V1').replace(/\.$/, '')}\n${(s.text || '').trim()}`).join('\n\n');
     }
 
+    function getLowerThirdSubChunks(rawText, maxLines = 2) {
+      const limit = Math.max(1, Math.min(4, parseInt(maxLines, 10) || 2));
+      const lines = String(rawText || '').split('\n').map(l => l.trim()).filter(Boolean);
+      if (!lines.length) return [[]];
+      if (lines.length <= limit) return [lines];
+      const chunks = [];
+      for (let i = 0; i < lines.length; i += limit) {
+        chunks.push(lines.slice(i, i + limit));
+      }
+      // Avoid lonely 1-line tail if maxLines === 3 and prev chunk has 2
+      return chunks;
+    }
+
     function buildLyricsOverlayMarkup(renderState, isFullOverlay, theme, fontStack, fontWeight) {
       const lMode = renderState.lyricsMode || 'full_screen';
       const isLive = Boolean(renderState.lyricsIsLive);
@@ -4790,41 +4948,84 @@
       const shouldShow = isLive || isStagedPreview;
       const isClearText = Boolean(renderState.lyricsClearText);
       const animClass = `fs-anim-${renderState.animStyle || 'broadcast_mask'}`;
-      const enFontStack = resolveEnglishFontStack(renderState);
+      // English Worship Font locked to Inter Bold (700) per operator spec
+      const enWorshipFont = "'Inter', 'Anek Latin', sans-serif";
       const isTeluguSong = renderState.lyricsLang === 'te' || /[\u0C00-\u0C7F]/.test(renderState.lyricsText || '');
-      const activeFontStack = isTeluguSong ? fontStack : enFontStack;
+      const activeFontStack = isTeluguSong ? fontStack : enWorshipFont;
 
       const rawSlideText = renderState.lyricsText || 'Select a song from the Lyrics Studio';
       const cleanText = renderState.lyricsStripChords ? stripChordProTags(rawSlideText) : rawSlideText;
       const lines = cleanText.split('\n').map(l => l.trim()).filter(Boolean);
       const nextCueRaw = renderState.lyricsStripChords ? stripChordProTags(renderState.lyricsNextLine || '') : (renderState.lyricsNextLine || '');
+      const scaleMult = (renderState.lyricsScalePercent || 100) / 100;
 
       const stagedBadge = isStagedPreview
         ? `<div class="absolute top-3 left-3 z-40 px-2.5 py-1 rounded-md bg-zinc-900/90 border border-white/15 text-[10px] font-semibold tracking-wider text-zinc-200 uppercase">LYRICS PREVIEW • OFF AIR</div>`
         : '';
 
-      const contentKey = ['LYR', renderState.lyricsSongId, renderState.lyricsSlideIdx, lMode, isClearText ? '1' : '0', cleanText].join('|');
+      const subIdx = Math.max(0, parseInt(renderState.lyricsSubStepIdx, 10) || 0);
+      const contentKey = ['LYR', renderState.lyricsSongId, renderState.lyricsSlideIdx, subIdx, lMode, renderState.lyricsLtStyle || 'cinema_band', isClearText ? '1' : '0', cleanText].join('|');
 
-      // 1. LOWER-THIRD LYRICS MODE (Clean 2-3 Line Livestream Strip Anchored at Bottom of 1080p Frame)
+      // 1. TRUE BROADCAST LOWER-THIRD LYRICS (Wide Bottom-Anchored Band, Max 2 Lines + Smart Sub-Stepping + Auto-Wrap)
       if (lMode === 'lower_third') {
-        const rawPos = renderState.position || 'bottom-center';
-        const flexPos = rawPos === 'bottom-left' ? 'items-end justify-start' : rawPos === 'bottom-right' ? 'items-end justify-end' : 'items-end justify-center';
+        const ltStyle = renderState.lyricsLtStyle || 'cinema_band';
+        const maxLines = renderState.lyricsLtMaxLines || 2;
+        const subChunks = getLowerThirdSubChunks(cleanText, maxLines);
+        const activeSubIdx = Math.min(subIdx, subChunks.length - 1);
+        const ltLines = subChunks[activeSubIdx] || lines.slice(0, maxLines);
         const visCls = shouldShow ? 'lt-visible' : 'lt-hidden';
-        const baseScale = ((renderState.scalePercent || 105) / 100) * (isFullOverlay ? 1.0 : 0.44);
-        const linesHtml = lines.map(ln => `<div style="line-height: 1.44; padding: 0.08em 0;">${escapeHtml(ln)}</div>`).join('');
-        return `
-          ${stagedBadge}
-          <div class="lt-wrapper ${visCls} lt-anim-${renderState.animStyle || 'broadcast_mask'} absolute inset-0 z-20 flex ${flexPos} pointer-events-none" style="padding: ${isFullOverlay ? '3.8% 5%' : '4% 4%'}; font-family: ${activeFontStack};">
-            <div style="transform: scale(${baseScale.toFixed(3)}); transform-origin: center bottom; max-width: 92%; opacity: ${isClearText ? '0' : '1'}; transition: opacity 0.28s ease;">
-              <div class="fs-anchored-bar flex flex-col items-center text-center" style="background: rgba(9, 12, 20, 0.84); border: 1px solid rgba(255,255,255,0.16); border-radius: 16px; padding: 18px 34px;">
-                ${renderState.lyricsShowHeader && renderState.lyricsTitle ? `
-                  <div style="color: ${theme.badgeColor}; font-size: 15px; font-weight: 700; letter-spacing: 0.06em; margin-bottom: 6px; font-family: ${activeFontStack};">
-                    ${renderState.lyricsSongNum ? `#${escapeHtml(renderState.lyricsSongNum)} • ` : ''}${escapeHtml(renderState.lyricsTitle)}
-                  </div>
-                ` : ''}
-                <div style="color: #f8fafc; font-size: ${lines.length > 3 ? '28px' : '34px'}; font-weight: 700; letter-spacing: 0;">
+
+        const maxLen = ltLines.reduce((m, l) => Math.max(m, l.length), 0);
+        // Fluid container-relative cqi sizing (scales identically from 600px Studio Preview to 1920px OBS 1080p!)
+        let baseCqi = ltLines.length <= 2 ? 2.65 : 2.15;
+        if (maxLen > 54) baseCqi *= 0.82;
+        else if (maxLen > 40) baseCqi *= 0.90;
+        const fontCqi = (baseCqi * scaleMult).toFixed(2) + 'cqi';
+        const hdrCqi = (1.05 * scaleMult).toFixed(2) + 'cqi';
+        const linesHtml = ltLines.map(ln => `<div style="line-height: ${isTeluguSong ? '1.44' : '1.28'}; padding: ${isTeluguSong ? '0.10em 0' : '0.04em 0'}; text-wrap: balance; overflow-wrap: break-word;">${escapeHtml(ln)}</div>`).join('');
+
+        const headerHtml = (renderState.lyricsShowHeader && renderState.lyricsTitle) ? `
+          <div style="color: ${theme.badgeColor}; font-size: ${hdrCqi}; font-weight: 700; letter-spacing: 0.06em; margin-bottom: 0.5cqi; opacity: 0.92; font-family: ${activeFontStack};">
+            ${renderState.lyricsSongNum ? `#${escapeHtml(renderState.lyricsSongNum)} • ` : ''}${escapeHtml(renderState.lyricsTitle)}${subChunks.length > 1 ? ` (${activeSubIdx + 1}/${subChunks.length})` : ''}
+          </div>
+        ` : '';
+
+        if (ltStyle === 'frosted_bar') {
+          return `
+            ${stagedBadge}
+            <div class="lt-wrapper ${visCls} lt-anim-${renderState.animStyle || 'broadcast_mask'} absolute inset-0 z-20 flex items-end justify-center pointer-events-none" style="padding: 0 4.5% 3.2% 4.5%; container-type: inline-size; font-family: ${activeFontStack};">
+              <div class="fs-anchored-bar w-full flex flex-col items-center text-center" style="opacity: ${isClearText ? '0' : '1'}; transition: opacity 0.28s ease; background: rgba(8, 11, 18, 0.78); border: 1px solid rgba(255,255,255,0.18); border-radius: 1.1cqi; padding: 1.4cqi 3.2cqi;">
+                ${headerHtml}
+                <div style="color: #f8fafc; font-size: ${fontCqi}; font-weight: 700; width: 100%; letter-spacing: ${isTeluguSong ? '0' : '-0.01em'};">
                   ${linesHtml}
                 </div>
+              </div>
+            </div>
+          `;
+        }
+
+        if (ltStyle === 'solid_strip') {
+          return `
+            ${stagedBadge}
+            <div class="lt-wrapper ${visCls} lt-anim-${renderState.animStyle || 'broadcast_mask'} absolute inset-0 z-20 flex items-end justify-center pointer-events-none" style="container-type: inline-size; font-family: ${activeFontStack};">
+              <div class="w-full flex flex-col items-center text-center" style="opacity: ${isClearText ? '0' : '1'}; transition: opacity 0.28s ease; background: rgba(7, 9, 15, 0.92); border-top: 2px solid ${theme.badgeColor}; padding: 1.6cqi 5% 2.1cqi 5%;">
+                ${headerHtml}
+                <div style="color: #f8fafc; font-size: ${fontCqi}; font-weight: 700; width: 100%; max-width: 92%; letter-spacing: ${isTeluguSong ? '0' : '-0.01em'};">
+                  ${linesHtml}
+                </div>
+              </div>
+            </div>
+          `;
+        }
+
+        // Default: Cinema Gradient Band (Full-width bottom vignette scrim, zero hard box edges!)
+        return `
+          ${stagedBadge}
+          <div class="lt-wrapper ${visCls} lt-anim-${renderState.animStyle || 'broadcast_mask'} absolute inset-0 z-20 flex items-end justify-center pointer-events-none" style="container-type: inline-size; font-family: ${activeFontStack};">
+            <div class="w-full flex flex-col items-center text-center" style="opacity: ${isClearText ? '0' : '1'}; transition: opacity 0.28s ease; background: linear-gradient(to top, rgba(4, 6, 12, 0.94) 0%, rgba(4, 6, 12, 0.74) 56%, rgba(4, 6, 12, 0) 100%); padding: 5.5cqi 5% 2.6cqi 5%;">
+              ${headerHtml}
+              <div style="color: #f8fafc; font-size: ${fontCqi}; font-weight: 700; width: 100%; max-width: 92%; letter-spacing: ${isTeluguSong ? '0' : '-0.01em'}; text-shadow: 0 3px 18px rgba(0, 0, 0, 0.90);">
+                ${linesHtml}
               </div>
             </div>
           </div>
@@ -4839,8 +5040,8 @@
           ? `left: 0; border-right: 1px solid rgba(255,255,255,0.12); box-shadow: 24px 0 56px rgba(0,0,0,0.72);`
           : `right: 0; border-left: 1px solid rgba(255,255,255,0.12); box-shadow: -24px 0 56px rgba(0,0,0,0.72);`;
         const visCls = shouldShow ? 'fs-visible' : 'fs-hidden';
-        const linesHtml = lines.map(ln => `<div style="line-height: 1.48; padding: 0.12em 0;">${escapeHtml(ln)}</div>`).join('');
-        const textCqi = lines.length > 3 ? '5.4cqi' : '6.6cqi';
+        const linesHtml = lines.map(ln => `<div style="line-height: 1.48; padding: 0.12em 0; text-wrap: balance; overflow-wrap: break-word;">${escapeHtml(ln)}</div>`).join('');
+        const textCqi = ((lines.length > 3 ? 5.6 : 7.0) * scaleMult).toFixed(2) + 'cqi';
         return `
           ${stagedBadge}
           <div class="fs-wrapper ${animClass} ${visCls} absolute top-0 bottom-0 z-20 flex flex-col justify-center items-start text-left pointer-events-none" data-fs-root="1" style="width: ${splitW}%; ${edgeStyle} background: #0b0d14; padding: 5% 6%; container-type: inline-size; font-family: ${activeFontStack};">
@@ -4852,7 +5053,7 @@
                 </div>
                 <div style="width: 100%; height: 1px; background: rgba(255,255,255,0.14);"></div>
               ` : ''}
-              <div class="fs-stage-verse" style="color: #f8fafc; font-size: ${textCqi}; font-weight: 700; letter-spacing: 0;">
+              <div class="fs-stage-verse w-full" style="color: #f8fafc; font-size: ${textCqi}; font-weight: 700; letter-spacing: ${isTeluguSong ? '0' : '-0.01em'};">
                 ${linesHtml}
               </div>
               ${renderState.lyricsShowNextCue && nextCueRaw ? `
@@ -4865,7 +5066,7 @@
         `;
       }
 
-      // 3. FULL-SCREEN TV LYRICS MODE (Shares Portable Sanctuary Backdrop Lab + WCAG AAA Contrast + Zero-Clip Telugu)
+      // 3. FULL-SCREEN TV LYRICS MODE (Big Confident Canvas Usage 90% Safe Width + Balanced Auto-Wrap + Inter Bold 700 English)
       const visCls = shouldShow ? 'fs-visible' : 'fs-hidden';
       const fsBackdropSource = (lMode === 'scene_overlay') ? 'solid' : (renderState.fsBackdropSource || 'shader');
       const effRenderState = lMode === 'scene_overlay'
@@ -4885,36 +5086,37 @@
         const stageW = previewEl ? previewEl.clientWidth : 0;
         previewMult = stageW > 120 ? Math.max(0.18, Math.min(0.65, stageW / 1920)) : 0.29;
       }
-      const lScale = ((renderState.lyricsScalePercent || 100) / 100) * previewMult;
+      const lScale = scaleMult * previewMult;
       const maxLineLen = lines.reduce((m, l) => Math.max(m, l.length), 0);
-      let baseRem = lines.length <= 2 ? 5.2 : lines.length === 3 ? 4.4 : 3.7;
-      if (maxLineLen > 48) baseRem *= 0.84;
-      else if (maxLineLen > 34) baseRem *= 0.92;
+      // Big commanding sanctuary proportions using 90% safe width + balanced auto-wrap (keeps 2-line phrases on 2 bold lines!)
+      let baseRem = lines.length <= 1 ? 7.2 : lines.length === 2 ? (maxLineLen > 22 ? 5.6 : 6.8) : lines.length === 3 ? 5.0 : lines.length === 4 ? 4.3 : 3.6;
+      if (maxLineLen > 54) baseRem *= 0.84;
+      else if (maxLineLen > 38) baseRem *= 0.92;
       const lyricSizeRem = (baseRem * lScale).toFixed(3);
-      const headerSizeRem = (1.85 * lScale).toFixed(3);
-      const cueSizeRem = (1.95 * lScale).toFixed(3);
+      const headerSizeRem = (1.95 * lScale).toFixed(3);
+      const cueSizeRem = (2.05 * lScale).toFixed(3);
 
       const textColor = isLightCanvas ? '#0f172a' : (shaderPreset.textColor || '#f8fafc');
       const badgeColor = isLightCanvas ? '#fde68a' : (shaderPreset.refAccent || theme.badgeColor);
       const pillBg = isLightCanvas ? 'rgba(15, 23, 42, 0.90)' : 'rgba(9, 13, 24, 0.56)';
       const alignCls = renderState.lyricsAlign === 'left' ? 'items-start text-left' : 'items-center text-center';
-      const shadowCss = isLightCanvas ? '' : 'text-shadow: 0 3px 22px rgba(0, 0, 0, 0.52);';
-      const linesHtml = lines.map(ln => `<div style="line-height: 1.50; padding: 0.14em 0;">${escapeHtml(ln)}</div>`).join('');
+      const shadowCss = isLightCanvas ? '' : 'text-shadow: 0 4px 26px rgba(0, 0, 0, 0.54);';
+      const linesHtml = lines.map(ln => `<div style="line-height: ${isTeluguSong ? '1.46' : '1.30'}; padding: ${isTeluguSong ? '0.16em 0' : '0.06em 0'}; text-wrap: balance; overflow-wrap: break-word;">${escapeHtml(ln)}</div>`).join('');
 
       return `
         ${stagedBadge}
-        <div class="fs-wrapper ${animClass} ${isLightCanvas ? 'fs-theme-light' : ''} ${visCls} absolute inset-0 z-10 flex flex-col justify-center ${alignCls} pointer-events-none" data-fs-root="1" style="${backdropStyle} padding: 5% 6.5%; ${shadowCss} font-family: ${activeFontStack};">
+        <div class="fs-wrapper ${animClass} ${isLightCanvas ? 'fs-theme-light' : ''} ${visCls} absolute inset-0 z-10 flex flex-col justify-center ${alignCls} pointer-events-none" data-fs-root="1" style="${backdropStyle} padding: 4.5% 5%; ${shadowCss} font-family: ${activeFontStack};">
           ${backdropLayerMarkup}
           <div class="fs-inner-stage relative z-10 w-full flex flex-col ${alignCls}" data-fs-content-key="${escapeHtml(contentKey)}" style="opacity: ${isClearText ? '0' : '1'}; transition: opacity 0.32s ease; gap: ${(1.5 * lScale).toFixed(3)}rem;">
             ${renderState.lyricsShowHeader && renderState.lyricsTitle ? `
-              <div class="fs-stage-ref fs-liquid-glass-pill inline-flex items-center gap-2" style="padding: ${(0.42 * lScale).toFixed(3)}rem ${(1.45 * lScale).toFixed(3)}rem; background: ${pillBg}; border: 1px solid rgba(255,255,255,0.20); border-radius: 9999px;">
+              <div class="fs-stage-ref fs-liquid-glass-pill inline-flex items-center gap-2" style="padding: ${(0.45 * lScale).toFixed(3)}rem ${(1.55 * lScale).toFixed(3)}rem; background: ${pillBg}; border: 1px solid rgba(255,255,255,0.20); border-radius: 9999px;">
                 <span style="color: ${badgeColor}; font-size: ${headerSizeRem}rem; font-weight: 700; line-height: 1.38;">
                   ${renderState.lyricsSongNum ? `#${escapeHtml(renderState.lyricsSongNum)} • ` : ''}${escapeHtml(renderState.lyricsTitle)}
                 </span>
               </div>
             ` : ''}
             <div class="fs-mask w-full">
-              <div class="fs-stage-verse w-full flex flex-col ${alignCls}" style="color: ${textColor}; font-size: ${lyricSizeRem}rem; font-weight: ${isTeluguSong ? '700' : '700'}; letter-spacing: 0;">
+              <div class="fs-stage-verse w-full flex flex-col ${alignCls}" style="color: ${textColor}; font-size: ${lyricSizeRem}rem; font-weight: 700; letter-spacing: ${isTeluguSong ? '0' : '-0.015em'};">
                 ${linesHtml}
               </div>
             </div>
@@ -5317,6 +5519,9 @@
         lyricsStripChords: Boolean(state.lyricsStripChords),
         lyricsAlign: state.lyricsAlign,
         lyricsScalePercent: state.lyricsScalePercent,
+        lyricsLtStyle: state.lyricsLtStyle,
+        lyricsLtMaxLines: state.lyricsLtMaxLines,
+        lyricsSubStepIdx: state.lyricsSubStepIdx || 0,
         timestamp: Date.now()
       };
 
@@ -8914,9 +9119,57 @@
         showToast('Saved Custom Book Names');
       });
 
-      // ==================== WORSHIP LYRICS STUDIO CONTROLLER (1,001 SONGS + VIDEOPSALM EDITOR + AGENDA) ====================
+      // ==================== WORSHIP LYRICS STUDIO CONTROLLER (1,001 SONGS + CUSTOM SONGBOOKS + 2-PANE STUDIO + LOOK) ====================
       let lyricsCatalog = Array.isArray(window.VAKYACAST_OFFLINE_SONGS) ? window.VAKYACAST_OFFLINE_SONGS.slice() : [];
       let lyricsVerifiedOverrides = {}; // songId -> curated song object stored in IndexedDB
+      let customSongBooks = [];         // [{ id: 'book_...', name: 'Carols 2025', lang: 'en' }]
+
+      const BUILTIN_SONGBOOKS = [
+        { id: 'teluguSongs', name: 'Telugu', lang: 'te' },
+        { id: 'englishHymns', name: 'Eng Hymns', lang: 'en' },
+        { id: 'englishChoruses', name: 'Choruses', lang: 'en' }
+      ];
+
+      function getAllSongBooks() {
+        return BUILTIN_SONGBOOKS.concat(Array.isArray(customSongBooks) ? customSongBooks : []);
+      }
+
+      function renderLyricsBookFilters() {
+        const bar = document.getElementById('lyricsBookFilterBar');
+        const sel = document.getElementById('lyricsEditBookSelect');
+        const allSongs = getMergedLyricsSongs();
+        const books = getAllSongBooks();
+        const bf = state.lyricsBookFilter || 'all';
+
+        if (bar) {
+          const pills = [
+            { id: 'all', label: `All (${allSongs.length})` },
+            ...books.map(b => ({
+              id: b.id,
+              label: `${b.name} (${allSongs.filter(s => s.book === b.id).length})`
+            })),
+            { id: 'verified', label: `✓ Verified (${allSongs.filter(s => s.verified).length})` }
+          ];
+          bar.innerHTML = pills.map(p => {
+            const active = p.id === bf;
+            return `<button type="button" data-book-filter="${escapeHtml(p.id)}" class="lyrics-book-btn px-2 py-0.5 rounded text-[10px] transition ${
+              active ? 'font-semibold bg-white text-zinc-950' : (p.id === 'verified' ? 'font-medium text-emerald-400 hover:text-emerald-300' : 'font-medium text-zinc-400 hover:text-white')
+            }">${escapeHtml(p.label)}</button>`;
+          }).join('');
+          bar.querySelectorAll('.lyrics-book-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+              state.lyricsBookFilter = btn.getAttribute('data-book-filter') || 'all';
+              renderLyricsBookFilters();
+              renderLyricsSongList();
+            });
+          });
+        }
+        if (sel) {
+          const curVal = sel.value;
+          sel.innerHTML = books.map(b => `<option value="${escapeHtml(b.id)}">${escapeHtml(b.name)} (${b.lang === 'te' ? 'Telugu' : 'English'})</option>`).join('');
+          if (curVal && books.some(b => b.id === curVal)) sel.value = curVal;
+        }
+      }
 
       function getMergedLyricsSongs() {
         const map = new Map();
@@ -8978,15 +9231,88 @@
         const chkC = document.getElementById('chkLyricsStripChords'); if (chkC) chkC.checked = Boolean(state.lyricsStripChords);
         const rngS = document.getElementById('rangeLyricsScale'); if (rngS) rngS.value = state.lyricsScalePercent || 100;
         const lblS = document.getElementById('lyricsScaleLabel'); if (lblS) lblS.textContent = `${state.lyricsScalePercent || 100}%`;
+
+        // Contextual Look & Backdrop Controls inside Lyrics (Full-Screen vs Lower-Third vs Scene Overlay)
+        const isLyrFs = m === 'full_screen';
+        const isLyrLt = m === 'lower_third';
+        document.getElementById('lyricsLookFullScreenGroup')?.classList.toggle('hidden', !isLyrFs);
+        document.getElementById('lyricsLookLowerThirdGroup')?.classList.toggle('hidden', !isLyrLt);
+
+        const fsSrc = state.fsBackdropSource || 'shader';
+        document.getElementById('lyricsBgSubShader')?.classList.toggle('hidden', fsSrc !== 'shader');
+        document.getElementById('lyricsBgSubMedia')?.classList.toggle('hidden', fsSrc !== 'media');
+        document.querySelectorAll('.lyr-bgsrc-btn').forEach(btn => {
+          const active = btn.getAttribute('data-lyr-bgsrc') === fsSrc;
+          btn.className = active
+            ? 'lyr-bgsrc-btn px-2 py-0.5 rounded text-[10px] font-semibold bg-white text-zinc-950 transition'
+            : 'lyr-bgsrc-btn px-2 py-0.5 rounded text-[10px] font-medium text-zinc-400 hover:text-white transition';
+        });
+        document.querySelectorAll('.lyr-shader-btn').forEach(btn => {
+          const active = btn.getAttribute('data-lyr-shader') === (state.fsShaderPreset || 'deep_navy_waves');
+          btn.classList.toggle('border-white', active);
+          btn.classList.toggle('ring-1', active);
+          btn.classList.toggle('ring-white/60', active);
+          btn.classList.toggle('border-white/10', !active);
+        });
+        document.querySelectorAll('.lyr-motion-btn').forEach(btn => {
+          const active = btn.getAttribute('data-lyr-motion') === (state.fsShaderMotion || 'silk_waves');
+          btn.className = active
+            ? 'lyr-motion-btn py-0.5 rounded text-[10px] font-semibold bg-white text-zinc-950 transition'
+            : 'lyr-motion-btn py-0.5 rounded text-[10px] font-medium bg-white/[0.05] text-zinc-400 hover:text-white transition';
+        });
+
+        const selTex = document.getElementById('selectLyricsTexture'); if (selTex) selTex.value = state.fsTexture || 'fine_grain';
+        const rngDim = document.getElementById('rangeLyricsDimmer'); if (rngDim) rngDim.value = state.fsDimmer ?? 24;
+        const rngSpd = document.getElementById('rangeLyricsSpeed'); if (rngSpd) rngSpd.value = state.fsShaderSpeed ?? 32;
+        const selLtSt = document.getElementById('selectLyricsLtStyle'); if (selLtSt) selLtSt.value = state.lyricsLtStyle || 'cinema_band';
+        const selLtMl = document.getElementById('selectLyricsLtMaxLines'); if (selLtMl) selLtMl.value = String(state.lyricsLtMaxLines || 2);
+        const selAnim = document.getElementById('selectLyricsAnimStyle'); if (selAnim) selAnim.value = state.animStyle || 'broadcast_mask';
+
+        // Update Contrast Badge & Summary Badge inside Lyrics Look Drawer
+        const lyrContrast = document.getElementById('lyricsContrastBadge');
+        if (lyrContrast && typeof computeEffectiveContrastRatio === 'function') {
+          const r = computeEffectiveContrastRatio(state);
+          lyrContrast.textContent = r >= 7.0 ? `AAA ${r.toFixed(1)}:1 ✓` : `AA ${r.toFixed(1)}:1`;
+          lyrContrast.className = r >= 7.0
+            ? 'text-[10px] tabular-nums font-semibold px-1.5 py-0.5 rounded bg-emerald-500/15 text-emerald-300 border border-emerald-500/30'
+            : 'text-[10px] tabular-nums font-semibold px-1.5 py-0.5 rounded bg-amber-500/15 text-amber-300 border border-amber-500/35';
+        }
+        const sumBadge = document.getElementById('lyricsLookSummaryBadge');
+        if (sumBadge) {
+          if (isLyrLt) {
+            const ltLbl = { cinema_band: 'Cinema Band', frosted_bar: 'Frosted Bar', solid_strip: 'Solid Strip' }[state.lyricsLtStyle || 'cinema_band'] || 'Cinema Band';
+            sumBadge.textContent = `${ltLbl} • Max ${state.lyricsLtMaxLines || 2}L`;
+          } else if (m === 'scene_overlay') {
+            sumBadge.textContent = `Split Overlay • Book Overlay`;
+          } else {
+            const pName = (SANCTUARY_SHADER_PRESETS[state.fsShaderPreset] || SANCTUARY_SHADER_PRESETS.deep_navy_waves).name;
+            const mName = { silk_waves: 'Silk Waves', aurora_drift: 'Aurora', mesh_orbs: 'Mesh Orbs', light_beams: 'Beams' }[state.fsShaderMotion || 'silk_waves'] || 'Silk Waves';
+            sumBadge.textContent = fsSrc === 'media' ? 'Custom Image/Video' : (fsSrc === 'solid' ? 'Solid Backdrop' : `${pName} • ${mName}`);
+          }
+        }
+
+        // Update Lower-Third Sub-Step indicator badge (e.g. LT 1/2 when 4-line hymn splits into 2+2)
+        const subBadge = document.getElementById('lyricsLtSubStepBadge');
+        if (subBadge) {
+          const cleanTxt = state.lyricsStripChords ? stripChordProTags(state.lyricsText || '') : (state.lyricsText || '');
+          const chunks = getLowerThirdSubChunks(cleanTxt, state.lyricsLtMaxLines || 2);
+          if (isLyrLt && chunks.length > 1) {
+            subBadge.textContent = `LT ${(state.lyricsSubStepIdx || 0) + 1}/${chunks.length}`;
+            subBadge.classList.remove('hidden');
+          } else {
+            subBadge.classList.add('hidden');
+          }
+        }
       }
 
-      function applyActiveLyricsSlide(song, slideIdx, autoAir = false) {
+      function applyActiveLyricsSlide(song, slideIdx, autoAir = false, subStepIdx = 0) {
         if (!song || !song.slides || !song.slides.length) return;
         const idx = Math.max(0, Math.min(song.slides.length - 1, slideIdx));
         const curSlide = song.slides[idx];
         const nextSlide = song.slides[idx + 1];
         state.lyricsSongId = song.id;
         state.lyricsSlideIdx = idx;
+        state.lyricsSubStepIdx = Math.max(0, subStepIdx || 0);
         state.lyricsTitle = song.title || '';
         state.lyricsSongNum = song.num || '';
         state.lyricsLang = song.lang || (song.book === 'teluguSongs' ? 'te' : 'en');
@@ -9040,9 +9366,29 @@
       function stepLyricsSlide(delta) {
         const song = getLyricsSongById(state.lyricsSongId);
         if (!song || !song.slides || !song.slides.length) return;
-        const nextIdx = Math.max(0, Math.min(song.slides.length - 1, (state.lyricsSlideIdx || 0) + delta));
         state.lyricsClearText = false;
-        applyActiveLyricsSlide(song, nextIdx, false);
+        // Smart 2-Line Lower-Third Sub-Stepping (e.g. 4-line Amazing Grace steps 1a -> 1b before Slide 2!)
+        if (state.lyricsMode === 'lower_third') {
+          const cleanTxt = state.lyricsStripChords ? stripChordProTags(state.lyricsText || '') : (state.lyricsText || '');
+          const chunks = getLowerThirdSubChunks(cleanTxt, state.lyricsLtMaxLines || 2);
+          const curSub = state.lyricsSubStepIdx || 0;
+          if (delta > 0 && curSub + 1 < chunks.length) {
+            applyActiveLyricsSlide(song, state.lyricsSlideIdx, false, curSub + 1);
+            return;
+          }
+          if (delta < 0 && curSub > 0) {
+            applyActiveLyricsSlide(song, state.lyricsSlideIdx, false, curSub - 1);
+            return;
+          }
+        }
+        const nextIdx = Math.max(0, Math.min(song.slides.length - 1, (state.lyricsSlideIdx || 0) + delta));
+        let targetSub = 0;
+        if (delta < 0 && state.lyricsMode === 'lower_third' && nextIdx !== state.lyricsSlideIdx) {
+          const prevTxt = state.lyricsStripChords ? stripChordProTags(song.slides[nextIdx].text || '') : (song.slides[nextIdx].text || '');
+          const prevChunks = getLowerThirdSubChunks(prevTxt, state.lyricsLtMaxLines || 2);
+          targetSub = Math.max(0, prevChunks.length - 1);
+        }
+        applyActiveLyricsSlide(song, nextIdx, false, targetSub);
       }
 
       function jumpLyricsToSection(sectionPrefix) {
@@ -9281,25 +9627,185 @@
         scheduleSavePreferences();
       });
 
-      document.getElementById('btnToggleLyricsToolsDrawer')?.addEventListener('click', () => {
-        const body = document.getElementById('lyricsToolsDrawerBody');
-        const chev = document.getElementById('lyricsToolsChevron');
+      document.getElementById('btnToggleLyricsLookDrawer')?.addEventListener('click', () => {
+        const body = document.getElementById('lyricsLookDrawerBody');
+        const chev = document.getElementById('lyricsLookChevron');
         if (!body) return;
         const willOpen = body.classList.contains('hidden');
         body.classList.toggle('hidden', !willOpen);
         if (chev) chev.style.transform = willOpen ? 'rotate(90deg)' : 'rotate(0deg)';
       });
 
-      document.getElementById('btnLyricsNewSong')?.addEventListener('click', () => {
-        const body = document.getElementById('lyricsToolsDrawerBody');
-        const chev = document.getElementById('lyricsToolsChevron');
-        if (body) body.classList.remove('hidden');
-        if (chev) chev.style.transform = 'rotate(90deg)';
-        const newId = 'custom_' + Date.now();
-        state.lyricsSongId = newId;
-        const tEl = document.getElementById('lyricsEditTitleInput'); if (tEl) { tEl.value = ''; tEl.focus(); }
-        const nEl = document.getElementById('lyricsEditNumInput'); if (nEl) nEl.value = '';
-        const ta = document.getElementById('lyricsVideoPsalmTextarea'); if (ta) ta.value = 'C1\n\n\nV1\n';
+      // Direct Contextual Look, Backdrop, Motion, Animation & Lower-Third Controls inside Lyrics
+      document.querySelectorAll('.lyr-bgsrc-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          state.fsBackdropSource = btn.getAttribute('data-lyr-bgsrc') || 'shader';
+          syncLyricsUiPills();
+          renderAll();
+          scheduleSavePreferences();
+        });
+      });
+      document.querySelectorAll('.lyr-shader-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          state.fsShaderPreset = btn.getAttribute('data-lyr-shader') || 'deep_navy_waves';
+          state.fsBackdropSource = 'shader';
+          syncLyricsUiPills();
+          renderAll();
+          scheduleSavePreferences();
+        });
+      });
+      document.querySelectorAll('.lyr-motion-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          state.fsShaderMotion = btn.getAttribute('data-lyr-motion') || 'silk_waves';
+          state.fsBackdropSource = 'shader';
+          syncLyricsUiPills();
+          renderAll();
+          scheduleSavePreferences();
+        });
+      });
+      document.getElementById('selectLyricsTexture')?.addEventListener('change', (e) => {
+        state.fsTexture = e.target.value || 'none';
+        renderStagePreview(); broadcastStateToOverlays(); scheduleSavePreferences();
+      });
+      document.getElementById('rangeLyricsDimmer')?.addEventListener('input', (e) => {
+        state.fsDimmer = parseInt(e.target.value, 10) || 0;
+        syncLyricsUiPills(); renderAll(); scheduleSavePreferences();
+      });
+      document.getElementById('rangeLyricsSpeed')?.addEventListener('input', (e) => {
+        state.fsShaderSpeed = parseInt(e.target.value, 10) || 0;
+        renderStagePreview(); broadcastStateToOverlays(); scheduleSavePreferences();
+      });
+      document.getElementById('selectLyricsLtStyle')?.addEventListener('change', (e) => {
+        state.lyricsLtStyle = e.target.value || 'cinema_band';
+        syncLyricsUiPills(); renderStagePreview(); broadcastStateToOverlays(); scheduleSavePreferences();
+      });
+      document.getElementById('selectLyricsLtMaxLines')?.addEventListener('change', (e) => {
+        state.lyricsLtMaxLines = parseInt(e.target.value, 10) || 2;
+        state.lyricsSubStepIdx = 0;
+        syncLyricsUiPills(); renderStagePreview(); broadcastStateToOverlays(); scheduleSavePreferences();
+      });
+      document.getElementById('selectLyricsAnimStyle')?.addEventListener('change', (e) => {
+        state.animStyle = normalizeAnimStyle(e.target.value);
+        syncUiControlsFromState(); renderStagePreview(); broadcastStateToOverlays(); scheduleSavePreferences();
+      });
+      document.getElementById('inputLyricsCustomBgFile')?.addEventListener('change', (e) => {
+        // Reuse the exact same portable IndexedDB + auto-contrast background loader!
+        const targetInput = document.getElementById('inputFsCustomBgFile');
+        if (targetInput && e.target.files && e.target.files.length) {
+          const dt = new DataTransfer();
+          dt.items.add(e.target.files[0]);
+          targetInput.files = dt.files;
+          targetInput.dispatchEvent(new Event('change'));
+        }
+        e.target.value = '';
+      });
+      document.getElementById('btnLyricsScanBgFolder')?.addEventListener('click', () => {
+        refreshBridgeBackgroundsList();
+        showToast('Scanned ./backgrounds/ — pick image/video or Upload above');
+      });
+
+      // 2-Pane Song & Custom SongBook Studio Modal
+      function renderLyricsModalLivePreview() {
+        const ta = document.getElementById('lyricsVideoPsalmTextarea');
+        const box = document.getElementById('lyricsModalLivePreview');
+        const cntEl = document.getElementById('lyricsModalSlideCount');
+        if (!ta || !box) return;
+        const slides = parseVideoPsalmText(ta.value || '');
+        if (cntEl) cntEl.textContent = `${slides.length} slide${slides.length === 1 ? '' : 's'}`;
+        if (!slides.length) {
+          box.innerHTML = '<div class="text-[11px] text-zinc-500 p-3 text-center">Type or paste lyrics on the left to preview slides live.</div>';
+          return;
+        }
+        const maxLt = state.lyricsLtMaxLines || 2;
+        box.innerHTML = slides.map((s, idx) => {
+          const lnCount = (s.text || '').split('\n').filter(Boolean).length;
+          const ltInfo = lnCount <= maxLt
+            ? `<span class="text-emerald-400">✓ ${lnCount}L</span>`
+            : `<span class="text-sky-300">${lnCount}L → ${Math.ceil(lnCount / maxLt)} LT steps</span>`;
+          return `
+            <div class="p-2 rounded-lg bg-[#141418] border border-white/[0.08] flex flex-col gap-1">
+              <div class="flex items-center justify-between text-[10px]">
+                <span class="px-1.5 rounded border font-semibold ${getSectionBadgeClass(s.label)}">${escapeHtml(s.label)}</span>
+                <span class="tabular-nums">${ltInfo}</span>
+              </div>
+              <div class="text-[11px] text-zinc-200 whitespace-pre-line leading-snug telugu-font-sans">${escapeHtml(s.text)}</div>
+            </div>
+          `;
+        }).join('');
+      }
+
+      function openLyricsStudioModal(mode = 'edit') {
+        const modal = document.getElementById('lyricsSongStudioModal');
+        const newBookBar = document.getElementById('lyricsNewBookInlineBar');
+        if (!modal) return;
+        renderLyricsBookFilters();
+        if (newBookBar) newBookBar.classList.toggle('hidden', mode !== 'new_book');
+        if (mode === 'new_song') {
+          state.lyricsSongId = 'custom_' + Date.now();
+          const tEl = document.getElementById('lyricsEditTitleInput'); if (tEl) tEl.value = '';
+          const nEl = document.getElementById('lyricsEditNumInput'); if (nEl) nEl.value = '';
+          const ta = document.getElementById('lyricsVideoPsalmTextarea'); if (ta) ta.value = 'C1\n\n\nV1\n';
+          const bf = state.lyricsBookFilter;
+          const sel = document.getElementById('lyricsEditBookSelect');
+          if (sel && bf && bf !== 'all' && bf !== 'verified') sel.value = bf;
+        } else if (mode === 'edit') {
+          const cur = getLyricsSongById(state.lyricsSongId);
+          if (cur) loadSongIntoLyricsEditor(cur);
+        }
+        renderLyricsModalLivePreview();
+        modal.classList.remove('hidden');
+        if (mode === 'new_book') document.getElementById('inputNewSongBookName')?.focus();
+        else if (mode === 'new_song') document.getElementById('lyricsEditTitleInput')?.focus();
+      }
+
+      document.getElementById('btnLyricsNewSong')?.addEventListener('click', () => openLyricsStudioModal('new_song'));
+      document.getElementById('btnLyricsOpenEditModal')?.addEventListener('click', () => openLyricsStudioModal('edit'));
+      document.getElementById('btnLyricsNewBook')?.addEventListener('click', () => openLyricsStudioModal('new_book'));
+      document.getElementById('btnCloseLyricsModal')?.addEventListener('click', () => {
+        document.getElementById('lyricsSongStudioModal')?.classList.add('hidden');
+      });
+      document.getElementById('lyricsVideoPsalmTextarea')?.addEventListener('input', renderLyricsModalLivePreview);
+
+      document.getElementById('btnConfirmCreateSongBook')?.addEventListener('click', async () => {
+        const nameEl = document.getElementById('inputNewSongBookName');
+        const langEl = document.getElementById('selectNewSongBookLang');
+        const name = (nameEl?.value || '').trim();
+        if (!name) return;
+        const id = 'book_' + Date.now();
+        customSongBooks.push({ id, name, lang: langEl?.value || 'te' });
+        try { await idbPutSetting('vakyacast_custom_songbooks_v1', customSongBooks); } catch (_) {}
+        state.lyricsBookFilter = id;
+        renderLyricsBookFilters();
+        const sel = document.getElementById('lyricsEditBookSelect'); if (sel) sel.value = id;
+        if (nameEl) nameEl.value = '';
+        document.getElementById('lyricsNewBookInlineBar')?.classList.add('hidden');
+        showToast(`Created SongBook: ${name}`);
+      });
+
+      document.querySelectorAll('.lyr-ins-sec').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const ta = document.getElementById('lyricsVideoPsalmTextarea');
+          if (!ta) return;
+          const sec = btn.getAttribute('data-ins-sec') || 'V1';
+          const prefix = ta.value.trim() ? '\n\n' : '';
+          ta.value = ta.value.replace(/\s+$/, '') + `${prefix}${sec}\n`;
+          ta.focus();
+          renderLyricsModalLivePreview();
+        });
+      });
+
+      document.getElementById('btnLyricsAutoFormat2Line')?.addEventListener('click', () => {
+        const ta = document.getElementById('lyricsVideoPsalmTextarea');
+        if (!ta || !ta.value.trim()) return;
+        const parsed = parseVideoPsalmText(ta.value);
+        const out = [];
+        parsed.forEach(s => {
+          const chunks = getLowerThirdSubChunks(s.text, 2);
+          chunks.forEach(c => out.push({ label: s.label, text: c.join('\n') }));
+        });
+        ta.value = formatSlidesToVideoPsalm(out);
+        renderLyricsModalLivePreview();
+        showToast(`Formatted into ${out.length} clean 2-line slides`);
       });
 
       document.getElementById('btnLyricsSaveVerified')?.addEventListener('click', async () => {
@@ -9325,8 +9831,10 @@
         lyricsVerifiedOverrides[songId] = savedSong;
         try { await idbPutSetting('vakyacast_verified_songs_v1', lyricsVerifiedOverrides); } catch (_) {}
         applyActiveLyricsSlide(savedSong, 0, false);
+        renderLyricsBookFilters();
         renderLyricsSongList();
         renderLyricsAgenda();
+        document.getElementById('lyricsSongStudioModal')?.classList.add('hidden');
         showToast(`Saved ✓ Verified: ${savedSong.title}`);
       });
 
@@ -9426,15 +9934,18 @@
         renderStagePreview(); broadcastStateToOverlays(); scheduleSavePreferences();
       });
 
-      // Hydrate Verified Songs from IndexedDB & initial song selection
+      // Hydrate Verified Songs & Custom SongBooks from IndexedDB & initial song selection
       (async () => {
         try {
           const saved = await idbGetSetting('vakyacast_verified_songs_v1');
           if (saved && typeof saved === 'object') lyricsVerifiedOverrides = saved;
+          const savedBooks = await idbGetSetting('vakyacast_custom_songbooks_v1');
+          if (Array.isArray(savedBooks)) customSongBooks = savedBooks;
         } catch (_) {}
         if (!lyricsCatalog.length && Array.isArray(window.VAKYACAST_OFFLINE_SONGS)) {
           lyricsCatalog = window.VAKYACAST_OFFLINE_SONGS.slice();
         }
+        renderLyricsBookFilters();
         const all = getMergedLyricsSongs();
         if (all.length && !state.lyricsSongId) {
           const firstTe = all.find(s => s.book === 'teluguSongs') || all[0];
@@ -9505,6 +10016,7 @@
           obsModal.classList.add('hidden');
           hotkeysModal.classList.add('hidden');
           document.getElementById('bibleSyncModal')?.classList.add('hidden');
+          document.getElementById('lyricsSongStudioModal')?.classList.add('hidden');
           hidePictureOffAir(true);
           hideLyricsOffAir(true);
           hideLowerThird();
@@ -9651,6 +10163,9 @@
       if (payload.lyricsStripChords !== undefined) state.lyricsStripChords = Boolean(payload.lyricsStripChords);
       if (payload.lyricsAlign) state.lyricsAlign = payload.lyricsAlign;
       if (payload.lyricsScalePercent) state.lyricsScalePercent = payload.lyricsScalePercent;
+      if (payload.lyricsLtStyle) state.lyricsLtStyle = payload.lyricsLtStyle;
+      if (payload.lyricsLtMaxLines) state.lyricsLtMaxLines = payload.lyricsLtMaxLines;
+      if (typeof payload.lyricsSubStepIdx === 'number') state.lyricsSubStepIdx = payload.lyricsSubStepIdx;
       if (!memoryBibleBooksCache.te[state.bookId] || !memoryBibleBooksCache.en[state.bookId]) {
         ensureBookLoaded(state.bookId).then(() => {
           renderStagePreview();
